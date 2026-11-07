@@ -35,7 +35,7 @@
       "id": "severity_separation",
       "type": "bar",
       "title": "Severity ranks impact, not attacker intent",
-      "finding": "CRITICAL CVEs are 10.4x more likely to be exploited than LOW ones (0.538% vs 0.052%), but 99.5% of CRITICAL CVEs are never exploited \u2014 so a severity ordering spends almost all of its 500 slots on noise. On the 2025 pool, CVSS-first finds 8 of 55 exploited CVEs.",
+      "finding": "CRITICAL CVEs are 10.4x more likely to be exploited than LOW ones (0.538% vs 0.052%), but 99.5% of CRITICAL CVEs are never exploited \u2014 so a severity ordering spends almost all of its 500 slots on noise, and CVSS-first is the weakest of the three baselines on the held-out 2025 pool (see the blind-spot finding).",
       "stat": "CRITICAL/LOW risk ratio = 10.4x, with 0.54% absolute precision",
       "n": 87921,
       "chart": {

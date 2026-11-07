@@ -77,8 +77,8 @@ def main() -> None:
         "finding": (f"CRITICAL CVEs are {ratio:.1f}x more likely to be exploited than LOW ones "
                     f"({hi_r['rate']:.3%} vs {lo_r['rate']:.3%}), but {1 - hi_r['rate']:.1%} of CRITICAL "
                     f"CVEs are never exploited — so a severity ordering spends almost all of its 500 "
-                    f"slots on noise. On the 2025 pool, CVSS-first finds 8 of {int(train.loc[
-                        train.snapshot_month.str.startswith('2025'), 'y'].sum())} exploited CVEs.")
+                    f"slots on noise, and CVSS-first is the weakest of the three baselines on the "
+                    f"held-out 2025 pool (see the blind-spot finding).")
                     if lo_r and hi_r else "insufficient data",
         "stat": f"CRITICAL/LOW risk ratio = {ratio:.1f}x, with {hi_r['rate']:.2%} absolute precision"
                 if lo_r and hi_r else "n/a",

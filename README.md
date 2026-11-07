@@ -156,6 +156,8 @@ Full list in [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md).
 | [`docs/IBM_INTEGRATION.md`](docs/IBM_INTEGRATION.md) | Granite usage and measured contribution |
 | [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md) | what was executed and what it proves |
 | [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) | threats to validity |
+| [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) | timed 3-minute demo shot list, cuts and Q&A prep |
+| [`docs/COMPLETION_REPORT.md`](docs/COMPLETION_REPORT.md) | requirement-by-requirement status with evidence and known gaps |
 | [`docs/OFFICIAL_CHALLENGE.md`](docs/OFFICIAL_CHALLENGE.md) | the problem statement as issued |
 
 ## Team

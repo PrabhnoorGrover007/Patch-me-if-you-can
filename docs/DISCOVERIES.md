@@ -36,13 +36,21 @@ An 18× jump from zero to one source, and ~100× from zero to two. But only 2.5%
 public exploit code at snapshot, so this signal ranks a tiny corner of the pool. The model's job is
 the other 97.5%.
 
-## 3. Severity separates weakly, and expensively
+## 3. EPSS is calibrated but nearly empty in this cohort
+
+Observed KEV rate rises monotonically with EPSS: 0.10% at EPSS 0, 0.39% under 1%, 1.9% at 1–10%,
+4.0% at 10–50%, and 15.4% above 50%. Where the score is non-zero it is well calibrated. The problem
+is coverage: **99.9% of candidates sit below 0.10 at snapshot** (median EPSS 0.0004), so an EPSS-first
+ordering can only rank a tiny corner of the pool — which is exactly why it finds 8 of 52 exploited
+CVEs. A model that only re-sorts on EPSS inherits that blind spot.
+
+## 4. Severity separates weakly, and expensively
 
 CRITICAL CVEs are 0.538% likely to be exploited versus 0.052% for LOW — a 10.4× ratio, yet **99.5% of
 CRITICAL CVEs are never exploited**. The ratio is real; the *precision* is useless. A CVSS-first
 process spends all 500 slots at 1/200 accuracy, and on the 2025 pool finds 5 of 52 exploited CVEs.
 
-## 4. Weakness class carries independent information
+## 5. Weakness class carries independent information
 
 Highest-lift CWE classes (n ≥ 150): CWE-611 (XXE) **12.4×**, CWE-552 9.3×, CWE-290 8.9×,
 CWE-306 (missing authentication) 8.6×, CWE-288 7.7×, CWE-367 7.1×. CWE-611 is exploited at 1.7%
@@ -51,13 +59,13 @@ against a 0.139% base rate.
 Interpretation: weaknesses that cross a trust boundary and require no credentials are exploited out
 of proportion to their severity scores.
 
-## 5. Attackers return to vendors they already exploit
+## 6. Attackers return to vendors they already exploit
 
 CVEs from a vendor with at least one prior KEV entry are exploited at 0.278% versus 0.102% — 2.7×.
 This uses only KEV additions before each snapshot, so it is deployable knowledge, not hindsight.
 It is also the reason vendor history is a feature rather than a curiosity.
 
-## 6. Description wording predicts exploitation
+## 7. Description wording predicts exploitation
 
 | Phrase in description | lift | n |
 |---|---|---|
@@ -70,14 +78,14 @@ It is also the reason vendor history is a feature rather than a curiosity.
 Descriptions are written at publication by the CNA, so this is available on day one — unlike EPSS or
 exploit code.
 
-## 7. IBM Granite similarity is a genuine, independent signal
+## 8. IBM Granite similarity is a genuine, independent signal
 
 Cosine similarity between a CVE description and the descriptions of KEV entries **already on the list
 at snapshot time** reaches ROC-AUC 0.742 for predicting a later addition, using no CVSS, no
 EPSS and no structured field. Exploitation clusters semantically: memory-corruption and
 deserialisation descriptions sit near previously exploited CVEs.
 
-## 8. The window that matters is days
+## 9. The window that matters is days
 
 For CVEs published 2023–2025 that reached KEV, 64% (2023), 61% (2024) and 74% (2025) were added
 within 30 days of publication; median lag 7 days.
