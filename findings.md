@@ -59,7 +59,7 @@ same 0.69% share as the top 500 of the scoreboard.
 | EPSS first | 11 | 13 |
 | Exploit flags then EPSS | 15 | **20** |
 | Our logistic regression | **17** | 18 |
-| Gradient boosting | 8 | 15 |
+| Gradient boosting | 11 | 17 |
 
 The logistic regression is roughly level with the strongest simple baseline. With only 48
 validation positives, a difference of 1 to 3 hits is noise. These are 2024–2025 numbers. They don't

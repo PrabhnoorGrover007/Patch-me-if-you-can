@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07 20:21:18",
+  "generated_at": "2026-11-07 20:23:19",
   "label_rule": "1 if added to CISA KEV after the end of snapshot_month and on/before 2025-12-31",
   "features_used": [
     "epss",
