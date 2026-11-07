@@ -8,6 +8,7 @@ Prints PASS/FAIL per check and exits with code 1 if anything fails.
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -96,16 +97,19 @@ def main():
     if not a.skip_repro:
         tmp = out / "_repro_check"
         tmp.mkdir(exist_ok=True)
-        for f in ("train.csv", "predict_2026.csv"):
-            (tmp / f).write_bytes((out / f).read_bytes())
-        model_script = Path(__file__).resolve().parent / "model.py"
-        subprocess.run([sys.executable, str(model_script), "--out-dir", str(tmp)], check=True,
-                       capture_output=True)
-        again = pd.read_csv(tmp / "top500.csv", dtype=str)
-        check("re-running model.py gives the same top500", list(again.cve_id) == list(top.cve_id))
-        for f in tmp.iterdir():
-            f.unlink()
-        tmp.rmdir()
+        try:
+            for f in ("train.csv", "predict_2026.csv"):
+                shutil.copyfile(out / f, tmp / f)
+            model_script = Path(__file__).resolve().parent / "model.py"
+            run = subprocess.run([sys.executable, str(model_script), "--out-dir", str(tmp)],
+                                 capture_output=True, text=True)
+            if run.returncode != 0:
+                check("re-running model.py succeeds", False, run.stderr.strip()[-300:])
+            else:
+                again = pd.read_csv(tmp / "top500.csv", dtype=str)
+                check("re-running model.py gives the same top500", list(again.cve_id) == list(top.cve_id))
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)  # always clean up, even if the run failed
 
     print()
     if all(results):
