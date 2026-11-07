@@ -98,7 +98,8 @@ def main():
         tmp.mkdir(exist_ok=True)
         for f in ("train.csv", "predict_2026.csv"):
             (tmp / f).write_bytes((out / f).read_bytes())
-        subprocess.run([sys.executable, "model.py", "--out-dir", str(tmp)], check=True,
+        model_script = Path(__file__).resolve().parent / "model.py"
+        subprocess.run([sys.executable, str(model_script), "--out-dir", str(tmp)], check=True,
                        capture_output=True)
         again = pd.read_csv(tmp / "top500.csv", dtype=str)
         check("re-running model.py gives the same top500", list(again.cve_id) == list(top.cve_id))
