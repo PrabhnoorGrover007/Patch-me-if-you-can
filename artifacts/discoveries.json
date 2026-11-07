@@ -1,0 +1,526 @@
+{
+  "cohort": {
+    "rows": 87921,
+    "positives": 122,
+    "base_rate": 0.001388,
+    "months": [
+      "2024-01",
+      "2024-02",
+      "2024-03",
+      "2024-04",
+      "2024-05",
+      "2024-06",
+      "2024-07",
+      "2024-08",
+      "2024-09",
+      "2024-10",
+      "2024-11",
+      "2024-12",
+      "2025-01",
+      "2025-02",
+      "2025-03",
+      "2025-04",
+      "2025-05",
+      "2025-06",
+      "2025-07",
+      "2025-08",
+      "2025-09",
+      "2025-10",
+      "2025-11",
+      "2025-12"
+    ]
+  },
+  "discoveries": [
+    {
+      "id": "severity_separation",
+      "type": "bar",
+      "title": "Severity ranks impact, not attacker intent",
+      "finding": "CRITICAL CVEs are 10.4x more likely to be exploited than LOW ones (0.538% vs 0.052%), but 99.5% of CRITICAL CVEs are never exploited \u2014 so a severity ordering spends almost all of its 500 slots on noise. On the 2025 pool, CVSS-first finds 8 of 55 exploited CVEs.",
+      "stat": "CRITICAL/LOW risk ratio = 10.4x, with 0.54% absolute precision",
+      "n": 87921,
+      "chart": {
+        "x": [
+          "LOW (<4)",
+          "MEDIUM (4-6.9)",
+          "HIGH (7-8.9)",
+          "CRITICAL (9+)",
+          "nan"
+        ],
+        "y": [
+          0.000518,
+          0.00029,
+          0.001637,
+          0.005384,
+          0.0
+        ],
+        "ci_low": [
+          9.1e-05,
+          0.000166,
+          0.001242,
+          0.004176,
+          0.0
+        ],
+        "ci_high": [
+          0.002929,
+          0.000507,
+          0.002157,
+          0.006938,
+          0.001241
+        ]
+      }
+    },
+    {
+      "id": "exploit_code",
+      "type": "bar",
+      "title": "Public exploit code is the strongest observable signal",
+      "finding": "Each additional public exploit source present at snapshot multiplies the later KEV rate: 0 sources -> 0.09% (n=85969), 1 source -> 1.58% (n=1775), 2 sources -> 8.92% (n=157). Cells with fewer than 20 CVEs are excluded from this claim.",
+      "stat": "99.5x between 0 and 2 sources",
+      "n": 87921,
+      "chart": {
+        "x": [
+          "0.0",
+          "1.0",
+          "2.0",
+          "3.0",
+          "4.0"
+        ],
+        "y": [
+          0.000896,
+          0.015775,
+          0.089172,
+          0.117647,
+          0.333333
+        ],
+        "ci_low": [
+          0.000717,
+          0.010936,
+          0.05386,
+          0.032879,
+          0.06149
+        ],
+        "ci_high": [
+          0.001119,
+          0.022705,
+          0.144108,
+          0.343368,
+          0.792345
+        ]
+      }
+    },
+    {
+      "id": "epss_calibration",
+      "type": "bar",
+      "title": "EPSS is calibrated but nearly empty in this cohort",
+      "finding": "Observed KEV rate rises monotonically with EPSS, yet 99.9% of candidates sit below 0.10 at snapshot, so EPSS alone can only rank a tiny corner of the pool.",
+      "stat": "median EPSS = 0.0004",
+      "n": 87921,
+      "chart": {
+        "x": [
+          "0",
+          "0-1%",
+          "1-10%",
+          "10-50%",
+          ">50%",
+          "nan"
+        ],
+        "y": [
+          0.000963,
+          0.003917,
+          0.019342,
+          0.040404,
+          0.153846,
+          0.001539
+        ],
+        "ci_low": [
+          0.000766,
+          0.002588,
+          0.01054,
+          0.015822,
+          0.061499,
+          0.00081
+        ],
+        "ci_high": [
+          0.00121,
+          0.005923,
+          0.035236,
+          0.099322,
+          0.335316,
+          0.002922
+        ]
+      }
+    },
+    {
+      "id": "cwe_lift",
+      "type": "bar",
+      "title": "Weakness class carries information severity does not",
+      "finding": "Highest-lift weakness classes (min 150 CVEs): CWE-611 12.4x, CWE-552 9.3x, CWE-290 8.9x, CWE-306 8.6x, CWE-288 7.7x, CWE-367 7.1x. CWE-611 is exploited at 1.7% versus 0.139% overall.",
+      "stat": "top lift = 12.37x (CWE-611)",
+      "n": 94539,
+      "chart": {
+        "x": [
+          "CWE-611",
+          "CWE-552",
+          "CWE-290",
+          "CWE-306",
+          "CWE-288",
+          "CWE-367",
+          "CWE-502",
+          "CWE-78",
+          "CWE-287",
+          "CWE-250",
+          "CWE-908",
+          "CWE-209"
+        ],
+        "y": [
+          12.37,
+          9.3,
+          8.93,
+          8.64,
+          7.67,
+          7.14,
+          5.3,
+          4.26,
+          4.24,
+          4.21,
+          4.18,
+          4.09
+        ],
+        "rate": [
+          0.017167,
+          0.012903,
+          0.012397,
+          0.011984,
+          0.010638,
+          0.009901,
+          0.007353,
+          0.00591,
+          0.005882,
+          0.005848,
+          0.005797,
+          0.005682
+        ],
+        "n": [
+          233,
+          155,
+          242,
+          751,
+          282,
+          202,
+          1088,
+          1692,
+          680,
+          171,
+          345,
+          176
+        ],
+        "ci_low": [
+          4.83,
+          2.56,
+          3.04,
+          4.55,
+          2.61,
+          1.96,
+          2.69,
+          2.32,
+          1.65,
+          0.74,
+          1.15,
+          0.72
+        ],
+        "ci_high": [
+          31.21,
+          33.02,
+          25.81,
+          16.3,
+          22.2,
+          25.49,
+          10.41,
+          7.82,
+          10.83,
+          23.33,
+          15.05,
+          22.69
+        ]
+      }
+    },
+    {
+      "id": "vendor_memory",
+      "type": "bar",
+      "title": "Attackers return to vendors they already exploit",
+      "finding": "CVEs from vendors with at least one prior KEV entry are exploited at 0.278% versus 0.102% \u2014 2.7x. This is computed strictly from KEV additions before each snapshot.",
+      "stat": "2.7x vendor-prior effect",
+      "n": 87921,
+      "chart": {
+        "x": [
+          "vendor already in KEV",
+          "vendor never in KEV"
+        ],
+        "y": [
+          0.002779,
+          0.001021
+        ],
+        "ci_low": [
+          0.002114,
+          0.000809
+        ],
+        "ci_high": [
+          0.003652,
+          0.001287
+        ],
+        "n": [
+          18352,
+          69569
+        ]
+      }
+    },
+    {
+      "id": "description_language",
+      "type": "bar",
+      "title": "Wording in the description predicts exploitation",
+      "finding": "Descriptions mentioning 'XXE' (13.0x, n=228), 'authentication bypass' (8.2x, n=949), 'unauthenticated' (5.4x, n=6542), 'third-party dependency' (3.9x, n=187) are far more likely to be exploited, while XSS/CSRF phrasing is markedly less so.",
+      "stat": "XXE: 13.0x lift",
+      "n": 87921,
+      "chart": {
+        "x": [
+          "XXE",
+          "authentication bypass",
+          "unauthenticated",
+          "third-party dependency",
+          "path traversal",
+          "remote code execution",
+          "deserialisation",
+          "command injection",
+          "information disclosure",
+          "privilege escalation",
+          "use-after-free",
+          "buffer overflow / OOB",
+          "SQL injection",
+          "cross-site scripting"
+        ],
+        "y": [
+          13.04,
+          8.18,
+          5.41,
+          3.88,
+          3.76,
+          3.53,
+          2.73,
+          2.69,
+          1.15,
+          1.07,
+          0.66,
+          0.6,
+          0.42,
+          0.19
+        ],
+        "rate": [
+          0.017544,
+          0.010537,
+          0.005656,
+          0.005348,
+          0.004904,
+          0.004209,
+          0.003711,
+          0.003566,
+          0.001588,
+          0.001474,
+          0.000924,
+          0.00087,
+          0.000606,
+          0.000311
+        ],
+        "n": [
+          228,
+          949,
+          6542,
+          187,
+          2039,
+          5702,
+          1078,
+          2524,
+          1889,
+          3391,
+          2165,
+          8048,
+          6597,
+          16072
+        ],
+        "ci_low": [
+          5.09,
+          4.45,
+          3.93,
+          0.69,
+          2.04,
+          2.37,
+          1.06,
+          1.42,
+          0.39,
+          0.46,
+          0.18,
+          0.29,
+          0.16,
+          0.08
+        ],
+        "ci_high": [
+          32.88,
+          14.97,
+          7.45,
+          21.52,
+          6.9,
+          5.25,
+          6.99,
+          5.1,
+          3.37,
+          2.5,
+          2.4,
+          1.24,
+          1.08,
+          0.44
+        ]
+      }
+    },
+    {
+      "id": "exploit_window",
+      "type": "line",
+      "title": "The window that matters is days, not months",
+      "finding": "Of KEV additions for CVEs published 2023-2025, 64% (2023), 61% (2024), 74% (2025) happened within 30 days of publication. Those CVEs are *already excluded* from this benchmark, which is why the prediction task is about the long tail.",
+      "stat": "median lag 7 days",
+      "n": 450,
+      "chart": {
+        "x": [
+          2023,
+          2024,
+          2025
+        ],
+        "median_days": [
+          7.0,
+          9.0,
+          5.0
+        ],
+        "share_30d": [
+          0.6395,
+          0.6069,
+          0.7405
+        ],
+        "share_90d": [
+          0.7347,
+          0.731,
+          0.9177
+        ],
+        "n": [
+          147,
+          145,
+          158
+        ]
+      }
+    },
+    {
+      "id": "blind_spot",
+      "type": "bar",
+      "title": "Conventional rankings all miss the same CVEs",
+      "finding": "On the Jan-Sep 2025 pool (52 exploited CVEs), the three published baselines' top 500s cover only 19 of them. 33 exploited CVEs (63%) appear in none of the three lists; their median CVSS is 7.8 and 100% have EPSS < 0.1.",
+      "stat": "33/52 exploited CVEs missed by every baseline",
+      "n": 35289,
+      "chart": {
+        "x": [
+          "CVSS",
+          "EPSS",
+          "PoC+EPSS",
+          "any baseline"
+        ],
+        "y": [
+          44,
+          44,
+          33,
+          33
+        ],
+        "positives": 52,
+        "missed_ids": [
+          "CVE-2023-52163",
+          "CVE-2024-13159",
+          "CVE-2024-13160",
+          "CVE-2024-13161",
+          "CVE-2024-53704",
+          "CVE-2024-54085",
+          "CVE-2024-57968",
+          "CVE-2024-58136",
+          "CVE-2025-0411",
+          "CVE-2025-2746",
+          "CVE-2025-2747",
+          "CVE-2025-3935",
+          "CVE-2025-6204",
+          "CVE-2025-6205",
+          "CVE-2025-6554",
+          "CVE-2025-9242",
+          "CVE-2025-9377",
+          "CVE-2025-21042",
+          "CVE-2025-21043",
+          "CVE-2025-23209",
+          "CVE-2025-24054",
+          "CVE-2025-24472",
+          "CVE-2025-25181",
+          "CVE-2025-27915",
+          "CVE-2025-32463",
+          "CVE-2025-35939",
+          "CVE-2025-38352",
+          "CVE-2025-41244",
+          "CVE-2025-47827",
+          "CVE-2025-48384",
+          "CVE-2025-48927",
+          "CVE-2025-48928",
+          "CVE-2025-55177"
+        ]
+      }
+    },
+    {
+      "id": "granite_semantics",
+      "type": "bar",
+      "title": "Granite embeddings find exploited CVEs from text alone",
+      "finding": "Cosine similarity between a CVE description and the descriptions of KEV entries already on the list at snapshot time reaches ROC-AUC 0.742 for predicting a *later* KEV addition, with no CVSS or EPSS input. Semantic similarity is a genuine, independent signal.",
+      "stat": "ROC-AUC 0.742 from text similarity alone",
+      "n": 87921,
+      "chart": {
+        "x": [
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4",
+          "Q5"
+        ],
+        "y": [
+          0.000398,
+          0.000284,
+          0.001251,
+          0.001308,
+          0.003697
+        ],
+        "ci_low": [
+          0.000193,
+          0.000121,
+          0.000826,
+          0.000872,
+          0.002902
+        ],
+        "ci_high": [
+          0.000822,
+          0.000666,
+          0.001894,
+          0.001962,
+          0.004708
+        ],
+        "n": [
+          17585,
+          17584,
+          17584,
+          17584,
+          17584
+        ]
+      }
+    }
+  ],
+  "meta": {
+    "ci": "Wilson 95%",
+    "label": "KEV addition after end of snapshot month",
+    "keywords_tested": 28
+  }
+}

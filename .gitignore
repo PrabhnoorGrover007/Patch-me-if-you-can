@@ -1,0 +1,30 @@
+# raw competition data — 809 MB, over GitHub's per-file limit
+data/
+data.zip
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+scratch/
+
+# node
+web/node_modules/
+web/dist/
+
+# large / regenerable artefacts (rebuild with the pipeline)
+artifacts/*.parquet
+artifacts/*.npy
+artifacts/*.joblib
+artifacts/*.log
+
+# keep these small, human-readable artefacts in the repo
+!artifacts/*.json
+!artifacts/ranked_2026.csv
+!artifacts/full_rankings.csv
+!artifacts/top500.csv
+
+# env
+.env
+.env.local

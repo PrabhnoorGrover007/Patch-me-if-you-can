@@ -1,0 +1,83 @@
+{
+  "pool": "Jan-Sep 2025 held-out",
+  "single_models": [
+    {
+      "model": "histgb_lean",
+      "hits@500": 20,
+      "precision@50": 0.1,
+      "average_precision": 0.04573,
+      "roc_auc": 0.86237
+    },
+    {
+      "model": "histgb_lean_g",
+      "hits@500": 19,
+      "precision@50": 0.14,
+      "average_precision": 0.0719,
+      "roc_auc": 0.88629
+    },
+    {
+      "model": "logit_core",
+      "hits@500": 19,
+      "precision@50": 0.12,
+      "average_precision": 0.03715,
+      "roc_auc": 0.83973
+    },
+    {
+      "model": "logit_core_g",
+      "hits@500": 21,
+      "precision@50": 0.08,
+      "average_precision": 0.04234,
+      "roc_auc": 0.8492
+    }
+  ],
+  "blends": [
+    {
+      "models": "histgb_lean+logit_core",
+      "uses_granite": false,
+      "w": 0.2,
+      "hits@500": 19,
+      "precision@50": 0.16,
+      "average_precision": 0.09025
+    },
+    {
+      "models": "histgb_lean+logit_core",
+      "uses_granite": false,
+      "w": 0.35,
+      "hits@500": 18,
+      "precision@50": 0.16,
+      "average_precision": 0.09422
+    },
+    {
+      "models": "histgb_lean+logit_core",
+      "uses_granite": false,
+      "w": 0.5,
+      "hits@500": 17,
+      "precision@50": 0.16,
+      "average_precision": 0.09448
+    },
+    {
+      "models": "histgb_lean_g+logit_core_g",
+      "uses_granite": true,
+      "w": 0.2,
+      "hits@500": 24,
+      "precision@50": 0.2,
+      "average_precision": 0.11805
+    },
+    {
+      "models": "histgb_lean_g+logit_core_g",
+      "uses_granite": true,
+      "w": 0.35,
+      "hits@500": 24,
+      "precision@50": 0.2,
+      "average_precision": 0.11489
+    },
+    {
+      "models": "histgb_lean_g+logit_core_g",
+      "uses_granite": true,
+      "w": 0.5,
+      "hits@500": 24,
+      "precision@50": 0.18,
+      "average_precision": 0.11995
+    }
+  ]
+}
