@@ -30,7 +30,8 @@ label = 0  otherwise
   `label_window_days` records its length (31 to ~700 days). The 2026 scoreboard is judged on a similar
   varying window (through 2026-11-04), so we keep the variable window instead of throwing away data.
 - `label = 0` means "not confirmed on KEV by 2025-12-31". It does **not** mean the CVE was never attacked.
-- Late-2025 cohorts have short windows, so they carry fewer positives. Expect ~120 positives in ~85k rows.
+- Late-2025 cohorts have short windows, so they carry fewer positives. The current build has
+  **78,287 rows and 111 positives** (63 from 2024 cohorts, 48 from 2025 cohorts).
 
 ## 4. Columns
 
@@ -80,11 +81,12 @@ label = 0  otherwise
 | `kw_exploited_in_wild` | int 0/1 | Vendor text says it "may have been exploited" / "exploited in the wild" | 0 |
 | `kw_wordpress` | int 0/1 | WordPress plugin/theme (huge volume, rarely on KEV) | 0 |
 | `desc_length` | int | Characters in the description | — |
-| `vendor_prior_kev_count` | int | Max, over KEV vendor names mentioned in the description, of KEV additions for that vendor dated **before** the first day of `snapshot_month` | 0 |
+| `vendor_prior_kev_count` | int | Max, over KEV vendor names mentioned in the description (case-sensitive whole word; ambiguous names WordPress, PHP, Perl, Meta, Nice are skipped), of KEV additions for that vendor dated **before** the first day of `snapshot_month` | 0 |
 | `assigner_prior_kev_count` | int | KEV additions dated before the first day of `snapshot_month` whose CVE has the same `assigner` (the CNA, e.g. `secure@microsoft.com`) | 0 |
 
-`model.py` reads the feature list from this table (it is also the constant `FEATURE_COLUMNS` in
-`prepare_data.py`) and fails fast if a column is missing or extra.
+The feature list lives in one place, the constant `FEATURE_COLUMNS` in `prepare_data.py`. `model.py`
+and `validate_outputs.py` import it, so the three files can't drift apart. `model.py` stops if any
+feature column is missing or blank.
 
 ## 5. Columns deliberately NOT used
 | Column | Why |
