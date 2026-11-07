@@ -24,3 +24,6 @@ __pycache__/
 
 # Teammate pipeline outputs (from main)
 out/*.parquet
+
+# Local assistant notes (not part of the project)
+CLAUDE.md
