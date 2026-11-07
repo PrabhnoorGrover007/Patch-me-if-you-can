@@ -1,5 +1,6 @@
 # Raw data (never commit)
 data/
+data
 *.zip
 *.csv
 !outputs/top500.csv
