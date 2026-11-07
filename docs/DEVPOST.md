@@ -8,6 +8,9 @@ Before the Breach — exploit-aware vulnerability prioritisation
 
 Rank 72,670 CVEs by what attackers will actually exploit, not by how scary the score looks.
 
+**Code repository:** _paste the GitHub URL here before submitting._
+**Submission file:** `top500.csv` — 500 unique `cve_id` values, one column, attached to this submission.
+
 ## Inspiration
 
 Every security team we have spoken to runs the same triage: sort by CVSS, work down the list until
@@ -40,6 +43,43 @@ in none of the three baseline top 500 lists** — not CVSS, not EPSS, not exploi
 model finds 8 of those 33. They are mostly products with a KEV history but no public exploit code at
 snapshot time: exactly the case a severity-plus-EPSS pipeline is blind to, and exactly the case that
 gets an organisation breached.
+
+## Which columns we used — and which we refused
+
+The brief warns that the NIST files are today's versions, so some fields were filled in after attacks
+happened. We split the data on that basis.
+
+**Used:** description text, CVSS 3/2/4 numeric fields and vector components, `cwe_ids`, `assigner`,
+`published`, `snapshot_month`; EPSS and exploit flags from `exploit_signals_*` dated at or before the
+row's `snapshot_month`; KEV `date_added` — as *history* when it predates the snapshot month end, as
+*the label* only when it comes strictly after it.
+
+**Refused, with reasons:**
+
+- `nvd_status`, `n_affected_cpes`, `n_references` — their presence mostly encodes whether NIST has
+  reviewed the CVE, and NIST reviews attacked CVEs first. Using them imports the answer.
+- Blank-severity as a signal — the same leak wearing a different hat.
+- `references.csv` links and tags (patch / exploit / advisory / news) — attached after publication,
+  and 37,853 of them point at IBM X-Force Exchange.
+- CPE product strings — 49.6% are blank in 2026 for attention-related reasons, so product identity
+  would carry the same bias.
+
+Every exclusion and its rationale is tabulated in `docs/FEATURE_AUDIT.md`, and
+`tests/test_pipeline.py::test_kev_never_used_as_feature` asserts that no KEV column reaches the model.
+
+## Data sources and links
+
+- **Organiser dataset** (`data.zip`, supplied with the challenge, not redistributed in the repo): NVD
+  mirror `fkie-cad/nvd-json-data-feeds` (6 Nov 2026), CISA KEV to 2025-12-29, FIRST EPSS, public
+  exploit flags from `t0sche/cvss-bt`, MITRE CWE 4.14.
+- CISA KEV — https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+- FIRST EPSS — https://www.first.org/epss/
+- NIST NVD — https://nvd.nist.gov/ (mirror: https://github.com/fkie-cad/nvd-json-data-feeds)
+- MITRE CWE — https://cwe.mitre.org/
+- t0sche/cvss-bt exploit flags — https://github.com/t0sche/cvss-bt
+- IBM Granite embedding model — https://huggingface.co/ibm-granite/granite-embedding-30m-english
+
+No other outside data was used.
 
 ## Challenges
 
@@ -82,7 +122,10 @@ model behind a caching layer once GPU capacity is available.
 Python, pandas, scikit-learn, LightGBM-style gradient boosting, IBM Granite embeddings,
 sentence-transformers, FastAPI, React, TypeScript, Vite, Recharts, pytest.
 
-## Demo script (3 minutes)
+## Demo video (2–3 minutes)
+
+**Video link:** _paste the recorded URL here before submitting._ Shot list, cuts, fallback and Q&A prep
+are in [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md); the beats are:
 
 1. **0:00 — the problem.** Two CVEs, both CVSS 9.8. One is on KEV, one was never touched. Show the
    base rate: fewer than 1 in 250.
