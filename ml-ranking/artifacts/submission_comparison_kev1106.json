@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T22:18:45+00:00",
+  "generated_at": "2026-11-07T22:19:13+00:00",
   "method": "positive = KEV dateAdded strictly after snapshot_month end, on/before cutoff",
   "kev_catalog_version": "2026.11.06",
   "kev_released": "2026-11-06T19:44:45.1797Z",

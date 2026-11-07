@@ -191,7 +191,7 @@ def main() -> None:
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    print(f"\nwrote {args.out.relative_to(ROOT)}")
+    print(f"\nwrote {args.out}")
 
 
 if __name__ == "__main__":
