@@ -1,0 +1,122 @@
+{
+  "generated_at": "2026-11-07 19:50:57",
+  "label_rule": "1 if added to CISA KEV after the end of snapshot_month and on/before 2025-12-31",
+  "features_used": [
+    "epss",
+    "epss_missing",
+    "epss_pct_in_month",
+    "epss_v4",
+    "exploitdb",
+    "metasploit",
+    "nuclei",
+    "poc_github",
+    "n_exploit_sources",
+    "days_public_at_cutoff",
+    "cvss_score",
+    "cvss_network",
+    "cvss_no_privileges",
+    "cvss_no_user_interaction",
+    "kw_rce",
+    "kw_command_injection",
+    "kw_auth_bypass",
+    "kw_unauthenticated",
+    "kw_deserialization",
+    "kw_path_traversal",
+    "kw_sql_injection",
+    "kw_memory_corruption",
+    "kw_privilege_escalation",
+    "kw_xss",
+    "kw_dos",
+    "kw_edge_device",
+    "kw_exploited_in_wild",
+    "kw_wordpress",
+    "desc_length",
+    "vendor_prior_kev_count",
+    "assigner_prior_kev_count"
+  ],
+  "train_period": "2024-01 to 2024-12",
+  "validation_period": "2025-01 to 2025-11",
+  "train_rows": 38428,
+  "train_positives": 63,
+  "validation_rows": 39859,
+  "validation_positives": 48,
+  "k_scaled_explanation": "Validation has 39,859 rows vs 72,670 in the scoreboard, so top 274 is the same share (0.69%) as top 500 of the scoreboard.",
+  "k_scaled": 274,
+  "validation": {
+    "models": {
+      "logistic_regression": {
+        "hits_at_274": 17,
+        "hits_at_500": 18,
+        "precision_at_274": 0.062,
+        "recall_at_274": 0.3542,
+        "precision_at_500": 0.036,
+        "recall_at_500": 0.375,
+        "average_precision": 0.053,
+        "roc_auc": 0.8795
+      },
+      "hist_gradient_boosting": {
+        "hits_at_274": 8,
+        "hits_at_500": 15,
+        "precision_at_274": 0.0292,
+        "recall_at_274": 0.1667,
+        "precision_at_500": 0.03,
+        "recall_at_500": 0.3125,
+        "average_precision": 0.025,
+        "roc_auc": 0.7955
+      }
+    },
+    "baselines": {
+      "cvss_first": {
+        "hits_at_274": 5,
+        "hits_at_500": 10,
+        "precision_at_274": 0.0182,
+        "recall_at_274": 0.1042,
+        "precision_at_500": 0.02,
+        "recall_at_500": 0.2083,
+        "average_precision": 0.0137,
+        "roc_auc": 0.7422
+      },
+      "epss_first": {
+        "hits_at_274": 11,
+        "hits_at_500": 13,
+        "precision_at_274": 0.0401,
+        "recall_at_274": 0.2292,
+        "precision_at_500": 0.026,
+        "recall_at_500": 0.2708,
+        "average_precision": 0.029,
+        "roc_auc": 0.7648
+      },
+      "exploit_flags_then_epss": {
+        "hits_at_274": 15,
+        "hits_at_500": 20,
+        "precision_at_274": 0.0547,
+        "recall_at_274": 0.3125,
+        "precision_at_500": 0.04,
+        "recall_at_500": 0.4167,
+        "average_precision": 0.054,
+        "roc_auc": 0.828
+      },
+      "heuristic_baseline": {
+        "hits_at_274": 12,
+        "hits_at_500": 15,
+        "precision_at_274": 0.0438,
+        "recall_at_274": 0.25,
+        "precision_at_500": 0.03,
+        "recall_at_500": 0.3125,
+        "average_precision": 0.04,
+        "roc_auc": 0.8783
+      }
+    }
+  },
+  "selected_model": "logistic_regression",
+  "final_model_trained_on": "all 78,287 training rows (111 positives)",
+  "scoreboard_rows_scored": 72670,
+  "notes": [
+    "risk_score is a ranking score, not a calibrated probability.",
+    "Validation positives are few, so Hits@K differences of 1-3 are within noise.",
+    "2025 validation outcomes are KEV additions through 2025-12-31 only; late-2025 cohorts are under-labelled.",
+    "Training labels for 2024 cohorts were observed through 2025-12-31, overlapping the validation period in time.",
+    "Description and CVSS come from today's NIST data; their availability at each cutoff cannot be proven.",
+    "Validation is historical. It does not show how we score against the official 2026 benchmark."
+  ]
+}
