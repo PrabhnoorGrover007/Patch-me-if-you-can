@@ -36,6 +36,11 @@ SNAPSHOT_OVERRIDES = {"2025-02": "2025-03"}
 
 FLAG_COLUMNS = ["exploitdb", "metasploit", "nuclei", "poc_github"]
 
+# KEV vendor names that mostly match the wrong thing in descriptions. "WordPress", "PHP" and
+# "Perl" appear in thousands of plugin/app CVEs that are not about the WordPress/PHP/Perl core
+# products on KEV; "Meta" and "Nice" are ordinary English words.
+AMBIGUOUS_KEV_VENDORS = {"WordPress", "PHP", "Perl", "Meta", "Nice"}
+
 # Description keywords (lower-case regex). Text is set by the vendor at publication, so
 # these are the most defensible "what kind of bug is it" signals we have.
 KEYWORD_PATTERNS = {
@@ -235,7 +240,8 @@ def add_history_features(df, kev, all_vulns):
 
     # (b) by KEV vendor name mentioned in the description (case-sensitive whole word)
     by_vendor = {v: np.sort(g["date_added"].values) for v, g in kev.groupby("vendor")}
-    names = sorted((v for v in by_vendor if len(v) >= 2), key=len, reverse=True)
+    names = sorted((v for v in by_vendor if len(v) >= 2 and v not in AMBIGUOUS_KEV_VENDORS),
+                   key=len, reverse=True)
     vendor_re = re.compile(r"\b(" + "|".join(re.escape(n) for n in names) + r")\b")
     mentioned = df["description"].fillna("").map(lambda t: set(vendor_re.findall(t)))
     counts = np.zeros(len(df), dtype=int)

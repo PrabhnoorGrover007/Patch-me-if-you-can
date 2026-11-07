@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07 19:50:57",
+  "generated_at": "2026-11-07 20:21:18",
   "label_rule": "1 if added to CISA KEV after the end of snapshot_month and on/before 2025-12-31",
   "features_used": [
     "epss",
@@ -51,18 +51,18 @@
         "recall_at_274": 0.3542,
         "precision_at_500": 0.036,
         "recall_at_500": 0.375,
-        "average_precision": 0.053,
-        "roc_auc": 0.8795
+        "average_precision": 0.0535,
+        "roc_auc": 0.8801
       },
       "hist_gradient_boosting": {
-        "hits_at_274": 8,
-        "hits_at_500": 15,
-        "precision_at_274": 0.0292,
-        "recall_at_274": 0.1667,
-        "precision_at_500": 0.03,
-        "recall_at_500": 0.3125,
-        "average_precision": 0.025,
-        "roc_auc": 0.7955
+        "hits_at_274": 11,
+        "hits_at_500": 17,
+        "precision_at_274": 0.0401,
+        "recall_at_274": 0.2292,
+        "precision_at_500": 0.034,
+        "recall_at_500": 0.3542,
+        "average_precision": 0.0294,
+        "roc_auc": 0.8012
       }
     },
     "baselines": {
@@ -103,8 +103,8 @@
         "recall_at_274": 0.25,
         "precision_at_500": 0.03,
         "recall_at_500": 0.3125,
-        "average_precision": 0.04,
-        "roc_auc": 0.8783
+        "average_precision": 0.0405,
+        "roc_auc": 0.8797
       }
     }
   },
