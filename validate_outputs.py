@@ -56,6 +56,10 @@ def main():
     check("predict cve_id unique", not pred.cve_id.duplicated().any())
     check("train cve_id unique", not train.cve_id.duplicated().any())
     check("predict IDs == scoreboard IDs", set(pred.cve_id) == set(sb.cve_id))
+    vul = pd.read_csv(data_dir / "vulnerabilities.csv", usecols=["cve_id", "published"], dtype=str)
+    both = pred[["cve_id", "published"]].merge(vul, on="cve_id", suffixes=("", "_nvd"))
+    check("predict publish dates match vulnerabilities.csv",
+          len(both) == len(pred) and bool((both.published == both.published_nvd).all()))
     check("no label in predict", "label" not in pred.columns and "label_window_days" not in pred.columns)
     check("feature columns identical in train and predict",
           [c for c in train.columns if c in FEATURE_COLUMNS] == [c for c in pred.columns if c in FEATURE_COLUMNS] == FEATURE_COLUMNS)
