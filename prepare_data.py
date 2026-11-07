@@ -287,12 +287,28 @@ def validate(train, predict):
 # ---------------------------------------------------------------------------
 # 5. Main
 # ---------------------------------------------------------------------------
+REQUIRED_RAW_FILES = ["vulnerabilities.csv", "known_exploited.csv", "exploit_signals_2024.csv",
+                      "exploit_signals_2025.csv", "scoreboard_2026.csv"]
+
+
+def check_raw_files(data_dir):
+    """Stop early with a clear message if the raw CSVs are not where we expect them."""
+    missing = [f for f in REQUIRED_RAW_FILES if not (data_dir / f).exists()]
+    if missing:
+        raise SystemExit(
+            f"Missing raw files in '{data_dir.resolve()}': {', '.join(missing)}\n"
+            "Unzip data.zip in the repo root (it creates a data\\ folder) or pass --data-dir.")
+
+
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--data-dir", default="data", help="folder with the raw CSVs")
     parser.add_argument("--out-dir", default="outputs")
     args = parser.parse_args()
     data_dir, out_dir = Path(args.data_dir), Path(args.out_dir)
+    check_raw_files(data_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     all_vulns, recent = load_vulnerabilities(data_dir)
