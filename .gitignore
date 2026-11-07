@@ -1,6 +1,25 @@
+# Raw data (never commit)
 data/
+*.zip
+*.csv
+!outputs/top500.csv
+
+# Generated outputs (keep only the submission file and small JSON results)
+outputs/*
+!outputs/top500.csv
+!outputs/validation_results.json
+!outputs/.gitkeep
+
+# Python
 .venv/
-out/*.parquet
+venv/
 __pycache__/
+*.pyc
 .ipynb_checkpoints/
+
+# Secrets
 .env
+*.key
+
+# Teammate pipeline outputs (from main)
+out/*.parquet
