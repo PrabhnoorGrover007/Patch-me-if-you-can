@@ -252,7 +252,7 @@ def main():
         "Description and CVSS come from today's NIST data; their availability at each cutoff cannot be proven.",
         "Validation is historical. It does not show how we score against the official 2026 benchmark.",
     ]
-    (out_dir / "validation_results.json").write_text(json.dumps(report, indent=2))
+    (out_dir / "validation_results.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
     log(f"wrote ranked_2026.csv ({len(ranked):,} rows), top500.csv, validation_results.json")
 
 

@@ -77,7 +77,7 @@ def main():
     check("no training CVE was already on KEV at its cutoff", not bool((m.date_added <= cut).any()))
 
     # --- model checks
-    rep = json.loads((out / "validation_results.json").read_text())
+    rep = json.loads((out / "validation_results.json").read_text(encoding="utf-8"))
     check("validation results saved", "selected_model" in rep, rep.get("selected_model", ""))
     check("label not used as a feature", "label" not in rep.get("features_used", []) and "label" not in FEATURE_COLUMNS)
     check("risk scores finite", bool(np.isfinite(ranked.risk_score).all()))
