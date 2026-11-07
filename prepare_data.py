@@ -138,6 +138,12 @@ def month_end(month_str):
     return pd.PeriodIndex(month_str, freq="M").to_timestamp(how="end").normalize()
 
 
+def make_label(kev_date_added, snapshot_end):
+    """1 if the CVE was added to KEV after its cutoff and on/before the last KEV date we have.
+    A blank KEV date (never added by 2025-12-31) gives 0."""
+    return ((kev_date_added > snapshot_end) & (kev_date_added <= LABEL_CUTOFF)).astype(int)
+
+
 def build_train_base(recent, kev, data_dir):
     """Pick training CVEs, give each a snapshot month, attach signals, drop CVEs already
     on KEV at the cutoff, and create the label."""
@@ -155,9 +161,7 @@ def build_train_base(recent, kev, data_dir):
         "(the scoreboard excludes these too)")
     base = base[~already_on_kev].copy()
 
-    # Label: added to KEV after the cutoff and by the last KEV date we have
-    base["label"] = ((base["date_added"] > base["snapshot_end"])
-                     & (base["date_added"] <= LABEL_CUTOFF)).astype(int)
+    base["label"] = make_label(base["date_added"], base["snapshot_end"])
     base["label_window_days"] = (LABEL_CUTOFF - base["snapshot_end"]).dt.days.astype(int)
     base = base.drop(columns=["date_added", "in_kev"])
     log(f"training rows: {len(base):,}, positives: {int(base.label.sum())}")
