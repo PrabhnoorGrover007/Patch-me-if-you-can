@@ -1,0 +1,19 @@
+{
+  "vulnerabilities": 401082,
+  "kev": 1484,
+  "scoreboard": 72670,
+  "scoreboard_snapshot_months": [
+    "2026-01",
+    "2026-02",
+    "2026-03",
+    "2026-04",
+    "2026-05",
+    "2026-07",
+    "2026-08",
+    "2026-09"
+  ],
+  "scoreboard_missing_cvss3": 6348,
+  "scoreboard_missing_epss": 1431,
+  "kev_max_date": "2025-12-29",
+  "seconds": 3.7
+}

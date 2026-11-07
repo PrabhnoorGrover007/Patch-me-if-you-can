@@ -1,0 +1,506 @@
+{
+  "protocol": "2024 out-of-fold selection, Jan-Sep 2025 held-out confirmation, final refit on 2024-2025, 2026 untouched",
+  "label": "KEV added after end of snapshot month (observed to 2025-12-29)",
+  "train_rows": 87921,
+  "train_positives": 122,
+  "granite_available": true,
+  "selection": {
+    "histgb_full": {
+      "features": 112,
+      "feature_set": "full",
+      "oof_2024": {
+        "hits@500": 27,
+        "hits@100": 11,
+        "candidates": 39873,
+        "positives": 67
+      },
+      "oof_2025": {
+        "hits@500": 23,
+        "hits@100": 12,
+        "candidates": 35289,
+        "positives": 52
+      }
+    },
+    "histgb_lean": {
+      "features": 76,
+      "feature_set": "lean",
+      "oof_2024": {
+        "hits@500": 27,
+        "hits@100": 16,
+        "candidates": 39873,
+        "positives": 67
+      },
+      "oof_2025": {
+        "hits@500": 21,
+        "hits@100": 11,
+        "candidates": 35289,
+        "positives": 52
+      }
+    },
+    "histgb_deep": {
+      "features": 112,
+      "feature_set": "full",
+      "oof_2024": {
+        "hits@500": 28,
+        "hits@100": 13,
+        "candidates": 39873,
+        "positives": 67
+      },
+      "oof_2025": {
+        "hits@500": 19,
+        "hits@100": 10,
+        "candidates": 35289,
+        "positives": 52
+      }
+    },
+    "logit_core": {
+      "features": 28,
+      "feature_set": "core",
+      "oof_2024": {
+        "hits@500": 23,
+        "hits@100": 6,
+        "candidates": 39873,
+        "positives": 67
+      },
+      "oof_2025": {
+        "hits@500": 21,
+        "hits@100": 10,
+        "candidates": 35289,
+        "positives": 52
+      }
+    },
+    "logit_core_reg": {
+      "features": 28,
+      "feature_set": "core",
+      "oof_2024": {
+        "hits@500": 22,
+        "hits@100": 6,
+        "candidates": 39873,
+        "positives": 67
+      },
+      "oof_2025": {
+        "hits@500": 21,
+        "hits@100": 10,
+        "candidates": 35289,
+        "positives": 52
+      }
+    },
+    "histgb_lean_g": {
+      "features": 78,
+      "feature_set": "lean_g",
+      "oof_2024": {
+        "hits@500": 25,
+        "hits@100": 14,
+        "candidates": 39873,
+        "positives": 67
+      },
+      "oof_2025": {
+        "hits@500": 20,
+        "hits@100": 13,
+        "candidates": 35289,
+        "positives": 52
+      }
+    },
+    "logit_core_g": {
+      "features": 30,
+      "feature_set": "core_g",
+      "oof_2024": {
+        "hits@500": 26,
+        "hits@100": 9,
+        "candidates": 39873,
+        "positives": 67
+      },
+      "oof_2025": {
+        "hits@500": 20,
+        "hits@100": 12,
+        "candidates": 35289,
+        "positives": 52
+      }
+    }
+  },
+  "blends": [
+    {
+      "pair": "histgb_full+logit_core",
+      "w_b": 0.0,
+      "hits@500": 27,
+      "hits@100": 11
+    },
+    {
+      "pair": "histgb_full+logit_core",
+      "w_b": 0.2,
+      "hits@500": 32,
+      "hits@100": 17
+    },
+    {
+      "pair": "histgb_full+logit_core",
+      "w_b": 0.35,
+      "hits@500": 32,
+      "hits@100": 16
+    },
+    {
+      "pair": "histgb_full+logit_core",
+      "w_b": 0.5,
+      "hits@500": 29,
+      "hits@100": 14
+    },
+    {
+      "pair": "histgb_full+logit_core",
+      "w_b": 0.65,
+      "hits@500": 28,
+      "hits@100": 13
+    },
+    {
+      "pair": "histgb_full+logit_core",
+      "w_b": 0.8,
+      "hits@500": 26,
+      "hits@100": 12
+    },
+    {
+      "pair": "histgb_full+logit_core",
+      "w_b": 1.0,
+      "hits@500": 23,
+      "hits@100": 6
+    },
+    {
+      "pair": "histgb_lean_g+logit_core_g",
+      "w_b": 0.0,
+      "hits@500": 25,
+      "hits@100": 14
+    },
+    {
+      "pair": "histgb_lean_g+logit_core_g",
+      "w_b": 0.2,
+      "hits@500": 30,
+      "hits@100": 16
+    },
+    {
+      "pair": "histgb_lean_g+logit_core_g",
+      "w_b": 0.35,
+      "hits@500": 30,
+      "hits@100": 14
+    },
+    {
+      "pair": "histgb_lean_g+logit_core_g",
+      "w_b": 0.5,
+      "hits@500": 28,
+      "hits@100": 13
+    },
+    {
+      "pair": "histgb_lean_g+logit_core_g",
+      "w_b": 0.65,
+      "hits@500": 27,
+      "hits@100": 13
+    },
+    {
+      "pair": "histgb_lean_g+logit_core_g",
+      "w_b": 0.8,
+      "hits@500": 28,
+      "hits@100": 14
+    },
+    {
+      "pair": "histgb_lean_g+logit_core_g",
+      "w_b": 1.0,
+      "hits@500": 26,
+      "hits@100": 9
+    },
+    {
+      "pair": "histgb_lean+logit_core_g",
+      "w_b": 0.0,
+      "hits@500": 27,
+      "hits@100": 16
+    },
+    {
+      "pair": "histgb_lean+logit_core_g",
+      "w_b": 0.2,
+      "hits@500": 28,
+      "hits@100": 17
+    },
+    {
+      "pair": "histgb_lean+logit_core_g",
+      "w_b": 0.35,
+      "hits@500": 29,
+      "hits@100": 17
+    },
+    {
+      "pair": "histgb_lean+logit_core_g",
+      "w_b": 0.5,
+      "hits@500": 29,
+      "hits@100": 15
+    },
+    {
+      "pair": "histgb_lean+logit_core_g",
+      "w_b": 0.65,
+      "hits@500": 28,
+      "hits@100": 14
+    },
+    {
+      "pair": "histgb_lean+logit_core_g",
+      "w_b": 0.8,
+      "hits@500": 28,
+      "hits@100": 13
+    },
+    {
+      "pair": "histgb_lean+logit_core_g",
+      "w_b": 1.0,
+      "hits@500": 26,
+      "hits@100": 9
+    }
+  ],
+  "selected_blend": {
+    "pair": "histgb_lean_g+logit_core_g",
+    "w_b": 0.2,
+    "hits@500": 30,
+    "hits@100": 16
+  },
+  "selection_rule": {
+    "oof_metric": "hits@500 on 2024 out-of-fold scores",
+    "granite_preference": "a Granite configuration within 2 hits@500 of the best OOF score is preferred, because IBM technology use is a competition requirement; the preference is applied on the selection metric only, and the held-out result of both configurations is reported",
+    "granite_preference_applied": true
+  },
+  "heldout_2025": {
+    "positives": 52,
+    "rows": [
+      {
+        "model": "cvss3_first",
+        "n_candidates": 35289,
+        "positives": 52,
+        "precision@50": 0.04,
+        "precision@100": 0.04,
+        "precision@250": 0.02,
+        "precision@500": 0.01,
+        "hits@500": 5,
+        "recall@500": 0.09615,
+        "average_precision": 0.00632,
+        "roc_auc": 0.73207,
+        "bootstrap_hits@500": {
+          "mean": 5.82,
+          "p2.5": 2,
+          "p97.5": 11,
+          "n": 1000
+        }
+      },
+      {
+        "model": "epss_first",
+        "n_candidates": 35289,
+        "positives": 52,
+        "precision@50": 0.06,
+        "precision@100": 0.04,
+        "precision@250": 0.032,
+        "precision@500": 0.016,
+        "hits@500": 8,
+        "recall@500": 0.15385,
+        "average_precision": 0.03092,
+        "roc_auc": 0.70731,
+        "bootstrap_hits@500": {
+          "mean": 7.85,
+          "p2.5": 3,
+          "p97.5": 14,
+          "n": 1000
+        }
+      },
+      {
+        "model": "poc_then_epss",
+        "n_candidates": 35289,
+        "positives": 52,
+        "precision@50": 0.08,
+        "precision@100": 0.08,
+        "precision@250": 0.06,
+        "precision@500": 0.036,
+        "hits@500": 18,
+        "recall@500": 0.34615,
+        "average_precision": 0.04711,
+        "roc_auc": 0.76806,
+        "bootstrap_hits@500": {
+          "mean": 18.18,
+          "p2.5": 10,
+          "p97.5": 27,
+          "n": 1000
+        }
+      },
+      {
+        "model": "histgb_lean_g",
+        "n_candidates": 35289,
+        "positives": 52,
+        "precision@50": 0.14,
+        "precision@100": 0.12,
+        "precision@250": 0.068,
+        "precision@500": 0.038,
+        "hits@500": 19,
+        "recall@500": 0.36538,
+        "average_precision": 0.0719,
+        "roc_auc": 0.88629,
+        "bootstrap_hits@500": {
+          "mean": 18.9,
+          "p2.5": 10,
+          "p97.5": 28,
+          "n": 1000
+        }
+      },
+      {
+        "model": "logit_core_g",
+        "n_candidates": 35289,
+        "positives": 52,
+        "precision@50": 0.08,
+        "precision@100": 0.07,
+        "precision@250": 0.06,
+        "precision@500": 0.042,
+        "hits@500": 21,
+        "recall@500": 0.40385,
+        "average_precision": 0.04234,
+        "roc_auc": 0.8492,
+        "bootstrap_hits@500": {
+          "mean": 20.93,
+          "p2.5": 12,
+          "p97.5": 31,
+          "n": 1000
+        }
+      },
+      {
+        "model": "final_blend",
+        "n_candidates": 35289,
+        "positives": 52,
+        "precision@50": 0.2,
+        "precision@100": 0.13,
+        "precision@250": 0.068,
+        "precision@500": 0.048,
+        "hits@500": 24,
+        "recall@500": 0.46154,
+        "average_precision": 0.11805,
+        "roc_auc": 0.89101,
+        "bootstrap_hits@500": {
+          "mean": 23.89,
+          "p2.5": 14,
+          "p97.5": 33,
+          "n": 1000
+        }
+      }
+    ]
+  },
+  "permutation_importance": [
+    {
+      "feature": "cwe_x_exploit",
+      "importance": 0.182372,
+      "std": 0.004193
+    },
+    {
+      "feature": "epss_x_exploit",
+      "importance": 0.17681,
+      "std": 0.005134
+    },
+    {
+      "feature": "nuclei",
+      "importance": 0.132143,
+      "std": 0.004352
+    },
+    {
+      "feature": "kw_unauthenticated",
+      "importance": 0.111582,
+      "std": 0.020976
+    },
+    {
+      "feature": "cvss3",
+      "importance": 0.106981,
+      "std": 0.082353
+    },
+    {
+      "feature": "vendor_kev_rate",
+      "importance": 0.097098,
+      "std": 0.072916
+    },
+    {
+      "feature": "granite_knn_max",
+      "importance": 0.096876,
+      "std": 0.031521
+    },
+    {
+      "feature": "desc_len_log",
+      "importance": 0.088254,
+      "std": 0.031347
+    },
+    {
+      "feature": "age_days",
+      "importance": 0.059464,
+      "std": 0.029391
+    },
+    {
+      "feature": "cwe_kev_rate_mean",
+      "importance": 0.055512,
+      "std": 0.022836
+    },
+    {
+      "feature": "con_ord",
+      "importance": 0.050692,
+      "std": 0.075315
+    },
+    {
+      "feature": "epss_rank",
+      "importance": 0.042303,
+      "std": 0.055327
+    },
+    {
+      "feature": "pub_dow",
+      "importance": 0.031847,
+      "std": 0.027538
+    },
+    {
+      "feature": "vendor_cve_n_log",
+      "importance": 0.031478,
+      "std": 0.03807
+    },
+    {
+      "feature": "pub_day",
+      "importance": 0.030459,
+      "std": 0.026124
+    },
+    {
+      "feature": "is_wordpress_eco",
+      "importance": 0.028096,
+      "std": 0.062655
+    },
+    {
+      "feature": "epss",
+      "importance": 0.027367,
+      "std": 0.005777
+    },
+    {
+      "feature": "ui_required",
+      "importance": 0.026331,
+      "std": 0.053891
+    },
+    {
+      "feature": "cwe_kev_rate_max",
+      "importance": 0.025198,
+      "std": 0.025285
+    },
+    {
+      "feature": "kw_rce",
+      "importance": 0.024991,
+      "std": 0.029734
+    },
+    {
+      "feature": "cwe_kev_n_max",
+      "importance": 0.023705,
+      "std": 0.012005
+    },
+    {
+      "feature": "poc_github",
+      "importance": 0.02114,
+      "std": 1.3e-05
+    },
+    {
+      "feature": "cvss4",
+      "importance": 0.018082,
+      "std": 0.000625
+    },
+    {
+      "feature": "cvss3_exploitability",
+      "importance": 0.017357,
+      "std": 0.006438
+    },
+    {
+      "feature": "vendor_kev_365_log",
+      "importance": 0.016363,
+      "std": 0.009875
+    }
+  ]
+}

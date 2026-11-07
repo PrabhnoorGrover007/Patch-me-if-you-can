@@ -1,0 +1,1188 @@
+{
+  "features": [
+    {
+      "feature": "pub_month",
+      "group": "calendar",
+      "source": "vulnerabilities.csv (published) + snapshot_month",
+      "calc": "Publication month, day-of-week, day-of-month, and days between publication and snapshot month end",
+      "available": true,
+      "risk": "none",
+      "why": "Timestamps known at publication and at the snapshot boundary",
+      "included": true
+    },
+    {
+      "feature": "pub_dow",
+      "group": "calendar",
+      "source": "vulnerabilities.csv (published) + snapshot_month",
+      "calc": "Publication month, day-of-week, day-of-month, and days between publication and snapshot month end",
+      "available": true,
+      "risk": "none",
+      "why": "Timestamps known at publication and at the snapshot boundary",
+      "included": true
+    },
+    {
+      "feature": "pub_day",
+      "group": "calendar",
+      "source": "vulnerabilities.csv (published) + snapshot_month",
+      "calc": "Publication month, day-of-week, day-of-month, and days between publication and snapshot month end",
+      "available": true,
+      "risk": "none",
+      "why": "Timestamps known at publication and at the snapshot boundary",
+      "included": true
+    },
+    {
+      "feature": "age_days",
+      "group": "calendar",
+      "source": "vulnerabilities.csv (published) + snapshot_month",
+      "calc": "Publication month, day-of-week, day-of-month, and days between publication and snapshot month end",
+      "available": true,
+      "risk": "none",
+      "why": "Timestamps known at publication and at the snapshot boundary",
+      "included": true
+    },
+    {
+      "feature": "cvss3",
+      "group": "cvss",
+      "source": "vulnerabilities.csv CVSS 3/2/4 fields",
+      "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+      "available": true,
+      "risk": "low \u2014 CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
+      "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
+      "included": true
+    },
+    {
+      "feature": "cvss3_sev_ord",
+      "group": "cvss",
+      "source": "vulnerabilities.csv CVSS 3/2/4 fields",
+      "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+      "available": true,
+      "risk": "low \u2014 CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
+      "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
+      "included": true
+    },
+    {
+      "feature": "cvss4",
+      "group": "cvss",
+      "source": "vulnerabilities.csv CVSS 3/2/4 fields",
+      "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+      "available": true,
+      "risk": "low \u2014 CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
+      "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
+      "included": true
+    },
+    {
+      "feature": "cvss2",
+      "group": "cvss",
+      "source": "vulnerabilities.csv CVSS 3/2/4 fields",
+      "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+      "available": true,
+      "risk": "low \u2014 CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
+      "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
+      "included": true
+    },
+    {
+      "feature": "av_ord",
+      "group": "cvss",
+      "source": "vulnerabilities.csv CVSS 3/2/4 fields",
+      "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+      "available": true,
+      "risk": "low \u2014 CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
+      "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
+      "included": true
+    },
+    {
+      "feature": "ac_low",
+      "group": "cvss",
+      "source": "vulnerabilities.csv CVSS 3/2/4 fields",
+      "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+      "available": true,
+      "risk": "low \u2014 CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
+      "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
+      "included": true
+    },
+    {
+      "feature": "pr_ord",
+      "group": "cvss",
+      "source": "vulnerabilities.csv CVSS 3/2/4 fields",
+      "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+      "available": true,
+      "risk": "low \u2014 CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
+      "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
+      "included": true
+    },
+    {
+      "feature": "ui_required",
+      "group": "cvss",
+      "source": "vulnerabilities.csv CVSS 3/2/4 fields",
+      "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+      "available": true,
+      "risk": "low \u2014 CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
+      "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
+      "included": true
+    },
+    {
+      "feature": "scope_changed",
+      "group": "cvss",
+      "source": "vulnerabilities.csv CVSS 3/2/4 fields",
+      "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+      "available": true,
+      "risk": "low \u2014 CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
+      "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
+      "included": true
+    },
+    {
+      "feature": "con_ord",
+      "group": "cvss",
+      "source": "vulnerabilities.csv CVSS 3/2/4 fields",
+      "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+      "available": true,
+      "risk": "low \u2014 CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
+      "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
+      "included": true
+    },
+    {
+      "feature": "int_ord",
+      "group": "cvss",
+      "source": "vulnerabilities.csv CVSS 3/2/4 fields",
+      "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+      "available": true,
+      "risk": "low \u2014 CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
+      "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
+      "included": true
+    },
+    {
+      "feature": "ava_ord",
+      "group": "cvss",
+      "source": "vulnerabilities.csv CVSS 3/2/4 fields",
+      "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+      "available": true,
+      "risk": "low \u2014 CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
+      "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
+      "included": true
+    },
+    {
+      "feature": "cvss3_exploitability",
+      "group": "cvss",
+      "source": "vulnerabilities.csv CVSS 3/2/4 fields",
+      "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+      "available": true,
+      "risk": "low \u2014 CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
+      "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
+      "included": true
+    },
+    {
+      "feature": "cvss3_impact",
+      "group": "cvss",
+      "source": "vulnerabilities.csv CVSS 3/2/4 fields",
+      "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+      "available": true,
+      "risk": "low \u2014 CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
+      "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
+      "included": true
+    },
+    {
+      "feature": "n_cwe",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "cwe_missing",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_20",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_22",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_77",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_78",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_79",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_89",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_94",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_119",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_120",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_121",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_122",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_125",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_190",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_200",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_269",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_284",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_287",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_295",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_306",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_352",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_362",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_400",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_401",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_416",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_434",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_476",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_502",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_611",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_639",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_787",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_798",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_862",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_863",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_918",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "has_cwe_1321",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "cwe_kev_rate_max",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "cwe_kev_rate_mean",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "cwe_kev_n_max",
+      "group": "weakness",
+      "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
+      "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
+      "available": true,
+      "risk": "low \u2014 CWE assigned at analysis/publication; historical rates use only past KEV additions",
+      "why": "CWE lift is one of the strongest structured signals we measured",
+      "included": true
+    },
+    {
+      "feature": "epss",
+      "group": "epss_exploit",
+      "source": "exploit_signals_2024/2025.csv (train) and scoreboard_2026.csv (predict)",
+      "calc": "EPSS score, logit, within-month percentile, missing flag; Exploit-DB / Metasploit / Nuclei / GitHub PoC flags",
+      "available": true,
+      "risk": "none \u2014 these files are exactly the state at month end by construction",
+      "why": "Only source of public-exposure evidence that is provably as-of",
+      "included": true
+    },
+    {
+      "feature": "epss_logit",
+      "group": "epss_exploit",
+      "source": "exploit_signals_2024/2025.csv (train) and scoreboard_2026.csv (predict)",
+      "calc": "EPSS score, logit, within-month percentile, missing flag; Exploit-DB / Metasploit / Nuclei / GitHub PoC flags",
+      "available": true,
+      "risk": "none \u2014 these files are exactly the state at month end by construction",
+      "why": "Only source of public-exposure evidence that is provably as-of",
+      "included": true
+    },
+    {
+      "feature": "epss_missing",
+      "group": "epss_exploit",
+      "source": "exploit_signals_2024/2025.csv (train) and scoreboard_2026.csv (predict)",
+      "calc": "EPSS score, logit, within-month percentile, missing flag; Exploit-DB / Metasploit / Nuclei / GitHub PoC flags",
+      "available": true,
+      "risk": "none \u2014 these files are exactly the state at month end by construction",
+      "why": "Only source of public-exposure evidence that is provably as-of",
+      "included": true
+    },
+    {
+      "feature": "epss_rank",
+      "group": "epss_exploit",
+      "source": "exploit_signals_2024/2025.csv (train) and scoreboard_2026.csv (predict)",
+      "calc": "EPSS score, logit, within-month percentile, missing flag; Exploit-DB / Metasploit / Nuclei / GitHub PoC flags",
+      "available": true,
+      "risk": "none \u2014 these files are exactly the state at month end by construction",
+      "why": "Only source of public-exposure evidence that is provably as-of",
+      "included": true
+    },
+    {
+      "feature": "exploitdb",
+      "group": "epss_exploit",
+      "source": "exploit_signals_2024/2025.csv (train) and scoreboard_2026.csv (predict)",
+      "calc": "EPSS score, logit, within-month percentile, missing flag; Exploit-DB / Metasploit / Nuclei / GitHub PoC flags",
+      "available": true,
+      "risk": "none \u2014 these files are exactly the state at month end by construction",
+      "why": "Only source of public-exposure evidence that is provably as-of",
+      "included": true
+    },
+    {
+      "feature": "metasploit",
+      "group": "epss_exploit",
+      "source": "exploit_signals_2024/2025.csv (train) and scoreboard_2026.csv (predict)",
+      "calc": "EPSS score, logit, within-month percentile, missing flag; Exploit-DB / Metasploit / Nuclei / GitHub PoC flags",
+      "available": true,
+      "risk": "none \u2014 these files are exactly the state at month end by construction",
+      "why": "Only source of public-exposure evidence that is provably as-of",
+      "included": true
+    },
+    {
+      "feature": "nuclei",
+      "group": "epss_exploit",
+      "source": "exploit_signals_2024/2025.csv (train) and scoreboard_2026.csv (predict)",
+      "calc": "EPSS score, logit, within-month percentile, missing flag; Exploit-DB / Metasploit / Nuclei / GitHub PoC flags",
+      "available": true,
+      "risk": "none \u2014 these files are exactly the state at month end by construction",
+      "why": "Only source of public-exposure evidence that is provably as-of",
+      "included": true
+    },
+    {
+      "feature": "poc_github",
+      "group": "epss_exploit",
+      "source": "exploit_signals_2024/2025.csv (train) and scoreboard_2026.csv (predict)",
+      "calc": "EPSS score, logit, within-month percentile, missing flag; Exploit-DB / Metasploit / Nuclei / GitHub PoC flags",
+      "available": true,
+      "risk": "none \u2014 these files are exactly the state at month end by construction",
+      "why": "Only source of public-exposure evidence that is provably as-of",
+      "included": true
+    },
+    {
+      "feature": "n_exploit_sources",
+      "group": "epss_exploit",
+      "source": "exploit_signals_2024/2025.csv (train) and scoreboard_2026.csv (predict)",
+      "calc": "EPSS score, logit, within-month percentile, missing flag; Exploit-DB / Metasploit / Nuclei / GitHub PoC flags",
+      "available": true,
+      "risk": "none \u2014 these files are exactly the state at month end by construction",
+      "why": "Only source of public-exposure evidence that is provably as-of",
+      "included": true
+    },
+    {
+      "feature": "any_exploit",
+      "group": "epss_exploit",
+      "source": "exploit_signals_2024/2025.csv (train) and scoreboard_2026.csv (predict)",
+      "calc": "EPSS score, logit, within-month percentile, missing flag; Exploit-DB / Metasploit / Nuclei / GitHub PoC flags",
+      "available": true,
+      "risk": "none \u2014 these files are exactly the state at month end by construction",
+      "why": "Only source of public-exposure evidence that is provably as-of",
+      "included": true
+    },
+    {
+      "feature": "vendor_kev_n_log",
+      "group": "vendor_history",
+      "source": "vulnerabilities.csv assigner + known_exploited.csv date_added",
+      "calc": "Vendor key from the CVE assigner domain; KEV counts and rates computed with date_added <= month end; 90/365-day recency windows",
+      "available": true,
+      "risk": "low \u2014 assigner is fixed at ID reservation; the CISA-ADP GUID assigner is collapsed to a neutral key because ADP enrichment is applied after publication",
+      "why": "84% of KEV entries come from vendors already represented in KEV",
+      "included": true
+    },
+    {
+      "feature": "vendor_cve_n_log",
+      "group": "vendor_history",
+      "source": "vulnerabilities.csv assigner + known_exploited.csv date_added",
+      "calc": "Vendor key from the CVE assigner domain; KEV counts and rates computed with date_added <= month end; 90/365-day recency windows",
+      "available": true,
+      "risk": "low \u2014 assigner is fixed at ID reservation; the CISA-ADP GUID assigner is collapsed to a neutral key because ADP enrichment is applied after publication",
+      "why": "84% of KEV entries come from vendors already represented in KEV",
+      "included": true
+    },
+    {
+      "feature": "vendor_kev_rate",
+      "group": "vendor_history",
+      "source": "vulnerabilities.csv assigner + known_exploited.csv date_added",
+      "calc": "Vendor key from the CVE assigner domain; KEV counts and rates computed with date_added <= month end; 90/365-day recency windows",
+      "available": true,
+      "risk": "low \u2014 assigner is fixed at ID reservation; the CISA-ADP GUID assigner is collapsed to a neutral key because ADP enrichment is applied after publication",
+      "why": "84% of KEV entries come from vendors already represented in KEV",
+      "included": true
+    },
+    {
+      "feature": "vendor_ransomware_share",
+      "group": "vendor_history",
+      "source": "vulnerabilities.csv assigner + known_exploited.csv date_added",
+      "calc": "Vendor key from the CVE assigner domain; KEV counts and rates computed with date_added <= month end; 90/365-day recency windows",
+      "available": true,
+      "risk": "low \u2014 assigner is fixed at ID reservation; the CISA-ADP GUID assigner is collapsed to a neutral key because ADP enrichment is applied after publication",
+      "why": "84% of KEV entries come from vendors already represented in KEV",
+      "included": true
+    },
+    {
+      "feature": "vendor_unseen",
+      "group": "vendor_history",
+      "source": "vulnerabilities.csv assigner + known_exploited.csv date_added",
+      "calc": "Vendor key from the CVE assigner domain; KEV counts and rates computed with date_added <= month end; 90/365-day recency windows",
+      "available": true,
+      "risk": "low \u2014 assigner is fixed at ID reservation; the CISA-ADP GUID assigner is collapsed to a neutral key because ADP enrichment is applied after publication",
+      "why": "84% of KEV entries come from vendors already represented in KEV",
+      "included": true
+    },
+    {
+      "feature": "vendor_is_generic_cna",
+      "group": "vendor_history",
+      "source": "vulnerabilities.csv assigner + known_exploited.csv date_added",
+      "calc": "Vendor key from the CVE assigner domain; KEV counts and rates computed with date_added <= month end; 90/365-day recency windows",
+      "available": true,
+      "risk": "low \u2014 assigner is fixed at ID reservation; the CISA-ADP GUID assigner is collapsed to a neutral key because ADP enrichment is applied after publication",
+      "why": "84% of KEV entries come from vendors already represented in KEV",
+      "included": true
+    },
+    {
+      "feature": "vendor_kev_90_log",
+      "group": "vendor_history",
+      "source": "vulnerabilities.csv assigner + known_exploited.csv date_added",
+      "calc": "Vendor key from the CVE assigner domain; KEV counts and rates computed with date_added <= month end; 90/365-day recency windows",
+      "available": true,
+      "risk": "low \u2014 assigner is fixed at ID reservation; the CISA-ADP GUID assigner is collapsed to a neutral key because ADP enrichment is applied after publication",
+      "why": "84% of KEV entries come from vendors already represented in KEV",
+      "included": true
+    },
+    {
+      "feature": "vendor_kev_365_log",
+      "group": "vendor_history",
+      "source": "vulnerabilities.csv assigner + known_exploited.csv date_added",
+      "calc": "Vendor key from the CVE assigner domain; KEV counts and rates computed with date_added <= month end; 90/365-day recency windows",
+      "available": true,
+      "risk": "low \u2014 assigner is fixed at ID reservation; the CISA-ADP GUID assigner is collapsed to a neutral key because ADP enrichment is applied after publication",
+      "why": "84% of KEV entries come from vendors already represented in KEV",
+      "included": true
+    },
+    {
+      "feature": "desc_len_log",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "desc_words",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_rce",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_cmd_injection",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_deserialization",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_sqli",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_xss",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_buffer_overflow",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_use_after_free",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_priv_esc",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_auth_bypass",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_path_traversal",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_ssrf",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_xxe",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_csrf",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_dos",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_info_disclosure",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_file_upload",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_template_injection",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_hardcoded",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_integer",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_race",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_open_redirect",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_zip_slip",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_prototype",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_dependency",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_unauthenticated",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_zero_click",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_wormable",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "kw_kev_ref",
+      "group": "text",
+      "source": "vulnerabilities.csv description",
+      "calc": "Length/word counts and 28 regex indicators (RCE, deserialisation, auth bypass, ...)",
+      "available": true,
+      "risk": "low \u2014 descriptions are written at publication; a minority are edited later, so keyword rates are a lower bound",
+      "why": "Descriptions carry wording that CVSS does not encode",
+      "included": true
+    },
+    {
+      "feature": "epss_x_exploit",
+      "group": "interactions",
+      "source": "derived",
+      "calc": "epss x exploit-code, cwe-rate x exploit-code, WordPress-ecosystem and GitHub-CNA flags, 'silent critical' flag",
+      "available": true,
+      "risk": "none \u2014 products of already-validated features",
+      "why": "Captures conditional effects additive models miss, with no new data dependency",
+      "included": true
+    },
+    {
+      "feature": "cwe_x_exploit",
+      "group": "interactions",
+      "source": "derived",
+      "calc": "epss x exploit-code, cwe-rate x exploit-code, WordPress-ecosystem and GitHub-CNA flags, 'silent critical' flag",
+      "available": true,
+      "risk": "none \u2014 products of already-validated features",
+      "why": "Captures conditional effects additive models miss, with no new data dependency",
+      "included": true
+    },
+    {
+      "feature": "is_wordpress_eco",
+      "group": "interactions",
+      "source": "derived",
+      "calc": "epss x exploit-code, cwe-rate x exploit-code, WordPress-ecosystem and GitHub-CNA flags, 'silent critical' flag",
+      "available": true,
+      "risk": "none \u2014 products of already-validated features",
+      "why": "Captures conditional effects additive models miss, with no new data dependency",
+      "included": true
+    },
+    {
+      "feature": "is_github_cna",
+      "group": "interactions",
+      "source": "derived",
+      "calc": "epss x exploit-code, cwe-rate x exploit-code, WordPress-ecosystem and GitHub-CNA flags, 'silent critical' flag",
+      "available": true,
+      "risk": "none \u2014 products of already-validated features",
+      "why": "Captures conditional effects additive models miss, with no new data dependency",
+      "included": true
+    },
+    {
+      "feature": "silent_crit",
+      "group": "interactions",
+      "source": "derived",
+      "calc": "epss x exploit-code, cwe-rate x exploit-code, WordPress-ecosystem and GitHub-CNA flags, 'silent critical' flag",
+      "available": true,
+      "risk": "none \u2014 products of already-validated features",
+      "why": "Captures conditional effects additive models miss, with no new data dependency",
+      "included": true
+    },
+    {
+      "feature": "horizon_days",
+      "group": "horizon",
+      "source": "snapshot_month + evaluation cutoff",
+      "calc": "Days from snapshot month end to the evaluation cutoff (2025-12-29 for train, 2026-11-04 for the competition)",
+      "available": true,
+      "risk": "low \u2014 the cutoff is a published competition rule, not per-CVE information",
+      "why": "Exposure windows differ by cohort; without it the model cannot distinguish a 10-month from a 1-month window",
+      "included": true
+    },
+    {
+      "feature": "granite_knn_max",
+      "group": "granite",
+      "source": "ibm-granite/granite-embedding-30m-english over CVE descriptions",
+      "calc": "Max and mean-of-top-5 cosine similarity to KEV descriptions added BEFORE the row's snapshot month end",
+      "available": true,
+      "risk": "none \u2014 the reference set is nested by month; future KEV additions are masked out",
+      "why": "Adds a semantic signal that is independent of CVSS and EPSS",
+      "included": true
+    },
+    {
+      "feature": "granite_knn_mean5",
+      "group": "granite",
+      "source": "ibm-granite/granite-embedding-30m-english over CVE descriptions",
+      "calc": "Max and mean-of-top-5 cosine similarity to KEV descriptions added BEFORE the row's snapshot month end",
+      "available": true,
+      "risk": "none \u2014 the reference set is nested by month; future KEV additions are masked out",
+      "why": "Adds a semantic signal that is independent of CVSS and EPSS",
+      "included": true
+    }
+  ],
+  "n_features": 114,
+  "excluded": [
+    {
+      "column": "nvd_status",
+      "reason": "NIST reviews attacked CVEs first; status is a post-hoc signal",
+      "decision": "Excluded from all features"
+    },
+    {
+      "column": "n_affected_cpes",
+      "reason": "CPE rows are added during NVD analysis; 49.6% of the 2026 pool is blank",
+      "decision": "Excluded"
+    },
+    {
+      "column": "n_references",
+      "reason": "Reference count grows after exploitation is reported",
+      "decision": "Excluded"
+    },
+    {
+      "column": "references.url / domain / tags",
+      "reason": "News and threat-research links are added after attacks; 37,853 IBM X-Force links alone",
+      "decision": "Summarised for the audit only, never a feature"
+    },
+    {
+      "column": "blank cvss3_score as signal",
+      "reason": "Blank severity correlates with un-analysed (i.e. not-yet-attacked) records",
+      "decision": "Kept as NaN; no has_score indicator"
+    },
+    {
+      "column": "last_modified",
+      "reason": "Every row is stamped mid-2026 or later",
+      "decision": "Excluded"
+    },
+    {
+      "column": "assigner == CISA-ADP GUID",
+      "reason": "ADP enrichment is applied after publication",
+      "decision": "Collapsed to a neutral category"
+    },
+    {
+      "column": "affected_products vendor/product",
+      "reason": "CPE coverage itself leaks NVD attention",
+      "decision": "Excluded from the model; used only in EDA"
+    }
+  ],
+  "principle": "a feature is admissible only if its value could have been known at the end of the vulnerability's snapshot month"
+}

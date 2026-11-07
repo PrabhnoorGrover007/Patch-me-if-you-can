@@ -1,0 +1,10 @@
+{
+  "model": "ibm-granite/granite-embedding-30m-english",
+  "dim": 384,
+  "train_rows": 87921,
+  "predict_rows": 72670,
+  "kev_reference_rows": 1484,
+  "train_max_sim_mean": 0.752601153694956,
+  "predict_max_sim_mean": 0.7558288823587129,
+  "seconds": 1383.0
+}

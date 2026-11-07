@@ -1,0 +1,70 @@
+{
+  "2025_jan_sep": {
+    "candidates": 35289,
+    "positives": 52,
+    "base_rate": 0.00147,
+    "baselines": [
+      {
+        "model": "cvss3_first",
+        "hits@500": 8,
+        "precision@500": 0.016
+      },
+      {
+        "model": "epss_first",
+        "hits@500": 8,
+        "precision@500": 0.016
+      },
+      {
+        "model": "poc_then_epss",
+        "hits@500": 19,
+        "precision@500": 0.038
+      }
+    ],
+    "per_month_positives": {
+      "2025-01": 7,
+      "2025-02": 6,
+      "2025-03": 7,
+      "2025-04": 5,
+      "2025-05": 6,
+      "2025-06": 8,
+      "2025-07": 2,
+      "2025-08": 5,
+      "2025-09": 6
+    },
+    "recall_at_500_ceiling": 9.6154
+  },
+  "2024_jan_sep": {
+    "candidates": 28844,
+    "positives": 46,
+    "base_rate": 0.00159,
+    "baselines": [
+      {
+        "model": "cvss3_first",
+        "hits@500": 5,
+        "precision@500": 0.01
+      },
+      {
+        "model": "epss_first",
+        "hits@500": 8,
+        "precision@500": 0.016
+      },
+      {
+        "model": "poc_then_epss",
+        "hits@500": 16,
+        "precision@500": 0.032
+      }
+    ],
+    "per_month_positives": {
+      "2024-01": 5,
+      "2024-02": 5,
+      "2024-03": 3,
+      "2024-04": 1,
+      "2024-05": 5,
+      "2024-06": 9,
+      "2024-07": 3,
+      "2024-08": 8,
+      "2024-09": 7
+    },
+    "recall_at_500_ceiling": 10.8696
+  }
+}
