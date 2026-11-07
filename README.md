@@ -164,3 +164,5 @@ Full list in [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md).
 
 Built by the Sheridan Datathon 2026 IBM team. Member 2 owns the ML and ranking layer: label design,
 feature engineering, model selection, validation, evaluation and the scoring pipeline.
+
+_Implementation developed with Codebuff, an AI coding agent._
