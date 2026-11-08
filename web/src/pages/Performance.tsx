@@ -99,11 +99,11 @@ export default function Performance() {
       </div>
 
       <div className="section grid c2">
-        <Card title="Out-of-fold comparison" sub="All 24 monthly cohorts; 2024 columns were the selection signal, 2025 the confirmation">
+        <Card title="Out-of-fold comparison" sub="All 24 monthly cohorts; 2024 was the selection signal, with 2025 held-out confirmation shown above">
           <div className="table-wrap" style={{ border: "none" }}>
             <table>
               <thead>
-                <tr><th>Candidate</th><th className="num">Features</th><th className="num">2024 @500</th><th className="num">2025 @500</th></tr>
+                <tr><th>Candidate</th><th className="num">Features</th><th className="num">2024 @500</th></tr>
               </thead>
               <tbody>
                 {Object.entries(perf.selection).map(([name, r]) => (
@@ -111,7 +111,6 @@ export default function Performance() {
                     <td className="small">{name.replace(/_/g, " ")}</td>
                     <td className="num mono">{r.features}</td>
                     <td className="num mono">{r.oof_2024["hits@500"]}</td>
-                    <td className="num mono">{r.oof_2025["hits@500"]}</td>
                   </tr>
                 ))}
               </tbody>
