@@ -13,15 +13,22 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, PlainTextResponse
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+
+from api.granite_llm import (
+    active_model as generative_granite_model,
+    generate_answer as generate_granite_answer,
+    is_available as generative_granite_configured,
+    local_available as local_granite_available,
+    provider as generative_granite_provider,
+    watsonx_configured as watsonx_granite_configured,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 ART = ROOT / "artifacts"
-WEB_DIST = ROOT / "web" / "dist"
 PRODUCT = "PATCH ME IF YOU CAN"
 GRANITE_MODEL = "ibm-granite/granite-embedding-30m-english"
 CVE_RE = re.compile(r"CVE-\d{4}-\d{4,}", re.IGNORECASE)
@@ -178,6 +185,271 @@ def _technical(drow: pd.Series | None, prow: pd.Series | None, key: str) -> Any:
     return None
 
 
+def _pretty(value: Any) -> str:
+    if value is None or (isinstance(value, float) and pd.isna(value)):
+        return ""
+    return str(value).replace("_", " ").strip()
+
+
+def _assigner_label(raw: Any) -> str:
+    """Short, readable CNA label from the raw CVE assigner field."""
+    value = _pretty(raw)
+    if not value:
+        return "Unassigned"
+    if re.match(r"^[0-9a-f]{8}-[0-9a-f]{4}-", value, re.IGNORECASE):
+        return "CISA (CNA)"
+    if "@" in value:
+        domain = value.split("@")[-1].lower()
+        core = re.sub(r"^(www|security|secure|cve|psirt|prodsec|support)\.", "", domain).split(".")[0]
+        return core[:1].upper() + core[1:]
+    return value
+
+
+def _effort_hours(description: str, product_types: list[str]) -> int:
+    """Transparent remediation-effort heuristic used only for the quick-wins matrix."""
+    text = (description or "").lower()
+    if re.search(r"wordpress|plugin|theme", text):
+        return 2
+    if "hardware" in product_types or re.search(r"firmware|hardware|bios", text):
+        return 20
+    if "operating_system" in product_types or re.search(r"kernel|driver", text):
+        return 12
+    if re.search(r"configuration|settings|policy|misconfigur", text):
+        return 3
+    if re.search(r"server|appliance|gateway|\bvpn\b|firewall", text):
+        return 10
+    if re.search(r"library|\bsdk\b|dependency|package", text):
+        return 4
+    return 6
+
+
+def _effort_tier(hours: int) -> str:
+    return "Low" if hours <= 4 else ("Medium" if hours <= 12 else "High")
+
+
+def _top500_product_details(ids: set[str]) -> dict[str, list[dict]]:
+    """Read the raw affected-product table once and keep only the submitted cohort."""
+    path = ROOT / "data" / "affected_products.csv"
+    out: dict[str, list[dict]] = {}
+    if not path.exists():
+        return out
+    try:
+        p = pd.read_csv(path, usecols=["cve_id", "vendor", "product", "version", "type", "vulnerable"])
+    except (ValueError, FileNotFoundError):
+        return out
+    p = p[p["cve_id"].isin(ids) & (p["vulnerable"].astype(str).str.upper() == "Y")]
+    for r in p.itertuples(index=False):
+        cid = str(r.cve_id)
+        bucket = out.setdefault(cid, [])
+        key = (str(r.vendor), str(r.product))
+        if any((x["vendor"], x["product"]) == key for x in bucket):
+            continue
+        bucket.append({
+            "type": _pretty(r.type),
+            "vendor": _pretty(r.vendor),
+            "product": _pretty(r.product),
+            "version": _pretty(r.version),
+        })
+    return out
+
+
+@lru_cache(maxsize=1)
+def dashboard_payload() -> dict:
+    """Hydrated 500-record view for the Next.js command centre.
+
+    The browser receives one payload for the submitted cohort. The full 72,670-row
+    pool is only queried through the paginated explorer endpoint.
+    """
+    df = ranked().sort_values("rank").head(500).copy()
+    ids = set(df["cve_id"].astype(str))
+    f = full()
+    f = f[f["cve_id"].isin(ids)].drop_duplicates("cve_id").set_index("cve_id")
+
+    vuln_path = ART / "vulnerabilities.parquet"
+    v = pd.DataFrame()
+    if vuln_path.exists():
+        v = pd.read_parquet(
+            vuln_path,
+            columns=["cve_id", "description", "assigner", "cvss3_vector", "attack_vector",
+                     "attack_complexity", "privileges_required", "user_interaction"],
+        )
+        v = v[v["cve_id"].isin(ids)].drop_duplicates("cve_id").set_index("cve_id")
+
+    names = cwe_names()
+    products = _top500_product_details(ids)
+    cpe_vendors: dict[str, str] = {}
+    try:
+        cp = products_table()
+        cp = cp[cp["cve_id"].isin(ids)]
+        cpe_vendors = dict(zip(cp["cve_id"], cp["cpe_vendor"]))
+    except HTTPException:
+        pass
+
+    kw_columns = {
+        "kw_rce": "remote code execution",
+        "kw_cmd_injection": "command / code injection",
+        "kw_auth_bypass": "authentication bypass",
+        "kw_unauthenticated": "no login required",
+        "kw_deserialization": "unsafe deserialization",
+        "kw_path_traversal": "path traversal",
+        "kw_sqli": "SQL injection",
+        "kw_buffer_overflow": "memory corruption",
+        "kw_use_after_free": "use-after-free",
+        "kw_priv_esc": "privilege escalation",
+        "kw_xss": "cross-site scripting",
+        "kw_dos": "denial of service",
+        "is_wordpress_eco": "WordPress plugin",
+    }
+
+    records: list[dict] = []
+    for r in df.itertuples(index=False):
+        cid = str(r.cve_id)
+        fr = f.loc[cid] if cid in f.index else None
+        vr = v.loc[cid] if cid in v.index else None
+        flags = {
+            "exploitdb": _safe_int(fr["exploitdb"]) if fr is not None and "exploitdb" in fr else 0,
+            "metasploit": _safe_int(fr["metasploit"]) if fr is not None and "metasploit" in fr else 0,
+            "nuclei": _safe_int(fr["nuclei"]) if fr is not None and "nuclei" in fr else 0,
+            "pocGithub": _safe_int(fr["poc_github"]) if fr is not None and "poc_github" in fr else _safe_int(r.poc_github) or 0,
+        }
+        flags = {k: int(x or 0) for k, x in flags.items()}
+        exploit_count = sum(flags.values())
+        cwe_ids = [x.strip() for x in str(r.cwe_top or "").split(";") if x.strip()]
+        cwes = [{"id": c, "name": names.get(c, "Unlisted weakness type")} for c in cwe_ids[:4]]
+        prod = products.get(cid, [])
+        if not prod and cpe_vendors.get(cid):
+            prod = [{"type": "", "vendor": _pretty(cpe_vendors[cid]), "product": "", "version": ""}]
+        types = [x["type"] for x in prod if x.get("type")]
+        description = _pretty(vr["description"]) if vr is not None else ""
+        effort = _effort_hours(description, types)
+        reason = _pretty(fr["driver_1"] if fr is not None and "driver_1" in fr else r.reason)
+        factors = [x.strip() for x in re.split(r";", reason) if x.strip()][:4]
+        keywords = [label for col, label in kw_columns.items()
+                    if fr is not None and col in fr and _safe_int(fr[col])]
+        severity = str(r.cvss3_severity or "UNSCORED").upper()
+        if severity in {"NAN", "NONE", ""}:
+            severity = "UNSCORED" if severity == "NAN" else severity
+        rank = int(r.rank)
+        probability = float(r.risk_score)
+        priority = round(100 * (1 - (rank - 1) / max(len(df) - 1, 1)), 1)
+        records.append({
+            "rank": rank,
+            "cveId": cid,
+            "published": str(pd.to_datetime(r.published).date()),
+            "snapshotMonth": str(r.snapshot_month),
+            "description": description,
+            "cvssScore": _safe_float(r.cvss3_score),
+            "severity": severity,
+            "cvssVector": _pretty(vr["cvss3_vector"]) if vr is not None else "",
+            "attackVector": _pretty(vr["attack_vector"]) if vr is not None else "",
+            "attackComplexity": _pretty(vr["attack_complexity"]) if vr is not None else "",
+            "privilegesRequired": _pretty(vr["privileges_required"]) if vr is not None else "",
+            "userInteraction": _pretty(vr["user_interaction"]) if vr is not None else "",
+            "epss": _safe_float(r.epss_score) or 0.0,
+            "epssPct": (_safe_float(fr["epss_rank"]) if fr is not None and "epss_rank" in fr else 0.0) or 0.0,
+            "flags": flags,
+            "exploitCount": exploit_count,
+            "riskScore": round(probability * 100, 2),
+            "riskProbability": round(probability, 6),
+            "priorityScore": priority,
+            "effortHours": effort,
+            "effortTier": _effort_tier(effort),
+            "riskFactors": factors,
+            "cwes": cwes,
+            "products": prod[:3],
+            "assigner": _pretty(vr["assigner"]) if vr is not None else "",
+            "assignerLabel": _assigner_label(vr["assigner"] if vr is not None else ""),
+            "keywords": keywords,
+        })
+
+    risks = sorted(x["priorityScore"] for x in records)
+    efforts = sorted(x["effortHours"] for x in records)
+    median = lambda xs: xs[len(xs) // 2] if xs else 0
+    risk_cut, effort_cut = median(risks), median(efforts)
+    for rec in records:
+        high_risk = rec["priorityScore"] >= risk_cut
+        high_effort = rec["effortHours"] > effort_cut
+        rec["quadrant"] = ("Quick win" if high_risk and not high_effort else
+                           "Plan it" if high_risk and high_effort else
+                           "Fill-in" if not high_risk and not high_effort else "Defer")
+
+    severity_counts: dict[str, int] = {}
+    effort_counts: dict[str, int] = {}
+    quadrant_counts: dict[str, int] = {}
+    for rec in records:
+        severity_counts[rec["severity"]] = severity_counts.get(rec["severity"], 0) + 1
+        effort_counts[rec["effortTier"]] = effort_counts.get(rec["effortTier"], 0) + 1
+        quadrant_counts[rec["quadrant"]] = quadrant_counts.get(rec["quadrant"], 0) + 1
+
+    months = sorted({x["published"][:7] for x in records})
+    exposure = []
+    for month in months:
+        up_to = [x for x in records if x["published"][:7] <= month]
+        exposure.append({
+            "month": month,
+            "published": sum(1 for x in records if x["published"][:7] == month),
+            "openRisk": round(sum(x["priorityScore"] for x in up_to), 1),
+            "criticalOpen": sum(1 for x in up_to if x["severity"] == "CRITICAL"),
+        })
+
+    perf = load_json("model_selection.json", {}) or {}
+    held = (perf.get("heldout_2025") or {}).get("rows", [])
+    ours = next((x for x in held if x.get("model") == "final_blend"), None)
+    base = next((x for x in held if x.get("model") == "poc_then_epss"), None)
+    validation = None
+    if ours and base:
+        validation = {
+            "model": "final_blend (HistGB lean + Granite logistic)",
+            "hitsAt500": int(ours["hits@500"]),
+            "baselineName": "public exploit code, then EPSS",
+            "baselineHits": int(base["hits@500"]),
+            "precisionAt50": float(ours["precision@50"]),
+            "precisionAt100": float(ours["precision@100"]),
+            "liftPct": round(((ours["hits@500"] - base["hits@500"]) / max(base["hits@500"], 1)) * 100, 1),
+            "rocAuc": float(ours["roc_auc"]),
+            "averagePrecision": float(ours["average_precision"]),
+            "validationRows": int(ours["n_candidates"]),
+            "positives": int(ours["positives"]),
+            "trainRows": int(perf.get("train_rows") or 0),
+            "trainPositives": int(perf.get("train_positives") or 0),
+            "kScaled": 500,
+            "bootstrap": ours.get("bootstrap_hits@500"),
+            "generatedAt": "",
+        }
+
+    return {
+        "cves": records,
+        "meta": {
+            "generatedAt": "",
+            "universe": int(len(ranked())),
+            "cohort": len(records),
+            "medians": {"risk": risk_cut, "effort": effort_cut},
+            "scoreNote": "Priority is a rank-normalised score within the submitted 500. The model probability is shown separately; neither is a guarantee of exploitation.",
+            "severityCounts": severity_counts,
+            "modelProbabilityRange": {"min": min(x["riskProbability"] for x in records),
+                                      "max": max(x["riskProbability"] for x in records)},
+            "effortCounts": effort_counts,
+            "quadrantCounts": quadrant_counts,
+            "exposureByMonth": exposure,
+            "exploitCoverage": {
+                "withAnyExploit": sum(1 for x in records if x["exploitCount"] > 0),
+                "withNuclei": sum(1 for x in records if x["flags"]["nuclei"]),
+                "epssAbove10pct": sum(1 for x in records if x["epss"] >= 0.1),
+            },
+            "validation": validation,
+            "sources": [
+                "artifacts/ranked_2026.parquet (model rank and risk)",
+                "artifacts/full_rankings.csv (exploit signals and reasons)",
+                "artifacts/vulnerabilities.parquet (descriptions, CVSS vectors, CNA)",
+                "data/affected_products.csv (affected-product context)",
+                "artifacts/model_selection.json (held-out 2025 validation)",
+            ],
+            "disclaimer": ("Risk score is a model ranking signal, not a calibrated probability. "
+                           "Held-out validation is historical and does not guarantee enterprise outcomes."),
+        },
+    }
+
+
 @app.get("/api/health")
 def health():
     ok = (ART / "ranked_2026.parquet").exists() and (ROOT / "top500.csv").exists()
@@ -190,6 +462,12 @@ def health():
         "granite": bool(load_json("granite_meta.json")),
         "api_version": app.version,
     }
+
+
+@app.get("/api/dashboard")
+def dashboard():
+    """One hydrated payload for the submitted 500, consumed by the Next.js app."""
+    return dashboard_payload()
 
 
 @app.get("/api/overview")
@@ -263,6 +541,7 @@ def vulnerabilities(
     cols = ["cve_id", "rank", "risk_score", "risk_percentile", "snapshot_month", "published",
             "cvss3_score", "cvss3_severity", "epss_score", "poc_github", "vendor", "cwe_top", "reason"]
     items = df[cols].copy()
+    items["description"] = items["cve_id"].map(descriptions()).fillna("")
     items["published"] = items["published"].dt.strftime("%Y-%m-%d")
     return {"total": total, "page": page, "size": size, "pages": int(np.ceil(total / size)),
             "items": _json_records(items)}
@@ -600,17 +879,71 @@ def _dna(description: str) -> dict:
     }
 
 
+def _cve_evidence(detail: dict) -> str:
+    keys = (
+        "cve_id", "description", "published", "snapshot_month", "rank", "risk_score",
+        "risk_percentile", "cvss3_score", "cvss3_severity", "epss_score", "poc_github",
+        "vendor", "cwe_top", "cwe_name", "reason", "drivers", "technical",
+        "remediation_priority", "disclaimer",
+    )
+    evidence = {key: detail.get(key) for key in keys}
+    evidence["contributions"] = (detail.get("contributions") or [])[:8]
+    return json.dumps(evidence, ensure_ascii=False, default=str)[:7000]
+
+
+def _chat_reply(question: str, answer: str, citations: list[str], evidence: str = "") -> dict:
+    """Ground every answer; use generative Granite only when watsonx.ai is configured."""
+    payload = {
+        "answer": answer,
+        "source": "grounded-retrieval",
+        "generative_model": None,
+        "generative_configured": generative_granite_configured(),
+        "generative_provider": generative_granite_provider(),
+        "citations": citations,
+    }
+    if generative_granite_configured():
+        generated, error = generate_granite_answer(question, answer, evidence or answer)
+        if generated:
+            payload.update(
+                answer=generated,
+                source="granite-generative",
+                generative_model=generative_granite_model(),
+            )
+        elif error:
+            payload["generation_error"] = error
+            payload["generation_note"] = (
+                "Generative Granite was configured but did not answer; "
+                "the grounded retrieval answer is shown instead."
+            )
+    return payload
+
+
 @app.get("/api/granite/status")
 def granite_status():
     meta = load_json("granite_meta.json", {}) or {}
+    configured = generative_granite_configured()
+    active_provider = generative_granite_provider()
     return {
         "product": PRODUCT,
         "embedding_model": meta.get("model", GRANITE_MODEL),
         "dim": meta.get("dim"),
         "available": bool(meta),
-        "generative_model": None,
-        "capabilities": ["semantic similarity", "similar-CVE retrieval", "grounded evidence retrieval"],
-        "limitation": "No Granite instruct/generative model is configured in this environment. Analyst answers are retrieval-grounded deterministic responses.",
+        "generative_model": generative_granite_model() if configured else None,
+        "generative_configured": configured,
+        "generative_provider": active_provider,
+        "generative_local": local_granite_available(),
+        "generative_watsonx": watsonx_granite_configured(),
+        "capabilities": [
+            "semantic similarity",
+            "similar-CVE retrieval",
+            "grounded evidence retrieval",
+            *(["grounded generative answers"] if configured else []),
+        ],
+        "limitation": (
+            f"Generative Granite is active through {active_provider}; answers are still constrained to retrieved evidence."
+            if configured else
+            "No Granite instruct/generative model is configured. Analyst answers are retrieval-grounded deterministic responses."
+        ),
     }
 
 
@@ -657,14 +990,26 @@ def granite_chat(req: ChatRequest):
         if "similar" in lower or "analog" in lower:
             sim = similar(detail["cve_id"], limit=5)
             ids = ", ".join(f"{x['cve_id']} ({x['similarity']:.3f})" for x in sim["items"])
-            answer = (f"Granite embeddings place these historical/2026 CVEs closest to {detail['cve_id']}: "
-                      f"{ids}. Similarity is not a probability of exploitation; the model risk rank is "
+            answer = (f"Granite embeddings place these CVEs closest to {detail['cve_id']}: "
+                      f"{ids}. Similarity is not a probability of exploitation; the model rank is "
                       f"#{detail['rank']} of 72,670.")
         elif "uncertain" in lower or "missing" in lower:
             missing = [k for k, v in detail["technical"].items() if v is None]
             answer = (f"Missing or unavailable evidence for {detail['cve_id']}: "
                       f"{', '.join(missing) if missing else 'none among the displayed technical fields'}. "
                       f"The model output is a ranking, not a calibrated probability, and absence of evidence is not evidence of safety.")
+        elif any(word in lower for word in ["patch", "fix", "upgrade", "remediat", "mitigat"]):
+            answer = (f"Remediation priority: {detail['remediation_priority']}. {detail['cve_id']} affects "
+                      f"{detail['vendor']} and maps to {detail['cwe_top']} ({detail['cwe_name']}). "
+                      f"Apply the vendor's fixed release for the affected component, then verify the deployed version. "
+                      f"The reason it is ranked here is: {detail['drivers']}. "
+                      f"Model rank is a prioritisation signal, not a guarantee of exploitation; validation is historical.")
+        elif any(word in lower for word in ["exploit", "kev", "weapon", "poc", "proof of concept", "in the wild"]):
+            answer = (f"At the {detail['snapshot_month']} snapshot, {detail['cve_id']} had "
+                      f"{detail['poc_github']} public GitHub PoC flag(s) and "
+                      f"{detail['technical']['n_exploit_sources']} tracked exploit source(s). "
+                      f"EPSS was {detail['epss_score']}. Recorded drivers: {detail['drivers']}. "
+                      f"The app does not treat a public PoC as proof of in-the-wild exploitation.")
         elif "cvss" in lower or "epss" in lower or "compare" in lower:
             answer = (f"{detail['cve_id']}: CVSS {detail['cvss3_score']}, EPSS {detail['epss_score']}, "
                       f"model rank #{detail['rank']} of 72,670 (risk score {detail['risk_score']:.3f}). "
@@ -674,26 +1019,26 @@ def granite_chat(req: ChatRequest):
                       f"{detail['risk_score']:.3f}. Recorded drivers: {detail['drivers']}. "
                       f"CVSS is {detail['cvss3_score']} and EPSS at snapshot is {detail['epss_score']}. "
                       f"Prediction is not confirmation of exploitation.")
-        return {"cve_id": detail["cve_id"], "answer": answer, "source": "grounded-retrieval",
-                "generative_model": None,
-                "citations": ["ranked_2026.parquet", "attribution.json", "granite_embed_2026.npy"]}
+        return _chat_reply(
+            question, answer,
+            ["ranked_2026.parquet", "attribution.json", "granite_embed_2026.npy"],
+            evidence=_cve_evidence(detail),
+        )
 
     if any(word in question.lower() for word in ["top", "first", "priorit", "investigat", "patch"]):
         top = ranked().head(5)
         lines = [f"#{int(r['rank'])} {r['cve_id']} ({r['vendor']}, risk {r['risk_score']:.3f}): {r['reason']}"
                  for _, r in top.iterrows()]
-        return {"answer": "Top-ranked CVEs in the 2026 benchmark:\n" + "\n".join(lines),
-                "source": "grounded-retrieval", "generative_model": None,
-                "citations": ["ranked_2026.parquet"]}
+        answer = "Top-ranked CVEs in the 2026 benchmark:\n" + "\n".join(lines)
+        return _chat_reply(question, answer, ["ranked_2026.parquet"], evidence=answer)
 
-    return {
-        "answer": ("Ask about a specific CVE (for example, “Why is CVE-2026-39808 ranked here?”), "
-                   "or ask for the highest-priority CVEs. Answers are assembled from the ranked table, "
-                   "the linear attribution and the Granite similarity index; no generative model is configured."),
-        "source": "grounded-retrieval",
-        "generative_model": None,
-        "citations": ["ranked_2026.parquet"],
-    }
+    return _chat_reply(
+        question,
+        ("Ask about a specific CVE (for example, “Why is CVE-2026-39808 ranked here?”), "
+         "or ask for the highest-priority CVEs. Answers are assembled from the ranked table, "
+         "the linear attribution and the Granite similarity index; no generative model is configured."),
+        ["ranked_2026.parquet"],
+    )
 
 
 @app.get("/api/model/performance")
@@ -708,6 +1053,7 @@ def model_performance():
             "heldout_2025": perf.get("heldout_2025"),
             "selected_blend": perf.get("selected_blend"),
             "baseline_reproduction": base,
+            "granite_ablation": load_json("granite_ablation.json", {}),
             "permutation_importance": perf.get("permutation_importance")}
 
 
@@ -744,14 +1090,20 @@ def top500():
     p = ROOT / "top500.csv"
     if not p.exists():
         raise HTTPException(503, "top500.csv missing — run models.predict")
-    return PlainTextResponse(p.read_text(encoding="utf-8"), media_type="text/csv")
+    # Read bytes, not text: universal-newline translation would change the CRLF
+    # submission file and break byte-for-byte reproduction of the deliverable.
+    return Response(
+        content=p.read_bytes(),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=top500.csv"},
+    )
 
 
-if WEB_DIST.exists():
-    app.mount("/", StaticFiles(directory=str(WEB_DIST), html=True), name="web")
-else:
-    @app.get("/")
-    def root():
-        return JSONResponse({"service": f"{PRODUCT} API",
-                             "note": "frontend build not found at web/dist",
-                             "docs": "/docs"})
+@app.get("/")
+def root():
+    """The Next.js UI is a separate process; keep the API root explicit."""
+    return JSONResponse({
+        "service": f"{PRODUCT} API",
+        "frontend": "http://127.0.0.1:3000",
+        "docs": "/docs",
+    })

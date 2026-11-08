@@ -63,20 +63,24 @@ competition requirement, and the preference is recorded in `model_selection.json
   matrix. The endpoint labels similarity as similarity, never as exploitation probability.
 - `POST /api/granite/analyze` — returns a deterministic, evidence-grounded DNA extraction plus
   Granite analog retrieval. It does **not** claim that Granite generated the extraction.
-- `POST /api/granite/chat` — retrieval-grounded analyst answers from the ranked table, attribution and
-  similarity index. It is explicitly labelled `generative_model: null`.
-- `GET /api/granite/status` — model ID, dimensions, capability list and the no-generative-model
-  limitation.
+- `POST /api/granite/chat` — analyst answers from the ranked table, attribution and similarity index.
+  Local Granite 2B writes the answer when llama.cpp is healthy; watsonx 8B is preferred when
+  configured. If neither is available, the deterministic grounded answer is returned. The response
+  labels `source`, `generative_provider` and `generative_model`.
+- `GET /api/granite/status` — embedding model, dimensions, active generative provider and capability
+  list.
 
-## Why this route, not watsonx.ai
+## Why local Granite first
 
 watsonx.ai requires an IBM Cloud account and an API key, neither of which was available in this
-environment. Rather than fabricate an integration or fake API responses, we used the same model
-family through its public Hugging Face release, which is an explicitly permitted route in the
-problem statement.
+environment. The embedding model already runs locally from public weights, an explicitly permitted
+route in the problem statement. For generation, the app runs a Q3-quantized Granite 2B instruct model
+through llama.cpp on CPU. It needs no account, binds to localhost and is labelled as a local 2B model
+rather than being presented as the hosted 8B model.
 
-If a watsonx key were supplied, the swap is one function: replace `SentenceTransformer.encode` with a
-watsonx embeddings call and keep the same feature contract. No downstream code changes.
+If watsonx credentials are supplied, the backend automatically prefers hosted Granite 8B for chat;
+the embedding and feature contract does not change. Without credentials, the local 2B model is used;
+without either, the deterministic grounded answer remains.
 
 ## Explanations in the product
 
@@ -85,14 +89,13 @@ from the row's own recorded evidence (EPSS at snapshot, exploit flags, vendor KE
 similarity, matched description phrases) plus the linear model's per-feature contributions. It cannot
 invent a fact, and the UI labels the source.
 
-We deliberately did not use a Granite *generative* model for this. A multi-billion-parameter instruct
-model on CPU adds latency and hallucination risk on a screen a security engineer will use to justify a
-patch decision. The UI states the source of every explanation (`deterministic` vs `granite`). If
-`artifacts/explanations.json` is present it takes precedence and the badge changes accordingly; today
-it is not, so every explanation is labelled deterministic.
+The analyst chat is a separate layer. It receives the same retrieved evidence and may use a local
+Granite 2B instruct model through llama.cpp, or a hosted Granite 8B through watsonx.ai when
+credentials are configured. The UI labels generated prose vs the deterministic grounded answer, and
+the API falls back to the latter if generation fails.
 
 ## What was not verified
 
 - No live watsonx.ai call was made; no IBM Cloud credentials were available.
-- No Granite instruct/generative model was run; the analyst endpoint is retrieval-grounded.
+- Hosted Granite 8B generation was not tested. Local Granite 2B generation was run and verified.
 - The embedding model was run locally; its output is cached, not called live during a demo.

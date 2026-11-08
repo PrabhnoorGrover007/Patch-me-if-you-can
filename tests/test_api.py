@@ -21,6 +21,22 @@ def test_health():
     assert body["rows"] == 72_670
 
 
+def test_dashboard_carries_500_real_records():
+    r = client.get("/api/dashboard")
+    assert r.status_code == 200
+    body = r.json()
+    assert len(body["cves"]) == 500
+    first = body["cves"][0]
+    assert first["rank"] == 1
+    assert first["cveId"] == "CVE-2026-2699"
+    assert first["priorityScore"] == 100.0
+    assert 0 <= first["riskProbability"] <= 1
+    assert first["products"]
+    assert body["meta"]["cohort"] == 500
+    assert body["meta"]["universe"] == 72_670
+    assert body["meta"]["validation"]["hitsAt500"] == 22
+
+
 def test_overview_shape():
     r = client.get("/api/overview")
     assert r.status_code == 200
@@ -72,6 +88,8 @@ def test_model_performance_and_discoveries():
     names = {row["model"] for row in rows}
     assert {"poc_then_epss", "final_blend"} <= names
 
+    assert r.json()["granite_ablation"]["pool"]
+
     d = client.get("/api/discoveries")
     assert d.status_code == 200
     assert len(d.json()["discoveries"]) >= 6
@@ -96,6 +114,8 @@ def test_export_and_top500():
     assert t.status_code == 200
     lines = t.text.strip().splitlines()
     assert lines[0] == "cve_id" and len(lines) == 501
+    # The download must be byte-identical to the on-disk submission (CRLF included).
+    assert t.content == (ROOT / "top500.csv").read_bytes()
 
 
 def test_similar_timeline_and_products():

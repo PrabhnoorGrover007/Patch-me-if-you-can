@@ -145,7 +145,7 @@ limitation instead of claiming the list is clean.
 ## Built with
 
 Python, pandas, scikit-learn, LightGBM-style gradient boosting, IBM Granite embeddings,
-sentence-transformers, FastAPI, React, TypeScript, Vite, Recharts, pytest.
+sentence-transformers, FastAPI, Next.js, React, TypeScript, Tailwind, Recharts, pytest.
 
 ## Demo video (2–3 minutes)
 

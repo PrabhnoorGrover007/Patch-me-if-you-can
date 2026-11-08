@@ -8,7 +8,7 @@ counts are from the final post-correction artefacts.
 
 | Command | Result |
 | :-- | :-- |
-| `.venv/Scripts/python.exe -m pytest -q` | **22 passed** |
+| `.venv/Scripts/python.exe -m pytest -q` | **23 passed** |
 | `python -m models.train` | exit 0, wrote `model.joblib`, `model_selection.json`, `attribution.json` |
 | `python -m models.predict` | exit 0, wrote `top500.csv` (500 ids), `ranked_2026.parquet` (72,670 rows) |
 | `python -m eval.backtest` | exit 0, baselines reproduced |
@@ -17,7 +17,7 @@ counts are from the final post-correction artefacts.
 | `python -m pipeline.discoveries` | exit 0, 9 discoveries with Wilson intervals |
 | `bash -n start.sh` / `start.bat` review | syntax OK; startup exercised |
 | HTTP smoke test | every exercised endpoint 200; invalid input 422; missing records 404 |
-| `npm run build` (web) | exit 0, TypeScript clean, Vite bundle written |
+| `cd app && npm run typecheck && npm run build` | exit 0, TypeScript clean, Next.js production build written |
 
 ## Pipeline tests (`tests/test_pipeline.py`, 11)
 
@@ -35,11 +35,12 @@ counts are from the final post-correction artefacts.
 | `test_model_is_deterministic_and_loadable` | both models load from the bundle and produce identical probabilities on repeated calls |
 | `test_discoveries_have_intervals` | every discovery carries a sample size; at least six carry confidence intervals |
 
-## API tests (`tests/test_api.py`, 11)
+## API tests (`tests/test_api.py`, 12)
 
 | Test | What it proves |
 | :-- | :-- |
 | `test_health` | `/api/health` reports the product name, `ok`/`degraded`, 72,670 rows and Granite availability |
+| `test_dashboard_carries_500_real_records` | the Next dashboard payload has exactly 500 hydrated records, model rank 1, products, universe 72,670 and held-out hits@500 22 |
 | `test_overview_shape` | headline model and baseline numbers are served from artefacts, not hard-coded in the frontend |
 | `test_vulnerabilities_pagination_and_filters` | paging, sorting and severity/EPSS filters return consistent counts |
 | `test_invalid_query_parameters_rejected` | page 0, oversized pages and unknown sorts return 422 |
@@ -49,7 +50,7 @@ counts are from the final post-correction artefacts.
 | `test_export_and_top500` | `/api/export` returns CSV of the requested length; `/api/top500` returns exactly 500 ids |
 | `test_similar_timeline_and_products` | similarity excludes the query CVE and stays in cosine range; timeline returns the CVE; product pagination works |
 | `test_patch_optimizer` | all four strategies return exactly the requested budget and an overlap matrix |
-| `test_granite_analysis_and_chat` | analysis labels `generative_model: null`, returns grounded extraction and analogs; chat is retrieval-grounded and cites the CVE |
+| `test_granite_analysis_and_chat` | analysis labels `generative_model: null`; the suite disables local generation so chat stays retrieval-grounded and cites the CVE. Live local generation is verified separately. |
 
 ## HTTP smoke test
 
@@ -66,7 +67,7 @@ A real uvicorn process was started on a free port and queried over TCP after the
 200  /api/products/{vendor}/vulnerabilities
 200  /api/patch-optimizer         four 20-item queues + overlap
 200  /api/granite/analyze         deterministic DNA + Granite analogs
-200  /api/granite/chat            grounded answer, generative_model=null
+200  /api/granite/chat            source=granite-generative, provider=local llama.cpp
 200  /api/model/performance       held-out rows + selection + permutation importance
 200  /api/discoveries             9 findings
 200  /api/rankings                ranked slice
@@ -88,9 +89,10 @@ an endpoint that serves CSV by design. The endpoint was correct; the harness was
   2025-12-29), so no test can assert 2026 accuracy. Only judges can score the submission.
 - **They do not prove generalisation.** Held-out performance is measured in `MODEL_EVALUATION.md` with
   bootstrap intervals; the unit tests check mechanics, not predictive quality.
-- **They do not check rendering.** No Chrome binary was available. The dashboard is verified by a
-  successful TypeScript build, Vite output and HTTP responses from the served bundle. Nobody clicked
-  through every control in a real browser; that remains a manual pre-recording step.
+- **They do not check click-level rendering.** No Chrome binary was available. The Next.js app is
+  verified by type-check, production build, live SSR responses and API contract tests. Nobody clicked
+  through every control in a real browser; that remains a manual pre-recording step. The integrated
+  frontend evidence is in `FRONTEND_TEST_REPORT.md`.
 - **They do not benchmark latency.** The API answers in well under a second on this machine for the
   endpoints exercised, but no load or concurrency test was run.
 
@@ -100,5 +102,8 @@ an endpoint that serves CSV by design. The endpoint was correct; the harness was
   artefact is absent, so the suite is runnable before the embedding step.
 - All artefact-dependent tests read from `artifacts/`. Run `python run_all.py` (or the individual
   stages) before the suite on a clean checkout.
-- Frontend verification is `npm ci && npm run build`; there is no separate frontend unit-test harness
-  in this submission.
+- `python setup_local_ai.py` installs the optional local Granite 2B chat model. The test suite sets
+  `LOCAL_GRANITE_DISABLED=1` so the API contract stays deterministic regardless of that server.
+- Frontend verification is `cd app && npm install && npm run typecheck && npm run build`; there is no
+  separate frontend unit-test harness in this submission. Live route checks are recorded in
+  `FRONTEND_TEST_REPORT.md`.

@@ -26,10 +26,10 @@ bash start.sh          # macOS / Linux / Git Bash
 start.bat              # Windows cmd / PowerShell
 ```
 
-It checks that the model artefacts exist, builds the dashboard if `web/dist` is missing, then serves
-the API and UI from one process at <http://127.0.0.1:8000>. If artefacts are missing it tells you to
-run the pipeline first: `python run_all.py` reproduces every artefact from the raw CSVs (add
-`--skip-granite` to skip the ~23-minute embedding stage).
+It checks that the model artefacts exist, installs/builds the Next.js app if needed, starts FastAPI
+on <http://127.0.0.1:8000> and the primary UI on <http://127.0.0.1:3000>. If artefacts are missing it
+tells you to run the pipeline first: `python run_all.py` reproduces every artefact from the raw CSVs
+(add `--skip-granite` to skip the ~23-minute embedding stage).
 
 Manual equivalent:
 
@@ -40,6 +40,10 @@ python -m pipeline.features         # cohorts   -> 73 features, as-of monthly pr
 python -m models.train              # selection -> artifacts/model.joblib
 python -m models.predict            # score 2026 -> top500.csv
 python -m uvicorn api.main:app --port 8000
+
+# second terminal
+cd app && npm install && npm run build
+API_BASE=http://127.0.0.1:8000 npm start   # http://127.0.0.1:3000
 ```
 
 Stages run as modules (`-m`) because they import one another: the script form fails with
@@ -52,16 +56,54 @@ pip install -r requirements-granite.txt
 python -m models.granite_embed      # ~23 min on CPU, no account or API key needed
 ```
 
+### Run the generative AI
+
+The assistant has three levels, in this order:
+
+1. **watsonx.ai Granite** when `WATSONX_API_KEY` and `WATSONX_PROJECT_ID` are set.
+2. **Local Granite 2B** through llama.cpp when `local_ai/` is installed.
+3. **Grounded retrieval** when neither is available.
+
+For the no-account local option on Windows x64:
+
+```bash
+python setup_local_ai.py     # one-time ~1.3 GB download
+bash start.sh                # starts llama.cpp + FastAPI + Next
+```
+
+`start.sh` launches `local_ai/runtime/llama-server.exe` on port 8081 with the Q3_K_M
+`granite-3.3-2b-instruct` model, then starts the API and UI. Budget about 2 GB of free RAM for the
+local model. On this CPU it generates roughly 20 tokens/second after a one-time model load.
+
+For the hosted 8B model instead (or as the preferred provider), create a watsonx.ai project and
+set its credentials before starting:
+
+```bash
+cp .env.example .env
+# edit .env
+# WATSONX_API_KEY=...
+# WATSONX_PROJECT_ID=...
+# WATSONX_MODEL_ID=ibm/granite-3-3-8b-instruct
+bash start.sh
+```
+
+`WATSONX_URL` defaults to `https://us-south.ml.cloud.ibm.com`; change it for another region.
+The browser never sees credentials. Every provider receives only the retrieved evidence, and the
+API falls back to the grounded answer if generation fails. Check the active provider at
+<http://127.0.0.1:8000/api/granite/status>.
+
 ## What you get
 
 - **`top500.csv`** — the deliverable.
-- **Dashboard** (`/`) — overview, searchable ranked table, per-CVE evidence panel, model performance
-  page, discovery cards, and a walkthrough of the monitoring workflow.
-- **REST API** (`/docs`) — every page is a thin client of it: `/api/vulnerabilities`,
-  `/api/vulnerabilities/{cve}`, `/api/rankings`, `/api/top500`, `/api/export`,
-  `/api/model/performance`, `/api/discoveries`, `/api/explanations/{cve}`, `/api/overview`,
-  `/api/vulnerabilities/{cve}/similar`, `/api/vulnerabilities/{cve}/timeline`, `/api/products`,
-  `/api/patch-optimizer`, `/api/granite/analyze`, `/api/granite/chat` and `/api/granite/status`.
+- **Next.js dashboard** (`app/`, <http://127.0.0.1:3000>) — the primary UI. Command centre,
+  full 72,670-row explorer, per-CVE investigation with Granite evidence and analogs, patch
+  optimizer, discovery lab, product exposure, model lab, risk trends, remediation board, CSV
+  validation and grounded analyst chat.
+- **REST API** (`/docs`) — every screen is a thin client: `/api/dashboard`,
+  `/api/vulnerabilities`, `/api/vulnerabilities/{cve}`, `/api/vulnerabilities/{cve}/similar`,
+  `/api/vulnerabilities/{cve}/timeline`, `/api/products`, `/api/products/{vendor}/vulnerabilities`,
+  `/api/patch-optimizer`, `/api/model/performance`, `/api/discoveries`, `/api/top500`,
+  `/api/export`, `/api/granite/analyze`, `/api/granite/chat` and `/api/granite/status`.
 - **Artefacts** — `artifacts/ranked_2026.parquet` (all 72,670 rows with score, rank and reasons),
   `full_rankings.csv`, `submission_summary.json`, plus every evaluation table quoted below.
 
@@ -137,7 +179,7 @@ pipeline/             prepare_data, features, discoveries, audit
 models/               train, predict, granite_embed
 eval/                 backtest (baselines), gap (blind spot), granite_ablation
 api/                  FastAPI service + static mount for the built dashboard
-web/                  Vite + React + TypeScript + Recharts dashboard
+app/                  Next.js 15 + React 19 + Tailwind 4 + Recharts dashboard (primary UI)
 tests/                pytest suite (pipeline invariants, API contract, submission format)
 artifacts/            generated tables, model bundle, ranked output
 docs/                 methodology, audit, discoveries, evaluation, IBM, limitations, test report
@@ -146,7 +188,7 @@ docs/                 methodology, audit, discoveries, evaluation, IBM, limitati
 ## Tests
 
 ```bash
-.venv/Scripts/python.exe -m pytest -q      # 22 passed
+.venv/Scripts/python.exe -m pytest -q      # 23 passed
 ```
 
 Covers label construction (no future leakage), feature as-of integrity, the Granite temporal
@@ -157,9 +199,10 @@ See [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md).
 ## Verify it yourself
 
 ```bash
-.venv/Scripts/python.exe -m pytest -q        # 22 passed: label, as-of integrity, submission format, API, new product surfaces
-bash start.sh                                # API + dashboard on http://127.0.0.1:8000
+.venv/Scripts/python.exe -m pytest -q        # 23 passed: label, as-of integrity, submission format, dashboard, API, new product surfaces
+bash start.sh                                # API :8000 + Next UI :3000
 curl -s http://127.0.0.1:8000/api/health     # {"status":"ok","rows":72670,"granite":true}
+curl -s http://127.0.0.1:3000/api/top500 | wc -l   # 501 lines: header + 500 ids
 ```
 
 `top500.csv` is the file that gets scored. Its invariants are executable: 500 unique ids, one column,
@@ -173,8 +216,11 @@ every id present in `scoreboard_2026.csv`. The submitted file's md5 is
 - 52 positives is a small held-out pool; bootstrap intervals are wide and we report them everywhere.
 - KEV is US-centric and lagging; a CVE exploited only in the wild without CISA confirmation is
   invisible to this model.
-- The dashboard is verified by build and HTTP responses, not by browser automation (no browser was
-  available in this environment).
+- The dashboard is verified by type-check, production build, live SSR/API requests and endpoint
+  assertions. No Chrome/Chromium binary was available for browser automation, so click-level
+  interaction and visual regression testing were not executed.
+- The Granite artefact is an embedding model. There is no hosted generative instruct model, so
+  analyst answers are deterministic grounded retrieval and are labelled as such.
 
 Full list in [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md).
 
@@ -188,7 +234,10 @@ Full list in [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md).
 | [`docs/DISCOVERIES.md`](docs/DISCOVERIES.md) | nine findings with confidence intervals |
 | [`docs/MODEL_EVALUATION.md`](docs/MODEL_EVALUATION.md) | selection table, held-out results, blind spot |
 | [`docs/IBM_INTEGRATION.md`](docs/IBM_INTEGRATION.md) | Granite usage and measured contribution |
-| [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md) | what was executed and what it proves |
+| [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md) | ML/API test history and evidence |
+| [`FRONTEND_INTEGRATION.md`](FRONTEND_INTEGRATION.md) | how the teammate app was integrated, conflicts and decisions |
+| [`FRONTEND_FEATURE_PARITY.md`](FRONTEND_FEATURE_PARITY.md) | feature-by-feature delivery matrix and unavailable states |
+| [`FRONTEND_TEST_REPORT.md`](FRONTEND_TEST_REPORT.md) | integrated build, API, SSR and export checks |
 | [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md) | threats to validity |
 | [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) | timed 3-minute demo shot list, cuts and Q&A prep |
 | [`docs/COMPLETION_REPORT.md`](docs/COMPLETION_REPORT.md) | requirement-by-requirement status with evidence and known gaps |

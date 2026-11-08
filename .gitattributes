@@ -1,0 +1,8 @@
+# Keep line endings consistent between Windows and Mac/Linux teammates.
+* text=auto
+*.py text eol=lf
+*.md text eol=lf
+*.csv text eol=lf
+*.json text eol=lf
+# The official submission is byte-sensitive; preserve its CRLF bytes.
+top500.csv -text
