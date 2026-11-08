@@ -1,12 +1,12 @@
 {
   "name": "patch-me-if-you-can",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
-    "data": "node scripts/build-dataset.mjs",
-    "dev": "next dev",
+    "dev": "next dev -p 3000",
     "build": "next build",
-    "start": "next start"
+    "start": "next start -p 3000",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "next": "^15.5.4",

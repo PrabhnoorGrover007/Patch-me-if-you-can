@@ -1,98 +1,140 @@
-"""Unit tests for the pipeline helpers. They use tiny hand-made tables, so no raw data is needed.
+"""Data + ML tests. These run against the real artefacts, not mocks."""
+from __future__ import annotations
 
-Run from the repo root (PowerShell):
-    python -m unittest discover -s tests -v
-"""
-import sys
-import unittest
+import json
 from pathlib import Path
 
+import joblib
 import numpy as np
 import pandas as pd
+import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+ROOT = Path(__file__).resolve().parents[1]
+ART = ROOT / "artifacts"
+DATA = ROOT / "data"
 
-import prepare_data as pdp  # noqa: E402
-from model import hits_at_k  # noqa: E402
-
-
-class LabelRuleTest(unittest.TestCase):
-    def test_label_needs_kev_after_cutoff_and_before_label_cutoff(self):
-        cutoff = pd.Series(pd.to_datetime(["2024-03-31"] * 4))
-        added = pd.Series(pd.to_datetime(["2024-03-31", "2024-04-01", "2025-12-31", None]))
-        # on the cutoff day -> already known, 0; day after -> 1; last KEV day -> 1; never -> 0
-        self.assertEqual(pdp.make_label(added, cutoff).tolist(), [0, 1, 1, 0])
-
-    def test_month_end_is_last_calendar_day(self):
-        ends = pdp.month_end(pd.Series(["2024-02", "2025-03", "2025-12"]))
-        self.assertEqual([d.strftime("%Y-%m-%d") for d in ends], ["2024-02-29", "2025-03-31", "2025-12-31"])
+FORBIDDEN = {"nvd_status", "n_references", "n_affected_cpes", "last_modified", "has_cvss3"}
+FEATURES = json.loads((ART / "feature_meta.json").read_text())["features"] if (ART / "feature_meta.json").exists() else []
 
 
-class PointInTimeTest(unittest.TestCase):
-    def test_prior_count_only_counts_strictly_earlier_kev_additions(self):
-        dates = {"acme": np.array(pd.to_datetime(["2024-01-15", "2024-03-01", "2024-05-20"]).values)}
-        cutoffs = pd.to_datetime(["2024-01-01", "2024-03-01", "2024-06-01"]).values
-        out = pdp.prior_count(dates, ["acme", "acme", "acme"], cutoffs)
-        self.assertEqual(out.tolist(), [0, 1, 3])  # an addition ON the month start is not counted
-
-    def test_unknown_key_counts_zero(self):
-        out = pdp.prior_count({}, ["nobody"], pd.to_datetime(["2024-01-01"]).values)
-        self.assertEqual(out.tolist(), [0])
+def test_source_files_present():
+    for name in ["vulnerabilities.csv", "affected_products.csv", "references.csv", "known_exploited.csv",
+                 "exploit_signals_2024.csv", "exploit_signals_2025.csv", "weakness_types.csv",
+                 "scoreboard_2026.csv"]:
+        assert (DATA / name).exists(), f"missing source file {name}"
 
 
-class FeatureTest(unittest.TestCase):
-    def test_keyword_flags(self):
-        df = pd.DataFrame({"description": [
-            "Unauthenticated remote code execution in the SSL VPN gateway.",
-            "Stored cross-site scripting in the Foo plugin for WordPress.",
-            None,
-        ]})
-        df = pdp.add_keyword_features(df)
-        self.assertEqual(df.loc[0, ["kw_rce", "kw_unauthenticated", "kw_edge_device", "kw_xss"]].tolist(), [1, 1, 1, 0])
-        self.assertEqual(df.loc[1, ["kw_xss", "kw_wordpress", "kw_rce"]].tolist(), [1, 1, 0])
-        self.assertEqual(df.loc[2, "desc_length"], 0)
-
-    def test_cvss_falls_back_to_v4_then_constant_without_missing_flag(self):
-        df = pd.DataFrame({
-            "cvss3_score": ["9.8", None, None],
-            "cvss4_score": [None, "8.7", None],
-            "attack_vector": ["NETWORK", None, None],
-            "privileges_required": ["NONE", None, None],
-            "user_interaction": ["REQUIRED", None, None],
-            "cvss4_vector": [None, "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N", None],
-        })
-        df = pdp.add_cvss_features(df)
-        self.assertEqual(df["cvss_score"].tolist(), [9.8, 8.7, pdp.CVSS_FILL_VALUE])
-        self.assertEqual(df["cvss_network"].tolist(), [1, 1, 0])
-        self.assertEqual(df["cvss_no_user_interaction"].tolist(), [0, 1, 0])
-        self.assertFalse(any("missing" in c for c in df.columns if c.startswith("cvss")))
-
-    def test_epss_percentile_is_within_month_and_missing_is_zero(self):
-        df = pd.DataFrame({
-            "snapshot_month": ["2024-05", "2024-05", "2025-05", "2025-05", "2025-05"],
-            "epss": [0.001, 0.002, 0.01, 0.02, np.nan],
-            "published": pd.to_datetime(["2024-05-01"] * 2 + ["2025-05-01"] * 3),
-            "snapshot_end": pd.to_datetime(["2024-05-31"] * 2 + ["2025-05-31"] * 3),
-            **{c: [0, 1, 0, 0, None] for c in pdp.FLAG_COLUMNS},
-        })
-        df = pdp.add_signal_features(df)
-        self.assertEqual(df["epss_pct_in_month"].tolist(), [0.5, 1.0, 0.5, 1.0, 0.0])
-        self.assertEqual(df["epss_missing"].tolist(), [0, 0, 0, 0, 1])
-        self.assertEqual(df["epss_v4"].tolist(), [0, 0, 1, 1, 1])
-        self.assertEqual(df["n_exploit_sources"].tolist(), [0, 4, 0, 0, 0])
-
-    def test_no_banned_column_is_a_feature(self):
-        self.assertFalse(pdp.BANNED_COLUMNS & set(pdp.FEATURE_COLUMNS))
-        self.assertNotIn("label", pdp.FEATURE_COLUMNS)
+def test_scoreboard_size_and_filter():
+    sb = pd.read_parquet(ART / "scoreboard.parquet")
+    assert len(sb) == 72_670
+    assert sb["cve_id"].is_unique
+    assert sb["published"].between("2026-01-01", "2026-09-30").all()
+    expected_end = pd.to_datetime(sb["snapshot_month"] + "-01") + pd.offsets.MonthEnd(0)
+    assert (sb["snapshot_end"] == expected_end).all()
 
 
-class MetricTest(unittest.TestCase):
-    def test_hits_at_k(self):
-        y = [0, 1, 0, 1, 1]
-        score = [0.9, 0.8, 0.7, 0.1, 0.2]
-        self.assertEqual(hits_at_k(y, score, 2), 1)
-        self.assertEqual(hits_at_k(y, score, 5), 3)
+def test_kev_never_used_as_feature():
+    train = pd.read_parquet(ART / "train.parquet")
+    for col in FORBIDDEN:
+        assert col not in train.columns, f"leak-prone column {col} present in model table"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_labels_only_count_future_additions():
+    train = pd.read_parquet(ART / "train.parquet")
+    pos = train[train["label_any"] == 1]
+    assert (pos["days_to_kev"] > 0).all(), "a positive label was added before/at the snapshot"
+    # The benchmark excludes CVEs that were already on KEV at snapshot time. A missing monthly
+    # signal row used to admit 14 such rows because in_kev was filled with zero.
+    assert not (train["days_to_kev"].notna() & (train["days_to_kev"] <= 0)).any(), \
+        "an already-exploited CVE leaked into the candidate cohort"
+
+
+def test_top500_matches_model_order():
+    ranked = pd.read_parquet(ART / "ranked_2026.parquet")
+    top = pd.read_csv(ROOT / "top500.csv")
+    assert top["cve_id"].tolist() == ranked.head(500)["cve_id"].tolist()
+    assert ranked.head(500)["risk_score"].is_monotonic_decreasing
+
+
+def test_train_predict_feature_parity():
+    train = pd.read_parquet(ART / "train.parquet")
+    predict = pd.read_parquet(ART / "predict.parquet")
+    assert len(predict) == 72_670
+    missing_train = [f for f in FEATURES if f not in train.columns]
+    missing_pred = [f for f in FEATURES if f not in predict.columns]
+    assert not missing_train, f"features missing from train: {missing_train}"
+    assert not missing_pred, f"features missing from predict: {missing_pred}"
+    for f in FEATURES:
+        assert str(train[f].dtype) == str(predict[f].dtype), f"dtype mismatch on {f}"
+
+
+def test_granite_features_are_asof():
+    path = ART / "granite_features.parquet"
+    if not path.exists():
+        pytest.skip("Granite stage not run")
+    g = pd.read_parquet(path)
+    assert g["cve_id"].is_unique
+    assert g["split"].isin(["train", "predict"]).all()
+    vals = g["granite_knn_max"].dropna()
+    assert len(vals) > 0, "granite feature column is entirely missing"
+    assert np.isfinite(vals).all(), "non-finite cosine similarity"
+    # float32 matmul on bf16-derived vectors can drift a few thousandths past 1.0
+    assert float(vals.max()) <= 1.02 and float(vals.min()) >= -1.02, "cosine similarity out of range"
+
+
+def test_top500_format():
+    p = ROOT / "top500.csv"
+    if not p.exists():
+        pytest.skip("submission not generated yet")
+    lines = p.read_text().strip().splitlines()
+    assert lines[0].strip() == "cve_id", "top500.csv must have exactly one column named cve_id"
+    ids = lines[1:]
+    assert len(ids) == 500
+    assert len(set(ids)) == 500
+    board = set(pd.read_csv(DATA / "scoreboard_2026.csv", usecols=["cve_id"])["cve_id"])
+    assert set(ids) <= board, "top500.csv contains ids outside the 2026 scoreboard"
+
+
+def test_ranked_table_integrity():
+    df = pd.read_parquet(ART / "ranked_2026.parquet")
+    assert len(df) == 72_670
+    assert df["cve_id"].is_unique
+    assert df["rank"].is_unique and df["rank"].min() == 1 and df["rank"].max() == len(df)
+    assert df["risk_score"].between(0, 1).all()
+    assert df["risk_score"].notna().all()
+
+
+def test_model_is_deterministic_and_loadable():
+    path = ART / "model.joblib"
+    if not path.exists():
+        pytest.skip("model not trained")
+    bundle = joblib.load(path)
+    predict = pd.read_parquet(ART / "predict.parquet").head(200)
+    gp = ART / "granite_features.parquet"
+    if gp.exists():  # granite columns are merged at load time, not stored in predict.parquet
+        gf = pd.read_parquet(gp)
+        predict = predict.merge(
+            gf[gf["split"] == "predict"][["cve_id", "granite_knn_max", "granite_knn_mean5"]],
+            on="cve_id", how="left")
+    for name, model in bundle["models"].items():
+        feats = bundle["feature_sets"][name]
+        a = model.predict_proba(predict[feats])[:, 1]
+        b = model.predict_proba(predict[feats])[:, 1]
+        assert np.allclose(a, b), f"{name} is not deterministic"
+        assert np.isfinite(a).all()
+
+
+def test_discoveries_have_intervals():
+    d = json.loads((ART / "discoveries.json").read_text())
+    assert len(d["discoveries"]) >= 6
+    with_ci = []
+    for item in d["discoveries"]:
+        assert item["finding"]
+        assert item["n"] > 0
+        chart = item.get("chart") or {}
+        if chart.get("ci_low"):
+            with_ci.append(item)
+            assert len(chart["ci_low"]) == len(chart["y"]) == len(chart["ci_high"]), \
+                f"{item['id']}: CI length mismatch"
+            assert all(lo <= v <= hi for lo, v, hi in zip(chart["ci_low"], chart["y"], chart["ci_high"]))
+    assert len(with_ci) >= 6, "too few discoveries carry confidence intervals"

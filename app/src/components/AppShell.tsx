@@ -7,11 +7,21 @@ import { useChat } from "./ChatProvider";
 
 const TABS = [
   { href: "/", label: "Dashboard" },
+  { href: "/explorer", label: "Explorer" },
+  { href: "/patch", label: "20-Patch challenge" },
+  { href: "/discoveries", label: "Discoveries" },
+  { href: "/model", label: "Model lab" },
+  { href: "/products", label: "Products" },
+  { href: "/intelligence", label: "Investigation" },
   { href: "/analytics", label: "Risk trends" },
   { href: "/queue", label: "Remediation" },
   { href: "/upload", label: "Upload" },
   { href: "/chat", label: "Chat" },
 ];
+
+function isActive(pathname: string, href: string) {
+  return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -19,7 +29,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-40 border-b border-[rgba(212,175,55,0.25)] bg-[rgba(253,248,238,0.88)] backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-[rgba(212,175,55,0.25)] bg-[rgba(253,248,238,0.9)] backdrop-blur-md">
         <div className="mx-auto w-full max-w-[1600px] px-5 sm:px-6">
           <div className="flex items-center justify-between gap-4 py-3.5">
             <Link href="/" className="flex items-center gap-3">
@@ -37,8 +47,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
             </Link>
 
             <div className="flex items-center gap-3">
-              <span className="hidden text-[12px] leading-tight text-muted md:block md:max-w-[220px]">
-                Ranked top 500 · AI on demand
+              <span className="hidden text-[12px] leading-tight text-muted md:block md:max-w-[230px]">
+                Ranked top 500 · grounded in the real evidence
               </span>
               <button onClick={() => openChat(null)} className="btn btn-primary">
                 <span aria-hidden>✦</span> Ask AI
@@ -48,12 +58,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
           <nav className="-mb-px flex items-center gap-1 overflow-x-auto">
             {TABS.map((tab) => {
-              const active = pathname === tab.href;
+              const active = isActive(pathname, tab.href);
               return (
                 <Link
                   key={tab.href}
                   href={tab.href}
-                  className={`relative whitespace-nowrap px-3.5 py-2.5 text-[13.5px] transition-colors ${
+                  className={`relative whitespace-nowrap px-3 py-2.5 text-[13px] transition-colors ${
                     active ? "text-ink" : "text-muted hover:text-ink"
                   }`}
                 >
@@ -75,10 +85,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
       <footer className="mx-auto w-full max-w-[1600px] px-5 pb-8 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[rgba(212,175,55,0.25)] pt-4 text-[11.5px] text-muted">
           <span>
-            Risk score is a prioritisation rank, not a calibrated probability. Signals are limited to
-            what was known at each snapshot month.
+            Priority is a ranking signal, not a calibrated probability. Signals are limited to what
+            was known at each snapshot month.
           </span>
-          <span className="mono uppercase tracking-[0.12em]">NIST · CISA KEV · EPSS · AI analyst</span>
+          <span className="mono uppercase tracking-[0.12em]">
+            NIST · CISA KEV · EPSS · IBM Granite
+          </span>
         </div>
       </footer>
     </div>

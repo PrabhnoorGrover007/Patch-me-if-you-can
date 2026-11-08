@@ -1,0 +1,464 @@
+{
+  "protocol": "2024 out-of-fold selection, Jan-Sep 2025 held-out confirmation, final refit on 2024-2025, 2026 untouched",
+  "label": "KEV added after end of snapshot month (observed to 2025-12-29)",
+  "train_rows": 87907,
+  "train_positives": 122,
+  "granite_available": true,
+  "selection": {
+    "histgb_full": {
+      "features": 71,
+      "feature_set": "full",
+      "oof_2024": {
+        "hits@500": 25,
+        "hits@100": 11,
+        "candidates": 39868,
+        "positives": 67
+      }
+    },
+    "histgb_lean": {
+      "features": 70,
+      "feature_set": "lean",
+      "oof_2024": {
+        "hits@500": 29,
+        "hits@100": 13,
+        "candidates": 39868,
+        "positives": 67
+      }
+    },
+    "histgb_deep": {
+      "features": 71,
+      "feature_set": "full",
+      "oof_2024": {
+        "hits@500": 24,
+        "hits@100": 10,
+        "candidates": 39868,
+        "positives": 67
+      }
+    },
+    "logit_core": {
+      "features": 26,
+      "feature_set": "core",
+      "oof_2024": {
+        "hits@500": 21,
+        "hits@100": 10,
+        "candidates": 39868,
+        "positives": 67
+      }
+    },
+    "logit_core_reg": {
+      "features": 26,
+      "feature_set": "core",
+      "oof_2024": {
+        "hits@500": 23,
+        "hits@100": 11,
+        "candidates": 39868,
+        "positives": 67
+      }
+    },
+    "histgb_lean_g": {
+      "features": 72,
+      "feature_set": "lean_g",
+      "oof_2024": {
+        "hits@500": 29,
+        "hits@100": 14,
+        "candidates": 39868,
+        "positives": 67
+      }
+    },
+    "logit_core_g": {
+      "features": 28,
+      "feature_set": "core_g",
+      "oof_2024": {
+        "hits@500": 23,
+        "hits@100": 10,
+        "candidates": 39868,
+        "positives": 67
+      }
+    }
+  },
+  "blends": [
+    {
+      "pair": "histgb_full+logit_core",
+      "w_b": 0.0,
+      "hits@500": 25,
+      "hits@100": 11
+    },
+    {
+      "pair": "histgb_full+logit_core",
+      "w_b": 0.2,
+      "hits@500": 28,
+      "hits@100": 14
+    },
+    {
+      "pair": "histgb_full+logit_core",
+      "w_b": 0.35,
+      "hits@500": 26,
+      "hits@100": 14
+    },
+    {
+      "pair": "histgb_full+logit_core",
+      "w_b": 0.5,
+      "hits@500": 26,
+      "hits@100": 14
+    },
+    {
+      "pair": "histgb_full+logit_core",
+      "w_b": 0.65,
+      "hits@500": 26,
+      "hits@100": 14
+    },
+    {
+      "pair": "histgb_full+logit_core",
+      "w_b": 0.8,
+      "hits@500": 26,
+      "hits@100": 14
+    },
+    {
+      "pair": "histgb_full+logit_core",
+      "w_b": 1.0,
+      "hits@500": 21,
+      "hits@100": 10
+    },
+    {
+      "pair": "histgb_lean_g+logit_core_g",
+      "w_b": 0.0,
+      "hits@500": 29,
+      "hits@100": 14
+    },
+    {
+      "pair": "histgb_lean_g+logit_core_g",
+      "w_b": 0.2,
+      "hits@500": 27,
+      "hits@100": 16
+    },
+    {
+      "pair": "histgb_lean_g+logit_core_g",
+      "w_b": 0.35,
+      "hits@500": 26,
+      "hits@100": 17
+    },
+    {
+      "pair": "histgb_lean_g+logit_core_g",
+      "w_b": 0.5,
+      "hits@500": 27,
+      "hits@100": 17
+    },
+    {
+      "pair": "histgb_lean_g+logit_core_g",
+      "w_b": 0.65,
+      "hits@500": 26,
+      "hits@100": 17
+    },
+    {
+      "pair": "histgb_lean_g+logit_core_g",
+      "w_b": 0.8,
+      "hits@500": 26,
+      "hits@100": 16
+    },
+    {
+      "pair": "histgb_lean_g+logit_core_g",
+      "w_b": 1.0,
+      "hits@500": 23,
+      "hits@100": 10
+    },
+    {
+      "pair": "histgb_lean+logit_core_g",
+      "w_b": 0.0,
+      "hits@500": 29,
+      "hits@100": 13
+    },
+    {
+      "pair": "histgb_lean+logit_core_g",
+      "w_b": 0.2,
+      "hits@500": 29,
+      "hits@100": 15
+    },
+    {
+      "pair": "histgb_lean+logit_core_g",
+      "w_b": 0.35,
+      "hits@500": 28,
+      "hits@100": 16
+    },
+    {
+      "pair": "histgb_lean+logit_core_g",
+      "w_b": 0.5,
+      "hits@500": 27,
+      "hits@100": 17
+    },
+    {
+      "pair": "histgb_lean+logit_core_g",
+      "w_b": 0.65,
+      "hits@500": 27,
+      "hits@100": 17
+    },
+    {
+      "pair": "histgb_lean+logit_core_g",
+      "w_b": 0.8,
+      "hits@500": 26,
+      "hits@100": 18
+    },
+    {
+      "pair": "histgb_lean+logit_core_g",
+      "w_b": 1.0,
+      "hits@500": 23,
+      "hits@100": 10
+    }
+  ],
+  "selected_blend": {
+    "pair": "histgb_lean+logit_core_g",
+    "w_b": 0.8,
+    "hits@500": 26,
+    "hits@100": 18
+  },
+  "selection_rule": {
+    "oof_metric": "hits@500 on 2024 out-of-fold scores",
+    "granite_preference": "a Granite configuration within 2 hits@500 of the best OOF score is preferred, because IBM technology use is a competition requirement; the preference is applied on the selection metric only, and the held-out result of both configurations is reported",
+    "granite_preference_applied": true
+  },
+  "heldout_2025": {
+    "positives": 52,
+    "rows": [
+      {
+        "model": "cvss3_first",
+        "n_candidates": 35280,
+        "positives": 52,
+        "precision@50": 0.06,
+        "precision@100": 0.04,
+        "precision@250": 0.02,
+        "precision@500": 0.01,
+        "hits@500": 5,
+        "recall@500": 0.09615,
+        "average_precision": 0.00635,
+        "roc_auc": 0.73215,
+        "bootstrap_hits@500": {
+          "mean": 5.92,
+          "p2.5": 2,
+          "p97.5": 11,
+          "n": 1000
+        }
+      },
+      {
+        "model": "epss_first",
+        "n_candidates": 35280,
+        "positives": 52,
+        "precision@50": 0.06,
+        "precision@100": 0.04,
+        "precision@250": 0.032,
+        "precision@500": 0.016,
+        "hits@500": 8,
+        "recall@500": 0.15385,
+        "average_precision": 0.03092,
+        "roc_auc": 0.70726,
+        "bootstrap_hits@500": {
+          "mean": 8.0,
+          "p2.5": 3,
+          "p97.5": 14,
+          "n": 1000
+        }
+      },
+      {
+        "model": "poc_then_epss",
+        "n_candidates": 35280,
+        "positives": 52,
+        "precision@50": 0.08,
+        "precision@100": 0.08,
+        "precision@250": 0.06,
+        "precision@500": 0.036,
+        "hits@500": 18,
+        "recall@500": 0.34615,
+        "average_precision": 0.04712,
+        "roc_auc": 0.76803,
+        "bootstrap_hits@500": {
+          "mean": 18.32,
+          "p2.5": 10,
+          "p97.5": 27,
+          "n": 1000
+        }
+      },
+      {
+        "model": "histgb_lean",
+        "n_candidates": 35280,
+        "positives": 52,
+        "precision@50": 0.14,
+        "precision@100": 0.09,
+        "precision@250": 0.052,
+        "precision@500": 0.034,
+        "hits@500": 17,
+        "recall@500": 0.32692,
+        "average_precision": 0.06029,
+        "roc_auc": 0.8342,
+        "bootstrap_hits@500": {
+          "mean": 16.91,
+          "p2.5": 9,
+          "p97.5": 25,
+          "n": 1000
+        }
+      },
+      {
+        "model": "logit_core_g",
+        "n_candidates": 35280,
+        "positives": 52,
+        "precision@50": 0.08,
+        "precision@100": 0.09,
+        "precision@250": 0.06,
+        "precision@500": 0.04,
+        "hits@500": 20,
+        "recall@500": 0.38462,
+        "average_precision": 0.05735,
+        "roc_auc": 0.83506,
+        "bootstrap_hits@500": {
+          "mean": 19.74,
+          "p2.5": 11,
+          "p97.5": 28,
+          "n": 1000
+        }
+      },
+      {
+        "model": "final_blend",
+        "n_candidates": 35280,
+        "positives": 52,
+        "precision@50": 0.24,
+        "precision@100": 0.14,
+        "precision@250": 0.064,
+        "precision@500": 0.044,
+        "hits@500": 22,
+        "recall@500": 0.42308,
+        "average_precision": 0.11916,
+        "roc_auc": 0.84779,
+        "bootstrap_hits@500": {
+          "mean": 21.73,
+          "p2.5": 13,
+          "p97.5": 31,
+          "n": 1000
+        }
+      }
+    ]
+  },
+  "permutation_importance": [
+    {
+      "feature": "epss_x_exploit",
+      "importance": 0.034919,
+      "std": 0.000646
+    },
+    {
+      "feature": "con_ord",
+      "importance": 0.010122,
+      "std": 0.021414
+    },
+    {
+      "feature": "desc_words",
+      "importance": 0.007957,
+      "std": 0.002832
+    },
+    {
+      "feature": "cvss3",
+      "importance": 0.005609,
+      "std": 0.005005
+    },
+    {
+      "feature": "nuclei",
+      "importance": 0.005359,
+      "std": 0.000424
+    },
+    {
+      "feature": "n_exploit_sources",
+      "importance": 0.00426,
+      "std": 3.3e-05
+    },
+    {
+      "feature": "epss_rank",
+      "importance": 0.003607,
+      "std": 0.006667
+    },
+    {
+      "feature": "pub_month",
+      "importance": 0.003101,
+      "std": 0.002681
+    },
+    {
+      "feature": "any_exploit",
+      "importance": 0.001644,
+      "std": 2.8e-05
+    },
+    {
+      "feature": "vendor_is_generic_cna",
+      "importance": 0.001459,
+      "std": 0.001604
+    },
+    {
+      "feature": "vendor_kev_n_log",
+      "importance": 0.000997,
+      "std": 0.002685
+    },
+    {
+      "feature": "pr_ord",
+      "importance": 0.000693,
+      "std": 0.001784
+    },
+    {
+      "feature": "kw_sqli",
+      "importance": 0.000547,
+      "std": 0.000405
+    },
+    {
+      "feature": "vendor_kev_rate",
+      "importance": 0.000272,
+      "std": 0.024906
+    },
+    {
+      "feature": "cvss3_sev_ord",
+      "importance": 0.000193,
+      "std": 0.001567
+    },
+    {
+      "feature": "av_ord",
+      "importance": 0.000106,
+      "std": 0.000117
+    },
+    {
+      "feature": "cvss2",
+      "importance": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "exploitdb",
+      "importance": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "metasploit",
+      "importance": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "poc_github",
+      "importance": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "vendor_unseen",
+      "importance": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "kw_cmd_injection",
+      "importance": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "kw_deserialization",
+      "importance": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "kw_use_after_free",
+      "importance": 0.0,
+      "std": 0.0
+    },
+    {
+      "feature": "kw_priv_esc",
+      "importance": 0.0,
+      "std": 0.0
+    }
+  ]
+}

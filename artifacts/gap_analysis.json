@@ -1,0 +1,77 @@
+{
+  "pool": "Jan-Sep 2025 (held-out)",
+  "candidates": 35280,
+  "positives": 52,
+  "model_top500_hits": 22,
+  "baseline_union_hits": 19,
+  "missed_by_all_baselines": 33,
+  "missed_but_recovered_by_model": 7,
+  "recovered_ids": [
+    "CVE-2024-53704",
+    "CVE-2024-54085",
+    "CVE-2025-2746",
+    "CVE-2025-2747",
+    "CVE-2025-9242",
+    "CVE-2025-24472",
+    "CVE-2025-41244"
+  ],
+  "overlap_with_baseline_union": 215,
+  "recovered_examples": [
+    {
+      "cve_id": "CVE-2024-53704",
+      "snapshot_month": "2025-01",
+      "cvss3": 9.8,
+      "epss": 0.0004299999854993075,
+      "vendor_key": "sonicwall",
+      "cwe_ids": "CWE-287"
+    },
+    {
+      "cve_id": "CVE-2024-54085",
+      "snapshot_month": "2025-03",
+      "cvss3": 9.8,
+      "epss": 0.0010000000474974513,
+      "vendor_key": "ami",
+      "cwe_ids": "CWE-290"
+    },
+    {
+      "cve_id": "CVE-2025-2746",
+      "snapshot_month": "2025-03",
+      "cvss3": 9.8,
+      "epss": 0.001180000021122396,
+      "vendor_key": "vulncheck",
+      "cwe_ids": "CWE-288"
+    },
+    {
+      "cve_id": "CVE-2025-2747",
+      "snapshot_month": "2025-03",
+      "cvss3": 9.8,
+      "epss": 0.001180000021122396,
+      "vendor_key": "vulncheck",
+      "cwe_ids": "CWE-288"
+    },
+    {
+      "cve_id": "CVE-2025-9242",
+      "snapshot_month": "2025-09",
+      "cvss3": 9.8,
+      "epss": 0.0029800001066178083,
+      "vendor_key": "cisaadp",
+      "cwe_ids": "CWE-787"
+    },
+    {
+      "cve_id": "CVE-2025-24472",
+      "snapshot_month": "2025-02",
+      "cvss3": 8.1,
+      "epss": 0.0004299999854993075,
+      "vendor_key": "fortinet",
+      "cwe_ids": "CWE-288"
+    },
+    {
+      "cve_id": "CVE-2025-41244",
+      "snapshot_month": "2025-09",
+      "cvss3": 7.8,
+      "epss": 0.00014000000373926014,
+      "vendor_key": "vmware",
+      "cwe_ids": "CWE-267"
+    }
+  ]
+}

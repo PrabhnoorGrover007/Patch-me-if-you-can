@@ -1,17 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { formatEpss, severityChipClass } from "@/lib/format";
 import type { Cve, Severity } from "@/lib/types";
-import { SeverityChip } from "./ui";
 
-const PAGE_SIZE = 25;
-
-type SortKey = "rank" | "risk" | "cvss" | "epss" | "effort";
+type SortKey = "rank" | "priority" | "cvss" | "epss" | "effort";
 
 const SORTS: { key: SortKey; label: string }[] = [
   { key: "rank", label: "Model rank" },
-  { key: "risk", label: "Composite risk" },
+  { key: "priority", label: "Priority" },
   { key: "cvss", label: "CVSS" },
   { key: "epss", label: "EPSS" },
   { key: "effort", label: "Least effort" },
@@ -29,27 +26,24 @@ export default function CveTable({
   const [query, setQuery] = useState("");
   const [severity, setSeverity] = useState<"ALL" | Severity>("ALL");
   const [sort, setSort] = useState<SortKey>("rank");
-  const [page, setPage] = useState(0);
-
-  useEffect(() => setPage(0), [query, severity, sort]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const rows = cves.filter((c) => {
-      if (severity !== "ALL" && c.severity !== severity) return false;
+    const rows = cves.filter((cve) => {
+      if (severity !== "ALL" && cve.severity !== severity) return false;
       if (!q) return true;
       return (
-        c.cveId.toLowerCase().includes(q) ||
-        c.description.toLowerCase().includes(q) ||
-        c.keywords.some((k) => k.toLowerCase().includes(q)) ||
-        c.cwes.some((w) => w.name.toLowerCase().includes(q))
+        cve.cveId.toLowerCase().includes(q) ||
+        cve.description.toLowerCase().includes(q) ||
+        cve.keywords.some((keyword) => keyword.toLowerCase().includes(q)) ||
+        cve.cwes.some((cwe) => cwe.name.toLowerCase().includes(q))
       );
     });
 
     return [...rows].sort((a, b) => {
       switch (sort) {
-        case "risk":
-          return b.riskScore - a.riskScore;
+        case "priority":
+          return b.priorityScore - a.priorityScore;
         case "cvss":
           return (b.cvssScore ?? -1) - (a.cvssScore ?? -1);
         case "epss":
@@ -62,22 +56,20 @@ export default function CveTable({
     });
   }, [cves, query, severity, sort]);
 
-  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const current = Math.min(page, pages - 1);
-  const rows = filtered.slice(current * PAGE_SIZE, current * PAGE_SIZE + PAGE_SIZE);
+  const rows = filtered;
 
   return (
-    <div className="flex min-h-0 flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       <div className="flex flex-wrap items-center gap-2 border-b border-[#ece3d2] px-4 py-3">
         <input
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(event) => setQuery(event.target.value)}
           placeholder="Search CVE, wording or weakness…"
           className="input min-w-[200px] flex-1"
         />
         <select
           value={severity}
-          onChange={(e) => setSeverity(e.target.value as "ALL" | Severity)}
+          onChange={(event) => setSeverity(event.target.value as "ALL" | Severity)}
           className="input w-auto min-w-[130px]"
           aria-label="Filter by severity"
         >
@@ -90,20 +82,20 @@ export default function CveTable({
         </select>
         <select
           value={sort}
-          onChange={(e) => setSort(e.target.value as SortKey)}
+          onChange={(event) => setSort(event.target.value as SortKey)}
           className="input w-auto min-w-[150px]"
           aria-label="Sort rows"
         >
-          {SORTS.map((s) => (
-            <option key={s.key} value={s.key}>
-              {s.label}
+          {SORTS.map((option) => (
+            <option key={option.key} value={option.key}>
+              {option.label}
             </option>
           ))}
         </select>
       </div>
 
       <div className="min-h-0 flex-1 overflow-auto">
-        <table className="w-full border-collapse text-left">
+        <table className="w-full border-collapse text-left" aria-label="Top 500 vulnerability queue">
           <thead className="sticky top-0 z-10 bg-[#fbf6ec]">
             <tr className="mono text-[10px] uppercase tracking-[0.12em] text-muted">
               <th className="px-4 py-2.5 font-medium">#</th>
@@ -111,47 +103,49 @@ export default function CveTable({
               <th className="px-2 py-2.5 font-medium">Severity</th>
               <th className="px-2 py-2.5 text-right font-medium">CVSS</th>
               <th className="px-2 py-2.5 text-right font-medium">EPSS</th>
-              <th className="px-2 py-2.5 text-right font-medium">Risk</th>
+              <th className="px-2 py-2.5 text-right font-medium">Priority</th>
               <th className="px-2 py-2.5 text-right font-medium">Effort</th>
               <th className="px-3 py-2.5 font-medium">Signals</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((c) => {
-              const active = c.cveId === selectedId;
+            {rows.map((cve) => {
+              const active = cve.cveId === selectedId;
               return (
                 <tr
-                  key={c.cveId}
-                  onClick={() => onSelect(c.cveId)}
+                  key={cve.cveId}
+                  onClick={() => onSelect(cve.cveId)}
                   className={`cursor-pointer border-b border-[#f0e8d9] transition-colors ${
                     active ? "bg-[#f7f0e1]" : "row-hover"
                   }`}
                 >
-                  <td className="mono px-4 py-2.5 text-[12px] text-muted">{c.rank}</td>
+                  <td className="mono px-4 py-2.5 text-[12px] text-muted">{cve.rank}</td>
                   <td className="px-2 py-2.5">
-                    <span className="mono text-[12.5px] text-ink">{c.cveId}</span>
+                    <span className="mono text-[12.5px] text-ink">{cve.cveId}</span>
                     <span className="mt-0.5 block max-w-[340px] truncate text-[11.5px] text-muted">
-                      {c.description}
+                      {cve.description}
                     </span>
                   </td>
                   <td className="px-2 py-2.5">
-                    <span className={`chip ${severityChipClass[c.severity]}`}>{c.severity}</span>
+                    <span className={`chip ${severityChipClass[cve.severity]}`}>{cve.severity}</span>
                   </td>
                   <td className="mono px-2 py-2.5 text-right text-[12.5px]">
-                    {c.cvssScore != null ? c.cvssScore.toFixed(1) : "—"}
+                    {cve.cvssScore != null ? cve.cvssScore.toFixed(1) : "—"}
                   </td>
-                  <td className="mono px-2 py-2.5 text-right text-[12.5px]">{formatEpss(c.epss)}</td>
+                  <td className="mono px-2 py-2.5 text-right text-[12.5px]">{formatEpss(cve.epss)}</td>
                   <td className="mono px-2 py-2.5 text-right text-[12.5px] font-medium text-ink">
-                    {c.riskScore}
+                    {cve.priorityScore.toFixed(1)}
                   </td>
-                  <td className="mono px-2 py-2.5 text-right text-[12px] text-muted">{c.effortHours}h</td>
+                  <td className="mono px-2 py-2.5 text-right text-[12px] text-muted">
+                    {cve.effortHours}h
+                  </td>
                   <td className="px-3 py-2.5">
                     <div className="flex gap-1">
                       {[
-                        ["M", c.flags.metasploit],
-                        ["E", c.flags.exploitdb],
-                        ["N", c.flags.nuclei],
-                        ["P", c.flags.pocGithub],
+                        ["M", cve.flags.metasploit],
+                        ["E", cve.flags.exploitdb],
+                        ["N", cve.flags.nuclei],
+                        ["P", cve.flags.pocGithub],
                       ].map(([label, on]) => (
                         <span
                           key={String(label)}
@@ -191,29 +185,9 @@ export default function CveTable({
 
       <div className="flex items-center justify-between gap-3 border-t border-[#ece3d2] px-4 py-2.5">
         <span className="mono text-[11px] text-muted">
-          {filtered.length === 0
-            ? "0 results"
-            : `${current * PAGE_SIZE + 1}–${Math.min((current + 1) * PAGE_SIZE, filtered.length)} of ${filtered.length}`}
+          {filtered.length === 0 ? "0 results" : `${filtered.length} of ${cves.length} ranked CVEs`}
         </span>
-        <div className="flex items-center gap-1.5">
-          <button
-            onClick={() => setPage(Math.max(0, current - 1))}
-            disabled={current === 0}
-            className="btn btn-ghost px-2.5 py-1 text-[12px]"
-          >
-            Prev
-          </button>
-          <span className="mono px-1 text-[11px] text-muted">
-            {current + 1}/{pages}
-          </span>
-          <button
-            onClick={() => setPage(Math.min(pages - 1, current + 1))}
-            disabled={current >= pages - 1}
-            className="btn btn-ghost px-2.5 py-1 text-[12px]"
-          >
-            Next
-          </button>
-        </div>
+        <span className="text-[11px] text-muted">Scroll inside the panel to browse the full queue</span>
       </div>
     </div>
   );

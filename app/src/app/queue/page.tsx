@@ -1,14 +1,12 @@
 import KanbanBoard from "@/components/KanbanBoard";
 import { PageHeader } from "@/components/ui";
-import { getCves, getMeta } from "@/lib/data";
+import { getDashboard } from "@/lib/data";
 import { readCards } from "@/lib/queue-store";
 
 export const dynamic = "force-dynamic";
 
 export default async function QueuePage() {
-  const cards = await readCards();
-  const cves = getCves();
-  const meta = getMeta();
+  const [{ cves, meta }, cards] = await Promise.all([getDashboard(), readCards()]);
 
   return (
     <div>

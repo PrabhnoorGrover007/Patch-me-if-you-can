@@ -1,38 +1,44 @@
-# Raw data (never commit)
+# raw competition data — 809 MB, over GitHub's per-file limit
 data/
-data
-*.zip
-*.csv
-!outputs/top500.csv
+data.zip
 
-# Generated outputs (keep only the submission file and small JSON results)
-outputs/*
-!outputs/top500.csv
-!outputs/validation_results.json
-!outputs/.gitkeep
-
-# Python
+# python
 .venv/
-venv/
 __pycache__/
 *.pyc
-.ipynb_checkpoints/
+.pytest_cache/
+scratch/
 
-# Secrets
-.env
-*.key
-
-# Teammate pipeline outputs (from main)
-out/*.parquet
-
-# Local assistant notes (not part of the project)
-CLAUDE.md
-
-# Node build artefacts and local state
+# node / next
+node_modules/
 app/node_modules/
 app/.next/
 app/.data/
-*.tsbuildinfo
+app/tsconfig.tsbuildinfo
+app/next-env.d.ts
+app/out/
+app/.env.local
+web/node_modules/
+web/dist/
 
-# macOS
-.DS_Store
+# temporary integration extraction
+.integration_tmp/
+
+# large / regenerable artefacts (rebuild with the pipeline)
+artifacts/*.parquet
+artifacts/*.npy
+artifacts/*.joblib
+artifacts/*.log
+
+# keep these small, human-readable artefacts in the repo
+!artifacts/*.json
+!artifacts/ranked_2026.csv
+!artifacts/full_rankings.csv
+!artifacts/top500.csv
+
+# local generative AI runtime and weights (large, machine-specific)
+local_ai/
+
+# env
+.env
+.env.local

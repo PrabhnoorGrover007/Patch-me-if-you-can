@@ -7,8 +7,8 @@ import { SourceBadge } from "./ui";
 
 const DEFAULT_SUGGESTIONS = [
   "Why is this ranked so high?",
-  "How do I patch it this sprint?",
-  "Give me a WAF virtual patch",
+  "What should I patch first?",
+  "Which CVEs look similar?",
   "Is there public exploit code?",
 ];
 
@@ -54,7 +54,7 @@ export default function ChatPanel({
         {
           role: "assistant",
           content:
-            "The AI service could not be reached. Check your API key in .env.local, then try again.",
+            "The IBM Granite evidence service could not be reached. Start the FastAPI backend, then try again. No answer was fabricated.",
         },
       ]);
     } finally {

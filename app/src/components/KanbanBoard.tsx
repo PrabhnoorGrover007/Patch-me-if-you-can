@@ -125,7 +125,7 @@ export default function KanbanBoard({ cards: initial, cves }: { cards: QueueCard
                     </p>
 
                     <div className="mono mt-2 flex items-center gap-3 text-[10.5px] text-[#8b8272]">
-                      <span>risk {cve.riskScore}</span>
+                      <span>priority {cve.priorityScore.toFixed(0)}</span>
                       <span>{cve.effortHours}h</span>
                       <span className="truncate">{cve.quadrant}</span>
                     </div>

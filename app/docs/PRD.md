@@ -2,7 +2,7 @@
 ## Project: Patch Me If You Can
 **Program / Event:** Sheridan Datathon 2026 — IBM Track  
 **Focus:** AI-Driven Threat Intelligence & Autonomous Vulnerability Prioritization  
-**Target LLM & Foundation Engine:** IBM watsonx (`security-granite-20b-chat` / Granite 3.0)  
+**Target IBM technology:** `ibm-granite/granite-embedding-30m-english` (local embeddings; no hosted generative model configured)  
 **Document Type:** Executive Architecture & Export Specification  
 **Version:** 1.0 (Final Approved)  
 

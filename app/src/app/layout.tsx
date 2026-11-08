@@ -6,7 +6,7 @@ import { ChatProvider } from "@/components/ChatProvider";
 export const metadata: Metadata = {
   title: "Patch Me If You Can · SecOps",
   description:
-    "AI-assisted vulnerability prioritisation: the top 500 CVEs of the 2026 scoreboard, ranked, explained and routed to remediation.",
+    "Exploit-aware vulnerability prioritisation: the top 500 CVEs of the 2026 scoreboard, ranked, explained and routed to remediation.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

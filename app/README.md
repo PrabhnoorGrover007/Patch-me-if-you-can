@@ -1,75 +1,69 @@
-# Patch Me If You Can — web app
+# Patch Me If You Can — integrated Next.js app
 
-Next.js (App Router) + TypeScript + Tailwind + Recharts front end for the top-500 ranked
-vulnerability list, with AI insights and a remediation board.
+Next.js (App Router) + TypeScript + Tailwind 4 + Recharts front end for the 72,670-row
+2026 benchmark, the submitted top 500, the model laboratory and the remediation board.
+
+This is the **primary frontend** of the project. It has no generated `src/data/*.json`. Every
+screen calls the FastAPI service in `../api/main.py`; generative Granite can use a local 2B model
+or watsonx.ai and is configured on that backend.
 
 ## Run it
 
+From the project root:
+
+```bash
+bash start.sh          # API :8000 + Next :3000 (macOS/Linux/Git Bash)
+start.bat              # Windows cmd
+```
+
+Or manually:
+
 ```bash
 npm install
-npm run data     # regenerate src/data/*.json from ../outputs/top500.csv + ../IBM_dataset
-npm run dev      # http://localhost:3000
+API_BASE=http://127.0.0.1:8000 npm run dev    # http://localhost:3000
 ```
 
-Production check: `npm run build && npm start`.
+Production check: `npm run typecheck && npm run build && API_BASE=http://127.0.0.1:8000 npm start`.
 
-## AI provider
+## Data and AI
 
-The app calls **Google Gemini** when `GEMINI_API_KEY` is set, and **IBM watsonx / Granite** when
-only the watsonx keys are set. Copy `.env.example` to `.env.local` and fill in one of them:
-
-| Variable | Purpose |
+| Source | Used for |
 | --- | --- |
-| `GEMINI_API_KEY` | Google AI Studio key — the default path |
-| `GEMINI_MODEL_ID` | default `gemini-3.6-flash` |
-| `GEMINI_API_URL` | optional REST base override |
-| `WATSONX_API_KEY` | IBM Cloud API key with watsonx.ai access (alternate) |
-| `WATSONX_PROJECT_ID` | watsonx.ai project id (alternate) |
-| `WATSONX_URL` | region endpoint, default `https://us-south.ml.cloud.ibm.com` |
-| `GRANITE_MODEL_ID` | default `ibm/granite-4-h-small` |
+| `GET /api/dashboard` | Hydrated top 500: rank, probability, priority, CVSS, EPSS, exploit flags, products, CWE, reasons |
+| `GET /api/vulnerabilities` | Paginated explorer over all 72,670 scored rows |
+| `GET /api/vulnerabilities/{cve}` | Investigation record, attribution and remediation priority |
+| `GET /api/vulnerabilities/{cve}/similar` | Granite embedding analog retrieval |
+| `GET /api/vulnerabilities/{cve}/timeline` | Monthly EPSS and exploit-source history where available |
+| `POST /api/patch-optimizer` | Four strategies under the selected budget |
+| `GET /api/model/performance` | Held-out metrics, baseline reproduction, Granite ablation |
+| `GET /api/discoveries` | Nine measured findings with intervals |
+| `GET /api/products` | CPE-vendor exposure from `affected_products.csv` |
+| `GET /api/top500` | Exact submission file, one `cve_id` column |
+| `GET /api/export` | Ranked working CSV |
 
-Gemini takes precedence when both are configured. With no credentials the app still runs: insights
-and chat answers come from a local explainer built from the CVE record, badged **Offline heuristic**
-instead of **Google Gemini**.
+`API_BASE` is server-only. Browser requests use relative `/api` paths and the rewrite in
+`next.config.ts`; no key or internal host name is shipped to the client.
 
-If a call fails (bad key, retired model, rate limit) that single answer falls back to the local
-explainer and the detail panel or chat bubble prints a crimson *"Model call failed"* line with the
-provider's error, so a misconfiguration is visible rather than silent.
-
-Model ids move: `gemini-3.5-flash` is already deprecated (Google routes it to 3.6). If you get a
-404, list what your key can reach and set `GEMINI_MODEL_ID` accordingly:
-
-```bash
-curl -s "https://generativelanguage.googleapis.com/v1beta/models" -H "x-goog-api-key: $GEMINI_API_KEY"
-```
-
-## Where the data comes from
-
-`scripts/build-dataset.mjs` streams the raw challenge CSVs once and writes two files the app
-imports:
-
-- `src/data/cves.json` — 500 records hydrated from `outputs/top500.csv` (rank order), joining
-  `vulnerabilities.csv` (description, CVSS, CWE), `scoreboard_2026.csv` (EPSS and exploit flags at
-  the cutoff), `weakness_types.csv` (CWE names) and `affected_products.csv` (product context).
-- `src/data/meta.json` — cohort aggregates, the validation numbers from
-  `outputs/validation_results.json`, and the monthly exposure series.
-
-Composite risk shown in the UI is `100 × (0.50·EPSS percentile + 0.25·Metasploit + 0.15·Exploit-DB
-+ 0.07·Nuclei + 0.03·GitHub PoC)`, evaluated only on signals available at the snapshot month.
-Remediation effort is a documented heuristic (product class + description wording), not a measured
-value.
+Analyst text is grounded retrieval assembled by FastAPI from the ranked table,
+`attribution.json`, the Granite similarity index and the deterministic description rules.
+The shipped embedding artefact is separate from generation. If a local Granite server is running
+or watsonx.ai credentials are set, the same evidence is handed to a Granite instruct model and the
+badge changes to **IBM Granite · generated**; otherwise the badge says **grounded** and no answer
+is invented. See `../.env.example` and `../setup_local_ai.py`.
 
 ## Structure
 
-```
-src/app/            routes: / (dashboard), /analytics, /queue, /upload, /chat
-src/components/     UI modules, one per surface
-src/lib/data.ts     typed accessors over the generated JSON
-src/lib/llm.ts      Gemini + watsonx clients, prompts, offline explanation fallbacks
-src/lib/ai-actions.ts  server actions: insight + chat
-src/lib/queue-*     server-side remediation store and actions
-docs/               original design system (DESIGN.md) and PRD
+```text
+src/app/              routes: dashboard, explorer, intelligence, patch, discoveries,
+                      model, products, analytics, queue, upload, chat
+src/components/       one module per surface, plus the shared Panel/StatCard/ui kit
+src/lib/api.ts        server/base-aware fetch wrapper
+src/lib/data.ts       server-only dashboard accessors
+src/lib/ai-actions.ts server actions calling the grounded FastAPI endpoints
+src/lib/queue-*       server-side remediation store and actions
+docs/DESIGN.md        the teammate's original Alabaster design system
 ```
 
-The remediation board is persisted to `.data/remediation.json` on the server. Replace the four
-functions in `src/lib/queue-store.ts` with Supabase queries to move it to Postgres.
+The remediation board persists to `.data/remediation.json` on the Next server. It is real
+server-side state, not seeded demo cards. Replace the four functions in `queue-store.ts` with a
+database when multiple hosts need to share it.

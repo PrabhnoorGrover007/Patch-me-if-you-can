@@ -1,16 +1,14 @@
 import AnalyticsView, { type SeverityMonth } from "@/components/AnalyticsView";
-import { getCves, getCveMap, getMeta } from "@/lib/data";
+import { getDashboard } from "@/lib/data";
 import { readCards } from "@/lib/queue-store";
 
 export const dynamic = "force-dynamic";
 
 export default async function AnalyticsPage() {
-  const cves = getCves();
-  const meta = getMeta();
-  const cveMap = getCveMap();
-  const cards = await readCards();
+  const [{ cves, meta }, cards] = await Promise.all([getDashboard(), readCards()]);
+  const cveMap = new Map(cves.map((cve) => [cve.cveId, cve]));
 
-  const months = [...new Set(cves.map((c) => c.published.slice(0, 7)))].sort();
+  const months = [...new Set(cves.map((cve) => cve.published.slice(0, 7)))].sort();
   const severityByMonth: SeverityMonth[] = months.map((month) => {
     const entry: SeverityMonth = { month, CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0, UNSCORED: 0 };
     for (const cve of cves) {
@@ -28,21 +26,23 @@ export default async function AnalyticsPage() {
   for (const card of cards) statusCounts[card.status] += 1;
 
   const openRisk = cards
-    .filter((c) => c.status !== "done")
-    .reduce((sum, c) => sum + (cveMap.get(c.cveId)?.riskScore ?? 0), 0);
+    .filter((card) => card.status !== "done")
+    .reduce((sum, card) => sum + (cveMap.get(card.cveId)?.priorityScore ?? 0), 0);
 
-  const cohortRisk = cves.reduce((sum, c) => sum + c.riskScore, 0);
+  const cohortRisk = cves.reduce((sum, cve) => sum + cve.priorityScore, 0);
 
   const durations = cards
-    .filter((c) => c.status === "done" && c.doneAt)
-    .map((c) => ({
-      cveId: c.cveId,
+    .filter((card) => card.status === "done" && card.doneAt)
+    .map((card) => ({
+      cveId: card.cveId,
       days:
-        Math.round(((Date.parse(c.doneAt as string) - Date.parse(c.addedAt)) / 86_400_000) * 10) / 10,
+        Math.round(
+          ((Date.parse(card.doneAt as string) - Date.parse(card.addedAt)) / 86_400_000) * 10,
+        ) / 10,
     }));
 
   const mttr = durations.length
-    ? Math.round((durations.reduce((sum, d) => sum + d.days, 0) / durations.length) * 10) / 10
+    ? Math.round((durations.reduce((sum, entry) => sum + entry.days, 0) / durations.length) * 10) / 10
     : null;
 
   return (
@@ -50,8 +50,8 @@ export default async function AnalyticsPage() {
       exposure={meta.exposureByMonth}
       severityByMonth={severityByMonth}
       statusCounts={statusCounts}
-      openRisk={openRisk}
-      cohortRisk={cohortRisk}
+      openRisk={Math.round(openRisk)}
+      cohortRisk={Math.round(cohortRisk)}
       mttr={mttr}
       mttrSeries={durations}
     />

@@ -232,7 +232,7 @@ export default function UploadInspector({ known }: { known: CveBrief[] }) {
                               )}
                             </td>
                             <td className="mono px-3 py-1.5 text-right text-[12px]">
-                              {brief?.riskScore ?? "—"}
+                              {brief?.priorityScore ?? "—"}
                             </td>
                           </tr>
                         );
@@ -280,11 +280,11 @@ export default function UploadInspector({ known }: { known: CveBrief[] }) {
                 <span className="mono text-ink">npm run data</span>.
               </p>
               <p>
-                {known.length} cohort rows are loaded right now. EPSS coverage:{" "}
+                {known.length} cohort rows are loaded right now. Ranked coverage:{" "}
                 <span className="mono text-ink">
-                  {known.filter((k) => k.riskScore > 0).length}
+                  {known.filter((k) => k.priorityScore > 0).length}
                 </span>{" "}
-                rows carry a non-zero composite score.
+                rows carry a non-zero priority score.
               </p>
             </div>
           </Panel>

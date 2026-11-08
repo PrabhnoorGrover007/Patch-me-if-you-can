@@ -1,64 +1,91 @@
 "use server";
 
-import { getBriefs, getCve } from "./data";
-import {
-  askModel,
-  buildChatPrompt,
-  buildInsightPrompt,
-  offlineAnswer,
-  offlineInsight,
-} from "./llm";
-import type { AiResult, ChatMessage } from "./types";
+import { apiFetch } from "./api";
+import type { AiResult, ChatMessage, ChatResponse, GraniteAnalysis } from "./types";
 
-/** One-paragraph AI briefing for the selected CVE. */
+/**
+ * All analyst text is grounded in FastAPI evidence. There is no Gemini or other
+ * hosted generation in this build: the shipped Granite artefact is an embedding
+ * model, so answers are assembled from records, attribution and analog retrieval.
+ */
 export async function getInsight(cveId: string): Promise<AiResult> {
-  const cve = getCve(cveId);
-  if (!cve) {
-    return { text: "That CVE is not part of the ranked top 500.", source: "offline" };
-  }
-
   try {
-    const answer = await askModel(buildInsightPrompt(cve), 1200);
-    if (answer) {
-      return { text: answer.text, source: "model", provider: answer.provider, model: answer.model };
-    }
+    const [analysis, chat] = await Promise.all([
+      apiFetch<GraniteAnalysis>("/api/granite/analyze", {
+        method: "POST",
+        body: JSON.stringify({ cve_id: cveId }),
+      }),
+      apiFetch<ChatResponse>("/api/granite/chat", {
+        method: "POST",
+        body: JSON.stringify({
+          cve_id: cveId,
+          question: `Why is ${cveId} ranked here, and what should we fix first?`,
+        }),
+      }),
+    ]);
+
+    const evidence = analysis.extracted.evidence
+      .slice(0, 3)
+      .map((item) => `${item.characteristic.replaceAll("_", " ")}: “${item.source_text}”`);
+    const unknown = analysis.extracted.uncertainty.slice(0, 3);
+
+    const text = [
+      chat.answer,
+      evidence.length ? `Grounded description evidence:\n${evidence.join("\n")}` : "",
+      unknown.length ? `Not established by the advisory: ${unknown.join("; ")}.` : "",
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
+    return {
+      text,
+      source: chat.generative_model ? "model" : "grounded",
+      provider: "granite",
+      model: chat.generative_model ?? analysis.embedding_model,
+      error: chat.generation_error ?? undefined,
+    };
   } catch (error) {
     return {
-      text: offlineInsight(cve),
+      text: "The IBM Granite evidence service is unavailable. Start the FastAPI backend, then retry; no answer has been invented locally.",
       source: "offline",
-      error: error instanceof Error ? error.message : "model request failed",
+      error: error instanceof Error ? error.message : "backend request failed",
     };
   }
-
-  return { text: offlineInsight(cve), source: "offline" };
 }
 
-/** Contextual chat. The CVE record is injected server-side, so the client never sends it. */
+/** Contextual analyst chat. The backend owns the evidence lookup. */
 export async function askAssistant(input: {
   cveId?: string | null;
   messages: ChatMessage[];
 }): Promise<AiResult> {
-  const cve = input.cveId ? getCve(input.cveId) : null;
   const messages = (input.messages ?? []).filter(
-    (m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string"
+    (message) =>
+      message &&
+      (message.role === "user" || message.role === "assistant") &&
+      typeof message.content === "string",
   );
-  const lastQuestion = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
+  const lastQuestion = [...messages].reverse().find((message) => message.role === "user")?.content ?? "";
 
   try {
-    const answer = await askModel(
-      buildChatPrompt(cve, messages, cve ? [] : getBriefs().slice(0, 10)),
-      1600
-    );
-    if (answer) {
-      return { text: answer.text, source: "model", provider: answer.provider, model: answer.model };
-    }
+    const answer = await apiFetch<ChatResponse>("/api/granite/chat", {
+      method: "POST",
+      body: JSON.stringify({
+        question: lastQuestion,
+        cve_id: input.cveId ?? null,
+      }),
+    });
+    return {
+      text: answer.answer,
+      source: answer.generative_model ? "model" : "grounded",
+      provider: "granite",
+      model: answer.generative_model ?? "granite-embedding-30m-english",
+      error: answer.generation_error ?? undefined,
+    };
   } catch (error) {
     return {
-      text: offlineAnswer(cve, lastQuestion),
+      text: "The IBM Granite evidence service could not be reached. Start the FastAPI backend and try again. No answer was fabricated.",
       source: "offline",
-      error: error instanceof Error ? error.message : "model request failed",
+      error: error instanceof Error ? error.message : "backend request failed",
     };
   }
-
-  return { text: offlineAnswer(cve, lastQuestion), source: "offline" };
 }

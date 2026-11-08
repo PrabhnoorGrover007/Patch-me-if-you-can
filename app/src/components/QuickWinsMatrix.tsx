@@ -19,7 +19,7 @@ import type { Cve, Quadrant } from "@/lib/types";
 interface Point {
   cveId: string;
   effortHours: number;
-  riskScore: number;
+  priorityScore: number;
   quadrant: Quadrant;
 }
 
@@ -33,7 +33,7 @@ function MatrixTooltip({ active, payload }: { active?: boolean; payload?: { payl
     <div className="card px-3 py-2">
       <div className="mono text-[11.5px] text-ink">{point.cveId}</div>
       <div className="mt-0.5 text-[11.5px] text-muted">
-        Risk {point.riskScore}/100 · {point.effortHours}h · {point.quadrant}
+        Priority {point.priorityScore.toFixed(1)}/100 · {point.effortHours}h · {point.quadrant}
       </div>
     </div>
   );
@@ -54,18 +54,18 @@ export default function QuickWinsMatrix({
 }) {
   const points = useMemo<Point[]>(
     () =>
-      cves.map((c) => ({
-        cveId: c.cveId,
-        effortHours: c.effortHours,
-        riskScore: c.riskScore,
-        quadrant: c.quadrant,
+      cves.map((cve) => ({
+        cveId: cve.cveId,
+        effortHours: cve.effortHours,
+        priorityScore: cve.priorityScore,
+        quadrant: cve.quadrant,
       })),
-    [cves]
+    [cves],
   );
 
   const counts = useMemo(() => {
     const out: Record<string, number> = {};
-    for (const c of cves) out[c.quadrant] = (out[c.quadrant] ?? 0) + 1;
+    for (const cve of cves) out[cve.quadrant] = (out[cve.quadrant] ?? 0) + 1;
     return out;
   }, [cves]);
 
@@ -92,7 +92,7 @@ export default function QuickWinsMatrix({
           />
           <YAxis
             type="number"
-            dataKey="riskScore"
+            dataKey="priorityScore"
             domain={[0, 100]}
             tick={{ fontSize: 10, fill: "#5b6373", fontFamily: "var(--font-mono)" }}
             axisLine={false}
@@ -110,13 +110,13 @@ export default function QuickWinsMatrix({
               if (point?.cveId) onSelect(point.cveId);
             }}
           >
-            {points.map((p) => (
+            {points.map((point) => (
               <Cell
-                key={p.cveId}
-                fill={quadrantColor[p.quadrant]}
-                fillOpacity={p.cveId === selectedId ? 1 : 0.62}
-                stroke={p.cveId === selectedId ? "#0b192c" : "#fffdfa"}
-                strokeWidth={p.cveId === selectedId ? 1.4 : 0.7}
+                key={point.cveId}
+                fill={quadrantColor[point.quadrant]}
+                fillOpacity={point.cveId === selectedId ? 1 : 0.62}
+                stroke={point.cveId === selectedId ? "#0b192c" : "#fffdfa"}
+                strokeWidth={point.cveId === selectedId ? 1.4 : 0.7}
               />
             ))}
           </Scatter>
@@ -125,14 +125,14 @@ export default function QuickWinsMatrix({
 
       <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap gap-2.5">
-          {QUADRANTS.map((q) => (
-            <span key={q} className="flex items-center gap-1.5 text-[11px] text-muted">
+          {QUADRANTS.map((quadrant) => (
+            <span key={quadrant} className="flex items-center gap-1.5 text-[11px] text-muted">
               <span
                 className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: quadrantColor[q] }}
+                style={{ backgroundColor: quadrantColor[quadrant] }}
                 aria-hidden
               />
-              {q} <span className="mono text-[10px] text-[#9a9284]">{counts[q] ?? 0}</span>
+              {quadrant} <span className="mono text-[10px] text-[#9a9284]">{counts[quadrant] ?? 0}</span>
             </span>
           ))}
         </div>
