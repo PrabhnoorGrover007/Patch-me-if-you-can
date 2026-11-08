@@ -18,7 +18,7 @@ severity-first and EPSS-first ranking *cannot* see, because on the day they were
 no exploit code and no meaningful EPSS. Any solution that just re-sorts on those two fields is
 competing for the same 19 hits.
 
-Our ranking finds 24 of the 52, including 8 of those 33 blind-spot CVEs — the ones no conventional
+Our ranking finds 20 of the 52, including 5 of those 33 blind-spot CVEs — the ones no conventional
 ranking surfaces at all.
 
 Caveat: 52 positives is a small pool; the 63% figure carries wide uncertainty, but the qualitative
@@ -58,6 +58,8 @@ against a 0.139% base rate.
 
 Interpretation: weaknesses that cross a trust boundary and require no credentials are exploited out
 of proportion to their severity scores.
+
+This is an observation about the data, not a feature. CWE is assigned during NVD analysis, so a blank weakness class encodes whether NIST has reviewed the record; all CWE-derived columns were removed from the model after review (see MODEL_EVALUATION.md, correction 1).
 
 ## 6. Attackers return to vendors they already exploit
 

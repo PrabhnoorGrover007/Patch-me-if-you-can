@@ -7,9 +7,9 @@ vulnerabilities is ever confirmed exploited**, yet severity scores remain the de
 This project ranks 72,670 candidate CVEs from the 2026 benchmark so that the ones attackers actually
 use land at the top, and explains each ranking in language an engineer can act on.
 
-**Result:** on a held-out nine-month pool that mirrors the benchmark, the model puts **24 of 52**
+**Result:** on a held-out nine-month pool that mirrors the benchmark, the model puts **20 of 52**
 later-exploited CVEs in its top 500. The best publication-style baseline (public exploit code, then
-EPSS) puts 18 there. It also recovers **8 of the 33** exploited CVEs that *no* baseline ranks in its
+EPSS) puts 18 there. It also recovers **5 of the 33** exploited CVEs that *no* baseline ranks in its
 top 500.
 
 Submission: [`top500.csv`](top500.csv) — 500 unique `cve_id` values, one column, all drawn from
@@ -36,7 +36,7 @@ Manual equivalent:
 ```bash
 python -m venv .venv && .venv/Scripts/pip install -r requirements.txt   # or .venv/bin/pip on unix
 python -m pipeline.prepare_data     # raw CSVs  -> parquet artefacts
-python -m pipeline.features         # cohorts   -> 112 features, as-of monthly priors
+python -m pipeline.features         # cohorts   -> 73 features, as-of monthly priors
 python -m models.train              # selection -> artifacts/model.joblib
 python -m models.predict            # score 2026 -> top500.csv
 python -m uvicorn api.main:app --port 8000
@@ -65,27 +65,32 @@ python -m models.granite_embed      # ~23 min on CPU, no account or API key need
 
 ## Results
 
-Held-out **Jan–Sep 2025**, 35,289 candidates, 52 positives; every ranker trained on 2024 only.
+Held-out **Jan-Sep 2025**, 35,289 candidates, 52 positives; every ranker trained on 2024 only.
 
 | Ranker | hits@500 | P@50 | AP | ROC-AUC |
 | :-- | --: | --: | --: | --: |
 | CVSS 3.1 descending | 5 | 0.04 | 0.006 | 0.732 |
 | EPSS descending | 8 | 0.06 | 0.031 | 0.707 |
 | Exploit-first, then EPSS | 18 | 0.08 | 0.047 | 0.768 |
-| **This model** | **24** | **0.20** | **0.118** | **0.891** |
+| **This model** | **20** | **0.22** | **0.110** | **0.857** |
 
-Bootstrap 95% interval on our hits@500 is 14–33, so the lead over the baseline is a direction, not a
-guaranteed margin. What is solid: precision at 50 is 2.5× the baseline and the full ordering (AP) is
-2.5× better, which means the top of the list is genuinely better, not just longer.
+Bootstrap 95% interval on our hits@500 is 12-31, so the two-hit lead over the baseline is a direction,
+not a guaranteed margin. What is more solid: precision at 50 is 2.75x the baseline and the full ordering
+(AP) is 2.3x better, which means the top of the list is genuinely better, not just longer.
+
+These numbers are **lower than the first version of this writeup**, which claimed 24/500. An independent
+review found the model was exploiting NIST-review metadata: blank severity and blank CWE are recorded
+only for vulnerabilities NIST has not analysed yet, and NIST analyses attacked CVEs first. Those
+features are gone and the selection folds are corrected, at a measured cost of 4 held-out hits and 2
+hits on the 2026 pool. The correction, its evidence and the residual tilt are documented in
+[`docs/MODEL_EVALUATION.md`](docs/MODEL_EVALUATION.md).
 
 We also tested four extra features adapted from a second, independently written implementation, and
-rejected them. They lifted the single booster on both pools (2024 OOF 28 → 29, held-out 19 → 20) but
-shifted the 2024-optimal blend weight from 0.20 to 0.35, where the shipped blend lost 2 held-out hits
-(24 → 22). The gate was fixed before the test, so the rejected variant is published instead of being
-quietly folded in — full table in [`docs/MODEL_EVALUATION.md`](docs/MODEL_EVALUATION.md).
+rejected them. That gate was run on the earlier 112-feature matrix and has not been re-run on the
+corrected matrix, so those figures are historical; the decision to keep the features out stands.
 
-Profile of the shipped top 500 versus the whole pool: mean EPSS 0.0212 vs 0.0027 (7.9×), public
-exploit code in 56.8% of rows, mean CVSS 9.27 vs 7.05.
+Profile of the shipped top 500 versus the whole pool: mean EPSS 0.0194 vs 0.0027 (7.2x), public exploit
+code in 56.4% of rows, mean CVSS 9.19 vs 7.05.
 
 ## How it works
 
@@ -93,15 +98,15 @@ exploit code in 56.8% of rows, mean CVSS 9.27 vs 7.05.
    1,484 KEV entries, 72,670 benchmark rows across eight snapshot months.
 2. **Label** — a CVE is positive if KEV added it *strictly after* its snapshot month ended. Nobody
    can see the future in this label, by construction.
-3. **Features (112)** — severity and vector components, EPSS level and rank, exploit-code availability
-   (PoC, Nuclei, Metasploit), CWE class and CWE×exploit interactions, description keyword families,
-   age, reference signals, vendor KEV history as-of the snapshot month, and IBM Granite embedding
+3. **Features (73)** — severity and vector components (missing values imputed, never flagged), EPSS level and rank, exploit-code availability
+   (PoC, Nuclei, Metasploit), description keyword families,
+   age, vendor KEV history as-of the snapshot month, and IBM Granite embedding
    similarity to previously exploited CVEs.
 4. **Model** — gradient boosting plus an L2 logistic model, blended 0.8/0.2 on rank-averaged scores.
 5. **Validation** — GroupKFold by month on 2024 for all choices, 2025 held out for confirmation, final
    refit on 2024–2025, 2026 never touched. Details in [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md).
 
-Leakage controls that mattered: `nvd_status`, `n_affected_cpes`, `n_references` and reference
+Leakage controls that mattered: `nvd_status`, `n_affected_cpes`, `n_references`, CWE missingness and reference
 links/tags are excluded (they encode whether NVD was paying attention, which is itself a KEV
 precursor); CPE product strings are excluded for the same reason (49.6% blank in 2026); every prior
 is computed as-of the row's own month; splits are never random.
@@ -113,8 +118,8 @@ is computed as-of the row's own month; splits are never random.
 a model feature, and similarity lookup powers the dashboard.
 
 Measured, not asserted: swapping the two Granite features into the blend moves held-out hits@500 from
-19 to 24 and doubles P@50. Text similarity alone reaches ROC-AUC 0.742 for a future KEV addition.
-Full ablation in [`docs/IBM_INTEGRATION.md`](docs/IBM_INTEGRATION.md).
+17 to 20 and lifts P@50 from 0.20 to 0.22. Text similarity alone reaches ROC-AUC 0.742 for a future KEV
+addition. Full ablation in [`docs/IBM_INTEGRATION.md`](docs/IBM_INTEGRATION.md).
 
 ## Repository layout
 
@@ -151,7 +156,7 @@ curl -s http://127.0.0.1:8000/api/health     # {"status":"ok","rows":72670,"gran
 
 `top500.csv` is the file that gets scored. Its invariants are executable: 500 unique ids, one column,
 every id present in `scoreboard_2026.csv`. The submitted file's md5 is
-`c842423e00d3c1fba5469065f03a1cbe`, reproducible with `python -m models.predict`.
+`0679af8c4200f3a818847ce8a9419f10`, reproducible with `python -m models.predict`.
 
 ## Honest limitations
 
@@ -171,7 +176,7 @@ Full list in [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md).
 | :-- | :-- |
 | [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) | data, label, features, model, validation protocol |
 | [`docs/DATA_AUDIT.md`](docs/DATA_AUDIT.md) | corpus shape, coverage, anomalies, leakage exclusions |
-| [`docs/FEATURE_AUDIT.md`](docs/FEATURE_AUDIT.md) | all 112 features, source, fill rate, leak status |
+| [`docs/FEATURE_AUDIT.md`](docs/FEATURE_AUDIT.md) | all 73 features, source, fill rate, leak status |
 | [`docs/DISCOVERIES.md`](docs/DISCOVERIES.md) | nine findings with confidence intervals |
 | [`docs/MODEL_EVALUATION.md`](docs/MODEL_EVALUATION.md) | selection table, held-out results, blind spot |
 | [`docs/IBM_INTEGRATION.md`](docs/IBM_INTEGRATION.md) | Granite usage and measured contribution |

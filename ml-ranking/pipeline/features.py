@@ -304,16 +304,13 @@ FEATURE_GROUPS = {
     "cvss": ["cvss3", "cvss3_sev_ord", "cvss4", "cvss2", "av_ord", "ac_low", "pr_ord",
              "ui_required", "scope_changed", "con_ord", "int_ord", "ava_ord",
              "cvss3_exploitability", "cvss3_impact"],
-    "weakness": ["n_cwe", "cwe_missing"] + ["has_" + c.replace("-", "_").lower() for c in TOP_CWES]
-                + ["cwe_kev_rate_max", "cwe_kev_rate_mean", "cwe_kev_n_max"],
     "epss_exploit": ["epss", "epss_logit", "epss_missing", "epss_rank", "exploitdb", "metasploit",
                      "nuclei", "poc_github", "n_exploit_sources", "any_exploit"],
     "vendor_history": ["vendor_kev_n_log", "vendor_cve_n_log", "vendor_kev_rate",
                        "vendor_ransomware_share", "vendor_unseen", "vendor_is_generic_cna",
                        "vendor_kev_90_log", "vendor_kev_365_log"],
     "text": ["desc_len_log", "desc_words"] + list(KEYWORDS),
-    "interactions": ["epss_x_exploit", "cwe_x_exploit", "is_wordpress_eco", "is_github_cna",
-                     "silent_crit"],
+    "interactions": ["epss_x_exploit", "is_wordpress_eco", "is_github_cna", "silent_crit"],
     "horizon": ["horizon_days"],
 }
 FEATURES = [f for g in FEATURE_GROUPS.values() for f in g]
