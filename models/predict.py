@@ -45,8 +45,6 @@ def build_reasons(df: pd.DataFrame) -> pd.DataFrame:
             d.append("Metasploit module available")
         elif getattr(r, "nuclei", 0) == 1:
             d.append("Nuclei detection template available")
-        if pd.notna(r.cwe_kev_rate_max) and r.cwe_kev_rate_max > 0.05:
-            d.append(f"weakness class has an elevated historical KEV rate ({r.cwe_kev_rate_max:.1%} of its CVEs)")
         if pd.notna(r.vendor_kev_n) and r.vendor_kev_n >= 20:
             d.append(f"vendor already has {int(r.vendor_kev_n)} KEV entries in this window")
         if getattr(r, "kw_rce", 0) == 1:
@@ -90,7 +88,7 @@ def main() -> None:
     predict["vendor_kev_n"] = np.expm1(predict["vendor_kev_n_log"].fillna(0)).round()
     out = predict[["cve_id", "snapshot_month", "published", "cvss3", "cvss3_severity", "epss",
                    "epss_rank", "poc_github", "nuclei", "metasploit", "vendor_key",
-                   "cwe_ids", "cwe_kev_rate_max", "vendor_kev_n", "granite_knn_max",
+                   "cwe_ids", "vendor_kev_n", "granite_knn_max",
                    "any_exploit", "kw_rce", "kw_auth_bypass", "age_days"]].copy()
     out["histgb_score"] = scores.get(a)
     out["logit_score"] = scores.get(b)

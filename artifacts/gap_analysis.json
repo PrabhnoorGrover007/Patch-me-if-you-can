@@ -2,46 +2,19 @@
   "pool": "Jan-Sep 2025 (held-out)",
   "candidates": 35289,
   "positives": 52,
-  "model_top500_hits": 24,
+  "model_top500_hits": 20,
   "baseline_union_hits": 19,
   "missed_by_all_baselines": 33,
-  "missed_but_recovered_by_model": 8,
+  "missed_but_recovered_by_model": 5,
   "recovered_ids": [
-    "CVE-2024-13159",
-    "CVE-2024-13160",
-    "CVE-2024-13161",
     "CVE-2024-53704",
     "CVE-2025-6554",
     "CVE-2025-9242",
     "CVE-2025-24472",
     "CVE-2025-41244"
   ],
-  "overlap_with_baseline_union": 188,
+  "overlap_with_baseline_union": 176,
   "recovered_examples": [
-    {
-      "cve_id": "CVE-2024-13159",
-      "snapshot_month": "2025-01",
-      "cvss3": 7.5,
-      "epss": 0.0004299999854993075,
-      "vendor_key": "cisaadp",
-      "cwe_ids": "CWE-36"
-    },
-    {
-      "cve_id": "CVE-2024-13160",
-      "snapshot_month": "2025-01",
-      "cvss3": 7.5,
-      "epss": 0.0004299999854993075,
-      "vendor_key": "cisaadp",
-      "cwe_ids": "CWE-36"
-    },
-    {
-      "cve_id": "CVE-2024-13161",
-      "snapshot_month": "2025-01",
-      "cvss3": 7.5,
-      "epss": 0.0004299999854993075,
-      "vendor_key": "cisaadp",
-      "cwe_ids": "CWE-36"
-    },
     {
       "cve_id": "CVE-2024-53704",
       "snapshot_month": "2025-01",

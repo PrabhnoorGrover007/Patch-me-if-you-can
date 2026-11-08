@@ -10,7 +10,7 @@ you hit record, so the first frame is already loaded.
 | 0:20–0:40 | overview stats row | "We scored all 72,670 CVEs in the 2026 benchmark. Our top 500 has 7.9× the pool's mean EPSS and public exploit code in 57% of rows, against a pool where most rows have neither." |
 | 0:40–1:10 | Explorer, filter severity + search a vendor | "Here is the full ranking. It's searchable and filterable, and every row is linkable." Open one row. |
 | 1:10–1:40 | CVE detail | "This is the part analysts actually need: why. EPSS at snapshot, exploit-code sources, weakness class, vendor history, and how close the description sits to CVEs already being exploited — with the contribution of each shown, and the explanation labelled as deterministic, not generated." |
-| 1:40–2:15 | Performance | "Held-out proof: nine months the model never saw. We find 24 of 52 exploited CVEs in the top 500; the best conventional ranking finds 18, and 33 of the 52 appear in none of the three baselines' top 500s. We recover 8 of those 33. Precision at 50 is 2.5× the baseline's." |
+| 1:40–2:15 | Performance | "Held-out proof: nine months the model never saw. We find 20 of 52 exploited CVEs in the top 500; the best conventional ranking finds 18, and 33 of the 52 appear in none of the three baselines' top 500s. We recover 5 of those 33. Precision at 50 is 2.5× the baseline's." |
 | 2:15–2:35 | Performance, then Discoveries | "And the intervals are on screen. 52 positives is a small pool — our hits@500 interval is 14 to 33 and overlaps the baseline's — so we claim better precision and ordering, not a guaranteed margin." |
 | 2:35–2:50 | terminal: `head top500.csv` | "The deliverable is one column, 500 unique IDs, all from the scoreboard, reproducible with one command. The 2026 score itself is unknown until judges run it." |
 
@@ -37,7 +37,7 @@ beats over those three responses; the numbers are identical.
 | Question | Answer |
 | :-- | :-- |
 | Why not just use EPSS? | 99.9% of candidates sit below 0.10 at snapshot; it can only rank a tiny corner. |
-| Is 24 vs 18 significant? | Intervals overlap (14–33 vs 10–27). We claim precision and ordering: P@50 0.20 vs 0.08, AP 2.5×. |
+| Is 20 vs 18 significant? | Intervals overlap (14–33 vs 10–27). We claim precision and ordering: P@50 0.20 vs 0.08, AP 2.5×. |
 | Where does IBM tech enter? | Granite embeddings turn each description into a vector; similarity to already-listed KEV entries is a model feature. Ablation: 19 → 24 hits@500 when added. |
 | Could you have leaked the answer? | No KEV field in the feature matrix, priors computed as-of each snapshot month, month-grouped splits, 2026 never used in fitting. |
 | What is the 2026 score? | Unknown — the release has no 2026 answer key. Everything shown is historical validation. |

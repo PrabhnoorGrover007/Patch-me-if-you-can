@@ -42,11 +42,11 @@
 
 ## On the model
 
-- **Blend weights were selected on 2024 out-of-fold scores** with 46 positives. That is a thin basis
+- **Blend weights were selected on 2024 out-of-fold scores** with 67 positives. That is a thin basis
   for a weight; the selected 0.2 vs 0.8 is not meaningfully better than nearby values, and we say so.
-- **The Granite preference is a judgement call.** The shipped blend scores 30 hits@500 on the
-  selection metric against 32 for the best non-Granite blend, and we preferred it because IBM
-  technology use is a competition requirement. It then scored 24 vs 19 on held-out, but that held-out
+- **The Granite preference is a judgement call.** The shipped blend scores 27 hits@500 on the
+  selection metric against 28 for the best non-Granite blend, and we preferred it because IBM
+  technology use is a competition requirement. It then scored 20 vs 18 on held-out, but that held-out
   result was observable to us before the final choice, so treat the preference as a documented
   decision rather than a clean pre-registered one. Both configurations are reported in
   MODEL_EVALUATION.md.

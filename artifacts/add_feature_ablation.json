@@ -1,0 +1,192 @@
+{
+  "rows": [
+    {
+      "variant": "base",
+      "model": "histgb_lean_g",
+      "features": 78,
+      "oof_2024_hits@500": 28,
+      "heldout_hits@500": 19,
+      "heldout_hits@100": 12,
+      "heldout_p@50": 0.14,
+      "heldout_ap": 0.0719,
+      "heldout_auc": 0.8863
+    },
+    {
+      "variant": "base",
+      "model": "logit_core_g",
+      "features": 30,
+      "oof_2024_hits@500": 26,
+      "heldout_hits@500": 21,
+      "heldout_hits@100": 7,
+      "heldout_p@50": 0.08,
+      "heldout_ap": 0.0423,
+      "heldout_auc": 0.8492
+    },
+    {
+      "variant": "new",
+      "model": "histgb_lean_g",
+      "features": 82,
+      "oof_2024_hits@500": 29,
+      "heldout_hits@500": 20,
+      "heldout_hits@100": 11,
+      "heldout_p@50": 0.18,
+      "heldout_ap": 0.0744,
+      "heldout_auc": 0.8636
+    },
+    {
+      "variant": "new",
+      "model": "logit_core_g",
+      "features": 30,
+      "oof_2024_hits@500": 26,
+      "heldout_hits@500": 21,
+      "heldout_hits@100": 7,
+      "heldout_p@50": 0.08,
+      "heldout_ap": 0.0423,
+      "heldout_auc": 0.8492
+    },
+    {
+      "variant": "new_core",
+      "model": "logit_core_g_plus",
+      "features": 34,
+      "oof_2024_hits@500": 26,
+      "heldout_hits@500": 21,
+      "heldout_hits@100": 9,
+      "heldout_p@50": 0.08,
+      "heldout_ap": 0.0432,
+      "heldout_auc": 0.8455
+    }
+  ],
+  "feature_counts": {
+    "histgb_lean_g": 82,
+    "logit_core_g": 30,
+    "logit_core_g_plus": 34
+  },
+  "blend_grid": [
+    {
+      "variant": "base",
+      "w_b": 0.0,
+      "oof_2024_hits@500": 28,
+      "oof_2024_hits@100": 13
+    },
+    {
+      "variant": "base",
+      "w_b": 0.2,
+      "oof_2024_hits@500": 30,
+      "oof_2024_hits@100": 14
+    },
+    {
+      "variant": "base",
+      "w_b": 0.35,
+      "oof_2024_hits@500": 28,
+      "oof_2024_hits@100": 16
+    },
+    {
+      "variant": "base",
+      "w_b": 0.5,
+      "oof_2024_hits@500": 27,
+      "oof_2024_hits@100": 15
+    },
+    {
+      "variant": "base",
+      "w_b": 0.65,
+      "oof_2024_hits@500": 26,
+      "oof_2024_hits@100": 16
+    },
+    {
+      "variant": "base",
+      "w_b": 0.8,
+      "oof_2024_hits@500": 25,
+      "oof_2024_hits@100": 16
+    },
+    {
+      "variant": "base",
+      "w_b": 1.0,
+      "oof_2024_hits@500": 26,
+      "oof_2024_hits@100": 8
+    },
+    {
+      "variant": "new",
+      "w_b": 0.0,
+      "oof_2024_hits@500": 29,
+      "oof_2024_hits@100": 13
+    },
+    {
+      "variant": "new",
+      "w_b": 0.2,
+      "oof_2024_hits@500": 28,
+      "oof_2024_hits@100": 14
+    },
+    {
+      "variant": "new",
+      "w_b": 0.35,
+      "oof_2024_hits@500": 31,
+      "oof_2024_hits@100": 15
+    },
+    {
+      "variant": "new",
+      "w_b": 0.5,
+      "oof_2024_hits@500": 29,
+      "oof_2024_hits@100": 14
+    },
+    {
+      "variant": "new",
+      "w_b": 0.65,
+      "oof_2024_hits@500": 28,
+      "oof_2024_hits@100": 14
+    },
+    {
+      "variant": "new",
+      "w_b": 0.8,
+      "oof_2024_hits@500": 27,
+      "oof_2024_hits@100": 14
+    },
+    {
+      "variant": "new",
+      "w_b": 1.0,
+      "oof_2024_hits@500": 26,
+      "oof_2024_hits@100": 8
+    }
+  ],
+  "verdict": {
+    "new_features": [
+      "kw_edge_device",
+      "vendor_text_kev_n",
+      "vendor_text_kev_90",
+      "epss_v4"
+    ],
+    "selected_w": {
+      "base": 0.2,
+      "new": 0.35
+    },
+    "heldout": {
+      "base": {
+        "w_b": 0.2,
+        "hits@500": 24,
+        "hits@100": 13,
+        "p@50": 0.2,
+        "ap": 0.1181,
+        "bootstrap": {
+          "mean": 23.89,
+          "p2.5": 14,
+          "p97.5": 33,
+          "n": 1000
+        }
+      },
+      "new": {
+        "w_b": 0.35,
+        "hits@500": 22,
+        "hits@100": 13,
+        "p@50": 0.18,
+        "ap": 0.119,
+        "bootstrap": {
+          "mean": 21.35,
+          "p2.5": 12,
+          "p97.5": 31,
+          "n": 1000
+        }
+      }
+    },
+    "delta_heldout": -2,
+    "decision": "revert"
+  }
+}

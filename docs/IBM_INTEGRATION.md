@@ -31,18 +31,18 @@ This is the part most projects hand-wave, so here are the numbers from
 
 | Configuration | Held-out hits@500 | P@50 | Average precision |
 | :-- | --: | --: | --: |
-| Gradient boosting, no Granite (`histgb_lean`) | 20 | 0.10 | 0.046 |
-| Gradient boosting + Granite (`histgb_lean_g`) | 19 | 0.14 | 0.072 |
-| Logistic, no Granite (`logit_core`) | 19 | 0.12 | 0.037 |
-| Logistic + Granite (`logit_core_g`) | 21 | 0.08 | 0.042 |
-| Blend of the two, no Granite (w=0.2) | 19 | 0.16 | 0.090 |
-| **Blend of the two + Granite (w=0.2)** | **24** | **0.20** | **0.118** |
+| Gradient boosting, no Granite (`histgb_lean`) | 18 | 0.14 | 0.057 |
+| Gradient boosting + Granite (`histgb_lean_g`) | 16 | 0.12 | 0.064 |
+| Logistic, no Granite (`logit_core`) | 19 | 0.08 | 0.049 |
+| Logistic + Granite (`logit_core_g`) | 20 | 0.06 | 0.057 |
+| Blend of the two, no Granite (w=0.2) | 17 | 0.20 | 0.090 |
+| **Blend of the two + Granite (w=0.2)** | **20** | **0.22** | **0.110** |
 
-The Granite features move the blended ranker from 19 to 24 hits at 500, and double precision at 50.
+The Granite features move the blended ranker from 17 to 20 hits at 500, and lift precision at 50 from 0.20 to 0.22.
 That is the configuration we ship.
 
-An honest caveat on selection: on the out-of-fold selection metric the Granite blend scores 30
-hits@500 against 32 for the best non-Granite blend — a difference well inside the bootstrap interval
+An honest caveat on selection: on the out-of-fold selection metric the Granite blend scores 27
+hits@500 against 28 for the best non-Granite blend — a difference well inside the bootstrap interval
 (14–33 vs 11–32 at 95%). IBM technology use is a stated competition requirement, so our selection
 rule prefers the Granite configuration when it is within 2 hits@500 of the outright best OOF score.
 The rule is recorded in `model_selection.json` under `selection_rule`, and both configurations'

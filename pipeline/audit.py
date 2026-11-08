@@ -26,17 +26,10 @@ GROUP_META = {
     },
     "cvss": {
         "source": "vulnerabilities.csv CVSS 3/2/4 fields",
-        "calc": "Numeric components and CVSS vector decomposition; NaNs preserved as missing",
+        "calc": "Numeric components and CVSS vector decomposition; missing values median-imputed before the model sees them",
         "available": True,
-        "risk": "low — CVSS is assigned at publication by the CNA; blank scores are a documented NVD-review leak, so the presence/absence flag is deliberately NOT a feature",
-        "why": "Severity components are the baseline comparator; the *missingness* pattern is excluded",
-    },
-    "weakness": {
-        "source": "vulnerabilities.csv cwe_ids + weakness_types.csv",
-        "calc": "Multi-hot for the 35 most common CWEs plus as-of CWE KEV rate (KEV additions <= month end)",
-        "available": True,
-        "risk": "low — CWE assigned at analysis/publication; historical rates use only past KEV additions",
-        "why": "CWE lift is one of the strongest structured signals we measured",
+        "risk": "medium — blank severity is itself a NIST-review signal, so a tree must not be able to split on 'missing'; the imputer removes that split",
+        "why": "Severity components are the baseline comparator; missingness is filled, never encoded",
     },
     "epss_exploit": {
         "source": "exploit_signals_2024/2025.csv (train) and scoreboard_2026.csv (predict)",
@@ -61,7 +54,7 @@ GROUP_META = {
     },
     "interactions": {
         "source": "derived",
-        "calc": "epss x exploit-code, cwe-rate x exploit-code, WordPress-ecosystem and GitHub-CNA flags, 'silent critical' flag",
+        "calc": "epss x exploit-code, WordPress-ecosystem and GitHub-CNA flags, 'silent critical' flag",
         "available": True,
         "risk": "none — products of already-validated features",
         "why": "Captures conditional effects additive models miss, with no new data dependency",
@@ -87,7 +80,8 @@ EXCLUDED = [
     ("n_affected_cpes", "CPE rows are added during NVD analysis; 49.6% of the 2026 pool is blank", "Excluded"),
     ("n_references", "Reference count grows after exploitation is reported", "Excluded"),
     ("references.url / domain / tags", "News and threat-research links are added after attacks; 37,853 IBM X-Force links alone", "Summarised for the audit only, never a feature"),
-    ("blank cvss3_score as signal", "Blank severity correlates with un-analysed (i.e. not-yet-attacked) records", "Kept as NaN; no has_score indicator"),
+    ("blank cvss3_score as signal", "Blank severity means NIST has not reviewed the record yet, and NIST reviews attacked CVEs first", "Median-imputed before the model sees it; no missingness indicator"),
+    ("cwe_ids missingness (cwe_missing, has_cwe_* dummies, cwe_kev_rate_*)", "CWE is assigned during NVD analysis, so a blank weakness class carries the same review-status signal as a blank score", "Dropped from the model entirely: the model was selecting only reviewed CVEs"),
     ("last_modified", "Every row is stamped mid-2026 or later", "Excluded"),
     ("assigner == CISA-ADP GUID", "ADP enrichment is applied after publication", "Collapsed to a neutral category"),
     ("affected_products vendor/product", "CPE coverage itself leaks NVD attention", "Excluded from the model; used only in EDA"),
@@ -130,7 +124,8 @@ def main() -> None:
               "| Column | Why it is unsafe | Decision |", "|---|---|---|"]
     lines += [f"| `{c}` | {r} | {d} |" for c, r, d in EXCLUDED]
     lines += ["", "## Notes", "",
-              "- CWE dummies: " + ", ".join(TOP_CWES),
+              "- CWE features are not in the model: blank CWE tracks NIST review, and a multi-hot encoding "
+              "makes 'no weakness class' a distinct, learnable pattern.",
               f"- Text indicators ({len(KEYWORDS)}): " + ", ".join(sorted(KEYWORDS)),
               "- Proc- and CPE-derived vendor/product features are excluded from the model because 49.6% of the "
               "2026 pool lacks them for reasons that correlate with NVD attention.",

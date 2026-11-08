@@ -23,12 +23,12 @@ consistent with NIST's deferred analysis.
 |---|---|---|
 | NVD files are today's state; `last_modified` is mid-2026+ | post-attack enrichment | columns excluded (below) |
 | 62 KEV entries predate publication | negative lags pollute "time to exploitation" | dropped from lag analysis (64% ≤ 30 days rather than 67%) |
-| February 2025 signals missing ~14,500 CVEs | EPSS missing for that cohort | kept as missing (`epss_missing`), EPSS never imputed |
+| February 2025 signals missing ~14,500 CVEs | EPSS missing for that cohort | kept as a missing flag (`epss_missing`); numeric EPSS is median-imputed inside each training fold |
 | ~11,800 signal IDs are rejected, not in `vulnerabilities.csv` | fan-out risk on joins | signals joined to the vulnerability table, never the reverse |
 | EPSS model changed March 2025 | levels not comparable across time | EPSS used as a snapshot level plus within-month rank, never as a cross-year trend |
 | `cve_id` year ≠ publication year | wrong cohort assignment | cohorts keyed on `published` only |
 | 49.6% of 2026 CVEs have no CPE list | product features would encode NVD attention | CPE fields excluded from the model |
-| 8.7% of 2026 rows have blank CVSS | blankness is an NVD-review leak | score kept as NaN, no `has_score` indicator |
+| 8.7% of 2026 rows have blank CVSS | blankness is an NVD-review leak | score median-imputed before the model sees it; no `has_score` indicator |
 
 ## 3. Leakage audit
 
@@ -69,5 +69,5 @@ Verification: no positive label has `days_to_kev <= 0`; all negatives with an ob
 
 - No external datasets. Adding e.g. a vendor breach feed would risk importing post-snapshot knowledge.
 - No scraping of current KEV. The supplied KEV file ends 2025-12-29 and we respected that boundary.
-- No imputation of EPSS, CVSS or CWE with cohort means; missingness is passed to the models, which
-  handle NaN natively (HistGradientBoosting) or via median imputation fitted on training folds only.
+- No cohort-mean imputation. Numeric columns, including EPSS and CVSS, are median-imputed inside
+  each training fold for both model families; missingness is available only through explicit flags such as `epss_missing`.

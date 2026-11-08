@@ -8,7 +8,8 @@ Before the Breach — exploit-aware vulnerability prioritisation
 
 Rank 72,670 CVEs by what attackers will actually exploit, not by how scary the score looks.
 
-**Code repository:** _paste the GitHub URL here before submitting._
+**Code repository:** https://github.com/PrabhnoorGrover007/Patch-me-if-you-can — the IBM-track solution
+lives in `ml-ranking/` on branch `feature/ml-ranking-solution`; `main` holds the team's other track.
 **Submission file:** `top500.csv` — 500 unique `cve_id` values, one column, attached to this submission.
 
 ## Inspiration
@@ -40,7 +41,7 @@ CVEs — a signal no structured field carries. The dashboard is React + TypeScri
 
 We measured what the standard rankings miss. On the held-out pool, **33 of 52 exploited CVEs appear
 in none of the three baseline top 500 lists** — not CVSS, not EPSS, not exploit-first-then-EPSS. Our
-model finds 8 of those 33. They are mostly products with a KEV history but no public exploit code at
+model finds 5 of those 33. They are mostly products with a KEV history but no public exploit code at
 snapshot time: exactly the case a severity-plus-EPSS pipeline is blind to, and exactly the case that
 gets an organisation breached.
 
@@ -58,7 +59,9 @@ row's `snapshot_month`; KEV `date_added` — as *history* when it predates the s
 
 - `nvd_status`, `n_affected_cpes`, `n_references` — their presence mostly encodes whether NIST has
   reviewed the CVE, and NIST reviews attacked CVEs first. Using them imports the answer.
-- Blank-severity as a signal — the same leak wearing a different hat.
+- Blank-severity as a signal, and CWE missingness (`cwe_missing`, CWE dummies) — the same leak
+  wearing a different hat. Both were removed after an independent review showed the model was
+  selecting only reviewed records.
 - `references.csv` links and tags (patch / exploit / advisory / news) — attached after publication,
   and 37,853 of them point at IBM X-Force Exchange.
 - CPE product strings — 49.6% are blank in 2026 for attention-related reasons, so product identity
@@ -97,25 +100,45 @@ No other outside data was used.
 
 ## Accomplishments
 
-- 24 of 52 held-out exploited CVEs in the top 500, against 18 for the strongest baseline, with 2.5×
-  the baseline's precision at 50 and 2.5× its average precision.
-- A measured Granite ablation: the embedding features take the blend from 19 to 24 hits@500.
+- 20 of 52 held-out exploited CVEs in the top 500, against 18 for the strongest baseline, with 2.75x
+  the baseline's precision at 50 and 2.3x its average precision.
+- A measured Granite ablation: the embedding features take the blend from 17 to 20 hits@500.
+- A correction we are not hiding: an independent review found NIST-review leakage in the first model,
+  we removed the offending features, and the cost (4 held-out hits) is published in
+  `docs/MODEL_EVALUATION.md` rather than buried.
 - A dashboard where every ranking is explainable from recorded evidence, with the explanation source
   labelled rather than implied.
+- A feature gate fixed before evaluation: four candidate features raised the single model but cost the
+  shipped blend 2 held-out hits, so they were reverted and the negative result is published in
+  `docs/MODEL_EVALUATION.md` instead of being quietly dropped.
 - 18 executable tests covering label construction, feature as-of integrity, submission format and the
   API contract.
 
 ## What we learned
 
-Severity is a description of damage, not a prediction of behaviour. The strongest single signal is an
-interaction: a dangerous weakness class *combined with* public exploit code. Vendor history and
-description semantics catch the tail that the interaction misses.
+Severity is a description of damage, not a prediction of behaviour. The strongest single signal is EPSS *combined with* public exploit code; vendor history and
+description semantics catch the tail. A weakness-class feature looked strong until we noticed it was
+learning whether NIST had reviewed the record, so it had to go.
 
-## What's next
+## What we corrected after an independent review
 
-Wire a KEV-refresh loop so the model retrains monthly as new confirmations land; add asset context so
-the same score can be re-ranked per customer environment; move explanations to a Granite instruct
-model behind a caching layer once GPU capacity is available.
+A second team reviewed this submission. Three of its criticisms were correct, and we fixed them rather
+than defending the first version.
+
+- **NIST-review leakage.** The first model kept blank CVSS as `NaN` (a tree splits on that) and shipped
+  `cwe_missing` plus CWE dummies. Because NIST reviews attacked CVEs first, "blank" meant "not reviewed
+  yet": our top 500 had 0.0% blank-severity rows against an 8.7% pool, and every training row with a
+  blank score or blank CWE was a negative. Those features are gone and severity is imputed.
+- **Selection leakage.** The 2024 out-of-fold score came from folds fitted on 2024-2025, so selection
+  saw a year of future data. Folds now live inside 2024.
+- **Weight chosen on a noisy cut-off.** hits@500 on 67 positives is about +/-4; the rule now breaks the
+  tie on hits@100, which keeps the blend at the weight shipped before the correction.
+
+Two claims did not survive checking, and we record that too: the alleged 15-15 tie does not reproduce
+under our label definition, and the list was not chosen from 2026 outcomes - `top500.csv` predates the
+2026 scoring code. The correction is not complete: the rebuilt list is still 0% blank-severity and 62%
+NIST-Analyzed against a 43% base rate, so a residual review-status tilt survives. We report it as a
+limitation instead of claiming the list is clean.
 
 ## Built with
 
@@ -134,6 +157,6 @@ are in [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md); the beats are:
 3. **1:00 — the ranking.** Search a vendor, open a CVE, read the evidence panel: which signals fired
    and what each contributed.
 4. **1:45 — the proof.** Performance page: held-out table, bootstrap interval, blind-spot number
-   (8 of 33 recovered), Granite ablation.
+   (5 of 33 recovered), Granite ablation.
 5. **2:30 — the deliverable.** `top500.csv`, 500 unique ids, reproducible in one command.
 6. **2:45 — the honesty slide.** Unknown 2026 score, small positive count, KEV lag.

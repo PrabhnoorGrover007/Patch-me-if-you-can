@@ -24,7 +24,7 @@ Commands are reproducible from the project root; no test is skipped or xfailed i
 | :-- | :-- |
 | `test_source_files_present` | all five raw CSVs exist with the documented names |
 | `test_scoreboard_size_and_filter` | the benchmark parquet has 72,670 rows across 8 snapshot months, and every row is unique |
-| `test_kev_never_used_as_feature` | no KEV column appears in the 114-feature matrix — the label cannot leak in through a column |
+| `test_kev_never_used_as_feature` | no KEV column appears in the 73-feature matrix — the label cannot leak in through a column |
 | `test_labels_only_count_future_additions` | positives are only KEV additions strictly after each row's snapshot month end; the 62 pre-publication KEV records are excluded |
 | `test_train_predict_feature_parity` | train and predict matrices expose the same feature set, so the model cannot silently drop a column at scoring time |
 | `test_granite_features_are_asof` | Granite similarity columns exist for both splits, are finite, and stay within cosine range (float32 drift ≤ 0.02 tolerated) |

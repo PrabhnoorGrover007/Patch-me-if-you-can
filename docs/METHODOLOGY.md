@@ -29,10 +29,10 @@ exactly the shape of `scoreboard_2026.csv`, which is why the historical cohorts 
 | Label | KEV add before 4 Nov 2026 (**unknown**) | KEV add after month end, observed to 2025-12-29 |
 
 Nine-month pools (Jan–Sep) mirror the 2026 shape exactly. Jan–Sep 2025 is the primary held-out pool.
-2024 slots are excluded from training (no signal file) rather than imputed with all-missing EPSS,
+2023 slots are excluded from training (no signal file) rather than imputed with all-missing EPSS,
 which would teach the model a spurious "missing EPSS" prior that does not hold in 2026 (2% missing).
 
-## 3. Features (114)
+## 3. Features (73)
 
 Built by `pipeline/features.py`; every group and its availability argument is in
 [FEATURE_AUDIT.md](FEATURE_AUDIT.md).
@@ -40,14 +40,18 @@ Built by `pipeline/features.py`; every group and its availability argument is in
 - **Calendar / horizon** — publish month, weekday, day, age at snapshot, days from snapshot to the
   evaluation cutoff (the nine cohorts have very different exposure windows).
 - **CVSS** — score, severity ordinal, vector decomposition, exploitability/impact sub-scores, CVSS4/2.
-  The *missingness* of CVSS is deliberately not a feature (it is an NVD-review leak).
-- **Weakness** — 35 CWE dummies plus as-of CWE KEV rate (KEV additions before month end only).
+  Every CVSS column is median-imputed before the model sees it: a tree must not be able to split on
+  'score is missing', because blank severity is an NVD-review leak.
+- **Weakness — removed.** CWE is assigned during NVD analysis, so a blank weakness class encodes
+  review status, and a multi-hot encoding makes "no class" a learnable pattern. No CWE-derived column
+  reaches the model.
 - **EPSS / exploit code** — EPSS, logit, within-month percentile, missing flag, and the four public
   exploit flags summed.
 - **Vendor history** — vendor key from the CVE assigner, KEV counts/rates with `date_added <= month end`,
   90- and 365-day recency windows, ransomware share of that vendor's KEV entries.
 - **Text** — 26 regex indicators plus length. Chosen for interpretability, not accuracy.
-- **Interactions** — EPSS × exploit code, CWE-rate × exploit code, WordPress-ecosystem and GitHub-CNA
+- **Interactions** — EPSS × exploit code, WordPress-ecosystem and GitHub-CNA flags, "silent
+  critical" (CVSS ≥ 9 with no public exploit).
   flags, "silent critical" (CVSS ≥ 9 with no public exploit).
 - **IBM Granite** — cosine similarity of each description to KEV descriptions available at that
   snapshot; `max` and `mean-of-top-5`. The reference set is nested by month, so the feature cannot
@@ -63,7 +67,7 @@ contender rather than a token baseline.
 |---|---|
 | CVSS-first, EPSS-first, PoC-then-EPSS | The published baselines, reproduced with deterministic tie-breaks |
 | `histgb_full` / `histgb_lean` / `histgb_deep` | Histogram gradient boosting, three capacity settings |
-| `logit_core` / `logit_core_reg` | L2 logistic regression on 29 standardised features, balanced class weights |
+| `logit_core` / `logit_core_reg` | L2 logistic regression on 26 standardised features, balanced class weights |
 | `*_g` variants | Same models plus the IBM Granite similarity features |
 | `final_blend` | Rank-average of the best boosting model and the best linear model, weight chosen on 2024 |
 
@@ -73,9 +77,12 @@ histogram booster covers the same ground and was measured, not assumed.)
 
 ## 5. Validation protocol
 
-1. **GroupKFold by snapshot month** (6 folds) over all 24 monthly cohorts — no row from a month is
+1. **GroupKFold by snapshot month** (6 folds) — folds are drawn inside the cohort used at each
+   stage (2024 only for selection), so no row from a month is ever in both halves and no selection fold
+   sees a future year.
    ever in both halves of a fold.
-2. Model and blend selection read **only the 2024 out-of-fold columns**.
+2. Model and blend selection read **only 2024 out-of-fold scores produced by folds fitted on 2024**;
+   the 2025 pool is read once, for confirmation.
 3. The chosen configuration is refit on 2024 alone and scored on the **Jan–Sep 2025 pool** — a real
    held-out year, never used for a decision.
 4. Metrics: hits@500 (the official metric), precision@50/100/250/500, average precision, ROC-AUC,

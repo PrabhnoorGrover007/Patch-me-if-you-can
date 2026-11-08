@@ -39,7 +39,7 @@ LEAN = [f for f in FEATURES if f not in CWE_DUMMIES and f != "horizon_days"]
 CORE = [
     "epss_logit", "epss_rank", "any_exploit", "n_exploit_sources", "epss_x_exploit",
     "cvss3", "cvss3_sev_ord", "av_ord", "pr_ord", "ui_required", "scope_changed",
-    "cwe_kev_rate_max", "cwe_x_exploit", "vendor_kev_rate", "vendor_kev_n_log",
+    "vendor_kev_rate", "vendor_kev_n_log",
     "vendor_kev_90_log", "vendor_unseen", "is_github_cna", "is_wordpress_eco",
     "kw_rce", "kw_deserialization", "kw_auth_bypass", "kw_priv_esc", "kw_cmd_injection",
     "age_days", "desc_len_log", "cvss4", "silent_crit",
@@ -50,7 +50,10 @@ def histgb(**kw):
     params = dict(max_iter=400, learning_rate=0.04, max_leaf_nodes=8, min_samples_leaf=40,
                   l2_regularization=5.0, max_features=0.7, early_stopping=False, random_state=RNG)
     params.update(kw)
-    return HistGradientBoostingClassifier(**params)
+    # Median imputation, not native NaN handling: a tree can split on "CVSS is missing", and
+    # blank severity is a documented NIST-review leak (blank means not reviewed yet, which
+    # correlates with not exploited). Filling first removes that split from the model.
+    return make_pipeline(SimpleImputer(strategy="median"), HistGradientBoostingClassifier(**params))
 
 
 def logit(C: float = 0.1):
@@ -119,28 +122,29 @@ def pool_hits(pool: pd.DataFrame, score: np.ndarray, k: int = 500) -> int:
     return int(pool["y"].to_numpy()[bt.top_k_idx(tmp, "s", k=k)].sum())
 
 
-def select(train: pd.DataFrame, sets: dict[str, list[str]]) -> tuple[dict, dict[str, np.ndarray]]:
+def select(train: pd.DataFrame, sets: dict[str, list[str]]) -> tuple[dict, dict[str, np.ndarray], pd.DataFrame]:
+    """Selection uses 2024 cohorts only, with folds drawn from 2024 alone.
+
+    An earlier version ran GroupKFold over 2024-2025 and read the 2024 rows out of it, so each
+    2024 prediction came from a model that had seen 2025 months. That is future data in the
+    selection metric; the folds are now restricted to the 2024 cohort.
+    """
     results, oofs = {}, {}
     m24 = train.snapshot_month.str.startswith("2024").to_numpy()
-    # the held-out pool mirrors the 2026 benchmark: nine months, Jan-Sep
-    m25 = train.snapshot_month.isin(bt.POOL_2025).to_numpy()
     p24 = train[m24].assign(y=train.loc[m24, "label_any"].to_numpy())
-    p25 = train[m25].assign(y=train.loc[m25, "label_any"].to_numpy())
+    d24 = p24.reset_index(drop=True)
     for name, (fn, set_name) in CANDIDATES.items():
         feats = sets[set_name]
         if not feats:
             continue
-        oof = oof_scores(fn, train, feats)
+        oof = oof_scores(fn, d24, feats)
         oofs[name] = oof
-        r = {"features": len(feats), "feature_set": set_name}
-        for tag, part, mask in (("oof_2024", p24, m24), ("oof_2025", p25, m25)):
-            s = oof[mask]
-            r[tag] = {"hits@500": pool_hits(part, s), "hits@100": pool_hits(part, s, 100),
-                      "candidates": int(len(part)), "positives": int(part["y"].sum())}
+        r = {"features": len(feats), "feature_set": set_name,
+             "oof_2024": {"hits@500": pool_hits(p24, oof), "hits@100": pool_hits(p24, oof, 100),
+                          "candidates": int(len(p24)), "positives": int(p24["y"].sum())}}
         results[name] = r
-        print(f"  {name:16s} feats={len(feats):3d}  2024OOF@500={r['oof_2024']['hits@500']:3d}"
-              f"  2025OOF@500={r['oof_2025']['hits@500']:3d}")
-    return results, oofs
+        print(f"  {name:16s} feats={len(feats):3d}  2024OOF@500={r['oof_2024']['hits@500']:3d}")
+    return results, oofs, p24
 
 
 def main() -> None:
@@ -150,11 +154,10 @@ def main() -> None:
           f"{train.snapshot_month.nunique()} months, granite={'yes' if GRANITE[0] in sets['core_g'] else 'no'}")
 
     print("\n== out-of-fold comparison (selection uses the 2024 columns only)")
-    selection, oofs = select(train, sets)
+    selection, oofs, p24 = select(train, sets)
 
     m24 = train.snapshot_month.str.startswith("2024").to_numpy()
     m25 = train.snapshot_month.isin(bt.POOL_2025).to_numpy()
-    p24 = train[m24].assign(y=train.loc[m24, "label_any"].to_numpy())
 
     print("\n== blends on 2024 OOF")
     pairs = [("histgb_full", "logit_core"), ("histgb_lean_g", "logit_core_g"),
@@ -164,22 +167,42 @@ def main() -> None:
         if a not in oofs or b not in oofs:
             continue
         for w in (0.0, 0.2, 0.35, 0.5, 0.65, 0.8, 1.0):
-            s = (1 - w) * rank_pct(oofs[a][m24]) + w * rank_pct(oofs[b][m24])
+            s = (1 - w) * rank_pct(oofs[a]) + w * rank_pct(oofs[b])
             row = {"pair": f"{a}+{b}", "w_b": w, "hits@500": pool_hits(p24, s),
                    "hits@100": pool_hits(p24, s, 100)}
             blend_rows.append(row)
             print(f"  {row['pair']:34s} w={w:.2f}  @500={row['hits@500']:3d}  @100={row['hits@100']:2d}")
-    best = max(blend_rows, key=lambda r: (r["hits@500"], r["hits@100"])) if blend_rows else None
+    # hits@500 on 67 positives moves by 2-3 when the fold seed changes, so blend weights whose
+    # score is within GRANITE_TOL of their pair's best are treated as tied; the tie is broken on
+    # hits@100, where the list is short enough for the ordering itself to matter. Choosing on @500
+    # alone previously shipped the single booster (w=0.0) even though @100 preferred a blend.
+    # One standard error on 67 positives is ~4 hits@500, so a 3-hit gap between weights is noise;
+    # treat the plateau as tied and let hits@100 (a shorter, more discriminative budget) decide.
+    BLEND_TOL = 3
+    GRANITE_TOL = 2
+
+    def winner(pair: str) -> dict:
+        rows = [r for r in blend_rows if r["pair"] == pair]
+        top = max(r["hits@500"] for r in rows)
+        near = [r for r in rows if r["hits@500"] >= top - BLEND_TOL]
+        return max(near, key=lambda r: (r["hits@100"], -r["w_b"]))
+
+    pair_max: dict[str, dict] = {}
+    for r in blend_rows:
+        cur = pair_max.get(r["pair"])
+        if cur is None or (r["hits@500"], r["hits@100"]) > (cur["hits@500"], cur["hits@100"]):
+            pair_max[r["pair"]] = r
+    best = winner(max(pair_max, key=lambda p: (pair_max[p]["hits@500"], pair_max[p]["hits@100"]))) \
+        if blend_rows else None
     # IBM technology use is a competition requirement. When a Granite configuration is within
     # GRANITE_TOL hits@500 of the outright best out-of-fold score (i.e. indistinguishable on the
     # selection metric), prefer it. Both numbers stay in the report.
-    GRANITE_TOL = 2
-    granite_rows = [r for r in blend_rows if "_g" in r["pair"]]
     preference_applied = False
-    if best and granite_rows:
-        g = max(granite_rows, key=lambda r: (r["hits@500"], r["hits@100"]))
-        if g["hits@500"] >= best["hits@500"] - GRANITE_TOL:
-            best, preference_applied = g, True
+    granite_pairs = [p for p in pair_max if "_g" in p]
+    if best and granite_pairs:
+        gp = max(granite_pairs, key=lambda p: (pair_max[p]["hits@500"], pair_max[p]["hits@100"]))
+        if pair_max[gp]["hits@500"] >= pair_max[best["pair"]]["hits@500"] - GRANITE_TOL:
+            best, preference_applied = winner(gp), True
     print(f"  -> selected {best['pair']} w_b={best['w_b']} "
           f"(granite preference applied: {preference_applied})")
     a_name, b_name = best["pair"].split("+") if best else ("histgb_full", "logit_core")
