@@ -156,7 +156,10 @@ def build_train_base(recent, kev, data_dir):
     base = base.merge(signals, on=["cve_id", "snapshot_month"], how="left")
 
     base = base.merge(kev[["cve_id", "date_added"]], on="cve_id", how="left")
-    already_on_kev = (base["date_added"] <= base["snapshot_end"]) | (base["in_kev"] == 1)
+    # CVEs with no signal row have in_kev = <NA>; treat that as "not on KEV" (fillna(False)),
+    # otherwise the NA makes the row silently disappear from the boolean filter below.
+    already_on_kev = ((base["date_added"] <= base["snapshot_end"])
+                      | (base["in_kev"] == 1).fillna(False)).astype(bool)
     log(f"dropping {int(already_on_kev.sum()):,} CVEs already on KEV at their cutoff "
         "(the scoreboard excludes these too)")
     base = base[~already_on_kev].copy()
