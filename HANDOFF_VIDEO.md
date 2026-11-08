@@ -66,7 +66,7 @@ Asset file names expected for the master:
 `explainer/` is the existing Remotion project (Remotion 4.0.537, React 18). It has an earlier 2:00 cartoon (scenes 1–3, 8). The new master should be a **new composition at exactly 4,500 frames**, with one `<Sequence>` per slot in `PLOT_2m30.md`. Each clip is trimmed to its slot, and a missing file shows a labelled placeholder so the length never changes. Run with `cd explainer && npm install && npm run preview`.
 
 ## Open items
-- [ ] Harsh: Higgsfield clips A, B, C, D, F, G, H (reference photos of Harsh and Zahan; confirm Zahan agrees to his likeness and voice being used)
+- [ ] Harsh: Higgsfield clips A, B, C, D, F, G, H (reference photos of Harsh and Zahan; Zahan confirmed on Nov 8 that his likeness and voice can be used)
 - [ ] Team: set up IBM Granite keys before recording the Chat tab
 - [ ] Team: fill the patch board (about 8 cards, a few Done) before recording Remediation/Risk trends
 - [ ] Decide on "IBM Bank" vs "Granite Bank" signage
