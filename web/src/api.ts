@@ -76,7 +76,7 @@ export interface Perf {
   label: string;
   train_rows: number;
   train_positives: number;
-  selection: Record<string, { features: number; oof_2024: { "hits@500": number }; oof_2025: { "hits@500": number } }>;
+  selection: Record<string, { features: number; oof_2024: { "hits@500": number } }>;
   heldout_2025: { positives: number; rows: HeldoutRow[] };
   selected_blend: { pair: string; w_b: number; "hits@500": number };
   permutation_importance: { feature: string; importance: number; std: number }[];
