@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07 20:23:19",
+  "generated_at": "2026-11-08 01:06:12",
   "label_rule": "1 if added to CISA KEV after the end of snapshot_month and on/before 2025-12-31",
   "features_used": [
     "epss",
@@ -36,80 +36,80 @@
   ],
   "train_period": "2024-01 to 2024-12",
   "validation_period": "2025-01 to 2025-11",
-  "train_rows": 38428,
-  "train_positives": 63,
-  "validation_rows": 39859,
-  "validation_positives": 48,
-  "k_scaled_explanation": "Validation has 39,859 rows vs 72,670 in the scoreboard, so top 274 is the same share (0.69%) as top 500 of the scoreboard.",
-  "k_scaled": 274,
+  "train_rows": 39868,
+  "train_positives": 67,
+  "validation_rows": 42559,
+  "validation_positives": 52,
+  "k_scaled_explanation": "Validation has 42,559 rows vs 72,670 in the scoreboard, so top 293 is the same share (0.69%) as top 500 of the scoreboard.",
+  "k_scaled": 293,
   "validation": {
     "models": {
       "logistic_regression": {
-        "hits_at_274": 17,
+        "hits_at_293": 17,
         "hits_at_500": 18,
-        "precision_at_274": 0.062,
-        "recall_at_274": 0.3542,
+        "precision_at_293": 0.058,
+        "recall_at_293": 0.3269,
         "precision_at_500": 0.036,
-        "recall_at_500": 0.375,
-        "average_precision": 0.0535,
-        "roc_auc": 0.8801
+        "recall_at_500": 0.3462,
+        "average_precision": 0.045,
+        "roc_auc": 0.8613
       },
       "hist_gradient_boosting": {
-        "hits_at_274": 11,
-        "hits_at_500": 17,
-        "precision_at_274": 0.0401,
-        "recall_at_274": 0.2292,
-        "precision_at_500": 0.034,
-        "recall_at_500": 0.3542,
-        "average_precision": 0.0294,
-        "roc_auc": 0.8012
+        "hits_at_293": 11,
+        "hits_at_500": 12,
+        "precision_at_293": 0.0375,
+        "recall_at_293": 0.2115,
+        "precision_at_500": 0.024,
+        "recall_at_500": 0.2308,
+        "average_precision": 0.0235,
+        "roc_auc": 0.8158
       }
     },
     "baselines": {
       "cvss_first": {
-        "hits_at_274": 5,
+        "hits_at_293": 5,
         "hits_at_500": 10,
-        "precision_at_274": 0.0182,
-        "recall_at_274": 0.1042,
+        "precision_at_293": 0.0171,
+        "recall_at_293": 0.0962,
         "precision_at_500": 0.02,
-        "recall_at_500": 0.2083,
-        "average_precision": 0.0137,
-        "roc_auc": 0.7422
+        "recall_at_500": 0.1923,
+        "average_precision": 0.0126,
+        "roc_auc": 0.7386
       },
       "epss_first": {
-        "hits_at_274": 11,
+        "hits_at_293": 11,
         "hits_at_500": 13,
-        "precision_at_274": 0.0401,
-        "recall_at_274": 0.2292,
+        "precision_at_293": 0.0375,
+        "recall_at_293": 0.2115,
         "precision_at_500": 0.026,
-        "recall_at_500": 0.2708,
-        "average_precision": 0.029,
-        "roc_auc": 0.7648
+        "recall_at_500": 0.25,
+        "average_precision": 0.0269,
+        "roc_auc": 0.7221
       },
       "exploit_flags_then_epss": {
-        "hits_at_274": 15,
+        "hits_at_293": 15,
         "hits_at_500": 20,
-        "precision_at_274": 0.0547,
-        "recall_at_274": 0.3125,
+        "precision_at_293": 0.0512,
+        "recall_at_293": 0.2885,
         "precision_at_500": 0.04,
-        "recall_at_500": 0.4167,
-        "average_precision": 0.054,
-        "roc_auc": 0.828
+        "recall_at_500": 0.3846,
+        "average_precision": 0.05,
+        "roc_auc": 0.7768
       },
       "heuristic_baseline": {
-        "hits_at_274": 12,
+        "hits_at_293": 12,
         "hits_at_500": 15,
-        "precision_at_274": 0.0438,
-        "recall_at_274": 0.25,
+        "precision_at_293": 0.041,
+        "recall_at_293": 0.2308,
         "precision_at_500": 0.03,
-        "recall_at_500": 0.3125,
-        "average_precision": 0.0405,
-        "roc_auc": 0.8797
+        "recall_at_500": 0.2885,
+        "average_precision": 0.0375,
+        "roc_auc": 0.8626
       }
     }
   },
   "selected_model": "logistic_regression",
-  "final_model_trained_on": "all 78,287 training rows (111 positives)",
+  "final_model_trained_on": "all 82,427 training rows (119 positives)",
   "scoreboard_rows_scored": 72670,
   "notes": [
     "risk_score is a ranking score, not a calibrated probability.",

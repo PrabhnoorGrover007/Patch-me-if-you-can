@@ -50,7 +50,7 @@ If PowerShell blocks `Activate.ps1`, run
 2. **Compare.** It scores logistic regression, gradient boosting and simple rankings (CVSS, EPSS,
    exploit flags then EPSS, and a hand-made rule) on the same 2025 rows. The measure is Hits@K:
    how many truly exploited CVEs land in the top K.
-3. **Pick and retrain.** The model with the most hits in the top 274 (the same 0.69% share as the
+3. **Pick and retrain.** The model with the most hits in the top 293 (the same 0.69% share as the
    top 500 of the scoreboard) wins. It's retrained on all history, then scores the 72,670
    scoreboard CVEs.
 4. **Write outputs.**

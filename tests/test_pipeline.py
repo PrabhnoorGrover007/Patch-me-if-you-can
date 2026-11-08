@@ -28,6 +28,16 @@ class LabelRuleTest(unittest.TestCase):
         self.assertEqual([d.strftime("%Y-%m-%d") for d in ends], ["2024-02-29", "2025-03-31", "2025-12-31"])
 
 
+class SignalJoinTest(unittest.TestCase):
+    def test_cve_without_signal_row_is_not_treated_as_on_kev(self):
+        # in_kev is <NA> after the left join when a CVE has no signal row that month
+        in_kev = pd.Series([pd.NA, 1, 0], dtype="Int8")
+        kev_hit = pd.Series([False, False, False])
+        already = (kev_hit | (in_kev == 1).fillna(False)).astype(bool)
+        self.assertEqual(already.tolist(), [False, True, False])
+        self.assertEqual(int((~already).sum()), 2)
+
+
 class PointInTimeTest(unittest.TestCase):
     def test_prior_count_only_counts_strictly_earlier_kev_additions(self):
         dates = {"acme": np.array(pd.to_datetime(["2024-01-15", "2024-03-01", "2024-05-20"]).values)}
