@@ -38,7 +38,7 @@ export default function Workflow() {
         <Card title="Before vs after" sub="What changes in the weekly patch meeting">
           <table>
             <thead>
-              <tr><th>Severity-first process</th><th>Before the Breach</th></tr>
+              <tr><th>Severity-first process</th><th>PATCH ME IF YOU CAN</th></tr>
             </thead>
             <tbody>
               <tr><td>Sort by CVSS 9+</td><td>Sort by predicted exploitation likelihood</td></tr>

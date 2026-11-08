@@ -65,6 +65,14 @@ Verification: no positive label has `days_to_kev <= 0`; all negatives with an ob
 `<= 0` (i.e. already in KEV at the snapshot and therefore filtered out). Asserted in
 `tests/test_pipeline.py`.
 
+**Follow-up audit (2026-11-08).** The original candidate filter used the monthly signal file's
+`in_kev` flag after filling absent monthly rows with zero. A join to the authoritative KEV table found
+**14 CVEs that were already on KEV at their snapshot** but had no signal row for that month. They were
+being treated as candidates and, because their KEV addition preceded the observation window, as
+negatives. The cohort now filters on `kev_added <= snapshot_end` before labels are built; the training
+table is **87,907 rows / 122 positives**, and the offending rows are gone. This is a correction to the
+original audit, not a new limitation.
+
 ## 5. What we did not do
 
 - No external datasets. Adding e.g. a vendor breach feed would risk importing post-snapshot knowledge.

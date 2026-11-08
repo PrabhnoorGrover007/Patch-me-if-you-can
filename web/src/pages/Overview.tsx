@@ -25,7 +25,7 @@ export default function Overview() {
     <>
       <div className="page-head">
         <div>
-          <div className="eyebrow">IBM track · Sheridan Datathon 2026</div>
+          <div className="eyebrow">IBM · Before the Breach track · Sheridan Datathon 2026</div>
           <h1>What will attackers actually exploit?</h1>
           <p className="lede">
             {fmt.int(data.analyzed)} vulnerabilities published January–September 2026, scored with only
@@ -33,9 +33,12 @@ export default function Overview() {
             a breach could be; this ranks how likely it is that someone tries.
           </p>
         </div>
-        <a className="button" href="/api/export?limit=500">
-          Export prioritised list
-        </a>
+        <div className="page-actions">
+          <Link className="button ghost" to="/patch">Run the 20-patch challenge</Link>
+          <a className="button" href="/api/export?limit=500">
+            Export prioritised list
+          </a>
+        </div>
       </div>
 
       <div className="grid c4">

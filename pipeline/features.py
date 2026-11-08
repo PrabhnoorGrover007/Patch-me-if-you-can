@@ -271,6 +271,17 @@ def build_train(vuln: pd.DataFrame, signals: pd.DataFrame, kev: pd.DataFrame, ta
 
     kev_add = kev.drop_duplicates("cve_id").set_index("cve_id")["date_added"]
     df["kev_added"] = df["cve_id"].map(kev_add)
+
+    # The benchmark excludes CVEs that were already on KEV at snapshot time. The old filter
+    # used the monthly signal file's `in_kev` flag and filled missing signal rows with zero,
+    # which silently admitted a small number of already-exploited CVEs. Use the authoritative
+    # KEV date instead so signal-file coverage cannot change the candidate population.
+    already_kev = df["kev_added"].notna() & (df["kev_added"] <= df["snapshot_end"])
+    excluded_already_kev = int(already_kev.sum())
+    if excluded_already_kev:
+        log(f"excluded {excluded_already_kev} rows already on KEV at snapshot")
+    df = df[~already_kev].copy()
+
     df["days_to_kev"] = (df["kev_added"] - df["snapshot_end"]).dt.days
 
     for h in (90, 180):
@@ -282,6 +293,7 @@ def build_train(vuln: pd.DataFrame, signals: pd.DataFrame, kev: pd.DataFrame, ta
     df = add_signal_features(df)
     df = apply_priors(df, tables)
     df = add_interactions(df)
+    df.attrs["excluded_already_kev"] = excluded_already_kev
     return df
 
 
@@ -346,6 +358,8 @@ def main() -> None:
         "features": FEATURES,
         "feature_groups": FEATURE_GROUPS,
         "positives": {c: int(train[c].sum()) for c in ["label_any", "label_90", "label_180"]},
+        "excluded_already_kev": int(train.attrs.get("excluded_already_kev", 0)),
+        "signal_missing_train": int(train["epss"].isna().sum()),
         "positives_by_month": train.groupby("snapshot_month")[["label_any", "label_90", "label_180"]].sum().astype(int).to_dict("index"),
         "train_months": sorted(train.snapshot_month.unique().tolist()),
         "predict_months": sorted(predict.snapshot_month.unique().tolist()),

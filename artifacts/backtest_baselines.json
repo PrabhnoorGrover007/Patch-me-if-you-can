@@ -1,6 +1,6 @@
 {
   "2025_jan_sep": {
-    "candidates": 35289,
+    "candidates": 35280,
     "positives": 52,
     "base_rate": 0.00147,
     "baselines": [
@@ -34,9 +34,9 @@
     "recall_at_500_ceiling": 9.6154
   },
   "2024_jan_sep": {
-    "candidates": 28844,
+    "candidates": 28839,
     "positives": 46,
-    "base_rate": 0.00159,
+    "base_rate": 0.0016,
     "baselines": [
       {
         "model": "cvss3_first",

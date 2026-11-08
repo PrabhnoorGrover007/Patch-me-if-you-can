@@ -1,5 +1,5 @@
 {
-  "train_rows": 87921,
+  "train_rows": 87907,
   "predict_rows": 72670,
   "features": [
     "pub_month",
@@ -166,6 +166,8 @@
     "label_90": 76,
     "label_180": 100
   },
+  "excluded_already_kev": 14,
+  "signal_missing_train": 5838,
   "positives_by_month": {
     "2024-01": {
       "label_any": 5,
@@ -343,8 +345,8 @@
   "missing_train": {
     "cvss3": 3089,
     "cvss3_sev_ord": 3089,
-    "cvss4": 71948,
-    "cvss2": 79051,
+    "cvss4": 71935,
+    "cvss2": 79039,
     "av_ord": 3089,
     "pr_ord": 3089,
     "con_ord": 3089,
@@ -352,8 +354,8 @@
     "ava_ord": 3089,
     "cvss3_exploitability": 3089,
     "cvss3_impact": 3089,
-    "epss": 5849,
-    "epss_logit": 5849,
-    "epss_rank": 5849
+    "epss": 5838,
+    "epss_logit": 5838,
+    "epss_rank": 5838
   }
 }

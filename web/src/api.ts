@@ -1,7 +1,7 @@
 const BASE = import.meta.env.VITE_API_BASE ?? "";
 
-export async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE}${path}`);
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, init);
   if (!res.ok) {
     let detail = res.statusText;
     try {
@@ -13,6 +13,18 @@ export async function get<T>(path: string): Promise<T> {
     throw new Error(detail);
   }
   return res.json() as Promise<T>;
+}
+
+export function get<T>(path: string): Promise<T> {
+  return request<T>(path);
+}
+
+export function post<T>(path: string, body: unknown): Promise<T> {
+  return request<T>(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
 }
 
 export interface VulnRow {
@@ -121,6 +133,141 @@ export interface VulnDetail {
   contributions: { feature: string; contribution: number }[];
   remediation_priority: string;
   disclaimer: string;
+}
+
+export interface PatchItem {
+  cve_id: string;
+  rank: number;
+  risk_score: number | null;
+  cvss3_score: number | null;
+  cvss3_severity: string | null;
+  epss_score: number | null;
+  poc_github: number | null;
+  n_exploit_sources: number | null;
+  vendor: string;
+  cwe_top: string;
+  reason: string;
+}
+
+export interface PatchResult {
+  budget: number;
+  strategies: Record<string, { label: string; count: number; items: PatchItem[] }>;
+  overlap: Record<string, Record<string, number>>;
+  unique: Record<string, string[]>;
+  historical_validation: {
+    pool?: string;
+    candidates?: number;
+    positives?: number;
+    model_top500_hits?: number;
+    baseline_union_hits?: number;
+    missed_by_all_baselines?: number;
+    missed_but_recovered_by_model?: number;
+  };
+  note: string;
+}
+
+export interface SimilarItem {
+  cve_id: string;
+  similarity: number;
+  rank: number;
+  risk_score: number;
+  cvss3_score: number | null;
+  epss_score: number | null;
+  vendor: string;
+  cwe_top: string;
+}
+
+export interface SimilarResponse {
+  cve_id: string;
+  source: string;
+  dim: number | null;
+  note: string;
+  items: SimilarItem[];
+}
+
+export interface TimelinePoint {
+  month: string;
+  epss: number | null;
+  in_kev: boolean;
+  exploit_sources: number;
+}
+
+export interface TimelineResponse {
+  cve_id: string;
+  published: string;
+  snapshot_month: string | null;
+  kev_added: string | null;
+  points: TimelinePoint[];
+  note: string;
+}
+
+export interface DNAEvidence {
+  characteristic: string;
+  source_text: string;
+}
+
+export interface DNA {
+  attack_surface: string;
+  authentication_required: boolean | null;
+  remote_exploitation_possible: boolean | null;
+  code_execution: boolean | null;
+  privilege_escalation: boolean | null;
+  information_disclosure: boolean | null;
+  vulnerability_class: string;
+  evidence: DNAEvidence[];
+  uncertainty: string[];
+  method: string;
+}
+
+export interface AnalyzeResponse {
+  cve_id: string;
+  source: string;
+  embedding_model: string;
+  generative_model: string | null;
+  extracted: DNA;
+  verified: {
+    cvss3_score: number | null;
+    cvss3_severity: string | null;
+    epss_score: number | null;
+    cwe_top: string;
+    cwe_name: string;
+    technical: Record<string, number | null>;
+  };
+  analogs: SimilarItem[];
+  note: string;
+}
+
+export interface ChatResponse {
+  cve_id?: string;
+  answer: string;
+  source: string;
+  generative_model: string | null;
+  citations: string[];
+}
+
+export interface ProductRow {
+  product_id: string;
+  vendor: string;
+  vulnerabilities: number;
+  cpe_product_rows: number;
+}
+
+export interface ProductPage {
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
+  note: string;
+  items: ProductRow[];
+}
+
+export interface ProductVulnPage {
+  product_id: string;
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
+  items: Omit<VulnRow, "risk_percentile" | "snapshot_month" | "published">[];
 }
 
 export const fmt = {

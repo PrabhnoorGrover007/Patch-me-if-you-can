@@ -3,31 +3,31 @@
   "single_models": [
     {
       "model": "histgb_lean",
-      "hits@500": 18,
+      "hits@500": 17,
       "precision@50": 0.14,
-      "average_precision": 0.05698,
-      "roc_auc": 0.83781
+      "average_precision": 0.06029,
+      "roc_auc": 0.8342
     },
     {
       "model": "histgb_lean_g",
-      "hits@500": 16,
+      "hits@500": 18,
       "precision@50": 0.12,
-      "average_precision": 0.06425,
-      "roc_auc": 0.85074
+      "average_precision": 0.06815,
+      "roc_auc": 0.85375
     },
     {
       "model": "logit_core",
       "hits@500": 19,
       "precision@50": 0.08,
-      "average_precision": 0.04929,
-      "roc_auc": 0.80306
+      "average_precision": 0.04972,
+      "roc_auc": 0.80317
     },
     {
       "model": "logit_core_g",
       "hits@500": 20,
-      "precision@50": 0.06,
-      "average_precision": 0.05655,
-      "roc_auc": 0.83501
+      "precision@50": 0.08,
+      "average_precision": 0.05735,
+      "roc_auc": 0.83506
     }
   ],
   "blends": [
@@ -35,17 +35,17 @@
       "models": "histgb_lean+logit_core",
       "uses_granite": false,
       "w": 0.2,
-      "hits@500": 17,
-      "precision@50": 0.2,
-      "average_precision": 0.08996
+      "hits@500": 16,
+      "precision@50": 0.22,
+      "average_precision": 0.09845
     },
     {
       "models": "histgb_lean+logit_core",
       "uses_granite": false,
       "w": 0.35,
-      "hits@500": 17,
-      "precision@50": 0.18,
-      "average_precision": 0.08792
+      "hits@500": 16,
+      "precision@50": 0.22,
+      "average_precision": 0.0988
     },
     {
       "models": "histgb_lean+logit_core",
@@ -53,15 +53,15 @@
       "w": 0.5,
       "hits@500": 16,
       "precision@50": 0.2,
-      "average_precision": 0.0937
+      "average_precision": 0.10027
     },
     {
       "models": "histgb_lean_g+logit_core_g",
       "uses_granite": true,
       "w": 0.2,
       "hits@500": 20,
-      "precision@50": 0.22,
-      "average_precision": 0.10974
+      "precision@50": 0.2,
+      "average_precision": 0.12394
     },
     {
       "models": "histgb_lean_g+logit_core_g",
@@ -69,15 +69,15 @@
       "w": 0.35,
       "hits@500": 20,
       "precision@50": 0.22,
-      "average_precision": 0.12138
+      "average_precision": 0.14253
     },
     {
       "models": "histgb_lean_g+logit_core_g",
       "uses_granite": true,
       "w": 0.5,
-      "hits@500": 19,
+      "hits@500": 20,
       "precision@50": 0.22,
-      "average_precision": 0.11247
+      "average_precision": 0.14357
     }
   ]
 }

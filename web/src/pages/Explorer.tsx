@@ -18,6 +18,8 @@ export default function Explorer() {
   const [severity, setSeverity] = useState<string[]>([]);
   const [minEpss, setMinEpss] = useState("");
   const [exploitOnly, setExploitOnly] = useState(false);
+  const [vendor, setVendor] = useState("");
+  const [cwe, setCwe] = useState("");
 
   const load = useCallback(() => {
     const params = new URLSearchParams({ page: String(page), size: String(size), sort, order });
@@ -25,11 +27,13 @@ export default function Explorer() {
     if (severity.length) params.set("severity", severity.join(","));
     if (minEpss) params.set("min_epss", minEpss);
     if (exploitOnly) params.set("exploit_only", "true");
+    if (vendor.trim()) params.set("vendor", vendor.trim());
+    if (cwe.trim()) params.set("cwe", cwe.trim().toUpperCase());
     setError(null);
     get<VulnPage>(`/api/vulnerabilities?${params.toString()}`)
       .then(setData)
       .catch((e: Error) => setError(e.message));
-  }, [page, size, sort, order, query, severity, minEpss, exploitOnly]);
+  }, [page, size, sort, order, query, severity, minEpss, exploitOnly, vendor, cwe]);
 
   useEffect(() => {
     load();
@@ -70,7 +74,7 @@ export default function Explorer() {
       <div className="toolbar">
         <input
           type="search"
-          placeholder="Search CVE id…"
+          placeholder="Search CVE id or description…"
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => {
@@ -86,6 +90,20 @@ export default function Explorer() {
           <option value="0.1">EPSS ≥ 10%</option>
           <option value="0.5">EPSS ≥ 50%</option>
         </select>
+        <input
+          type="text"
+          placeholder="Vendor (assigner)"
+          value={vendor}
+          onChange={(e) => { setVendor(e.target.value); setPage(1); }}
+          style={{ width: 160 }}
+        />
+        <input
+          type="text"
+          placeholder="CWE (e.g. CWE-79)"
+          value={cwe}
+          onChange={(e) => { setCwe(e.target.value); setPage(1); }}
+          style={{ width: 150 }}
+        />
         {SEVERITIES.map((s) => (
           <label className="check" key={s}>
             <input type="checkbox" checked={severity.includes(s)} onChange={() => toggleSeverity(s)} />
@@ -96,7 +114,7 @@ export default function Explorer() {
           <input type="checkbox" checked={exploitOnly} onChange={(e) => { setExploitOnly(e.target.checked); setPage(1); }} />
           Public exploit code only
         </label>
-        <button className="button ghost" onClick={() => { setQ(""); setQuery(""); setSeverity([]); setMinEpss(""); setExploitOnly(false); setPage(1); }}>
+        <button className="button ghost" onClick={() => { setQ(""); setQuery(""); setSeverity([]); setMinEpss(""); setExploitOnly(false); setVendor(""); setCwe(""); setPage(1); }}>
           Reset
         </button>
       </div>

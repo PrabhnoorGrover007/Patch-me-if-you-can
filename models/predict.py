@@ -89,7 +89,8 @@ def main() -> None:
     out = predict[["cve_id", "snapshot_month", "published", "cvss3", "cvss3_severity", "epss",
                    "epss_rank", "poc_github", "nuclei", "metasploit", "vendor_key",
                    "cwe_ids", "vendor_kev_n", "granite_knn_max",
-                   "any_exploit", "kw_rce", "kw_auth_bypass", "age_days"]].copy()
+                   "any_exploit", "kw_rce", "kw_auth_bypass", "age_days",
+                   "av_ord", "pr_ord", "ui_required", "n_exploit_sources"]].copy()
     out["histgb_score"] = scores.get(a)
     out["logit_score"] = scores.get(b)
     out["risk_score"] = risk

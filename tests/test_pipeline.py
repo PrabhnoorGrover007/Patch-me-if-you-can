@@ -43,8 +43,17 @@ def test_labels_only_count_future_additions():
     train = pd.read_parquet(ART / "train.parquet")
     pos = train[train["label_any"] == 1]
     assert (pos["days_to_kev"] > 0).all(), "a positive label was added before/at the snapshot"
-    neg = train[(train["label_any"] == 0) & train["days_to_kev"].notna()]
-    assert (neg["days_to_kev"] <= 0).all()
+    # The benchmark excludes CVEs that were already on KEV at snapshot time. A missing monthly
+    # signal row used to admit 14 such rows because in_kev was filled with zero.
+    assert not (train["days_to_kev"].notna() & (train["days_to_kev"] <= 0)).any(), \
+        "an already-exploited CVE leaked into the candidate cohort"
+
+
+def test_top500_matches_model_order():
+    ranked = pd.read_parquet(ART / "ranked_2026.parquet")
+    top = pd.read_csv(ROOT / "top500.csv")
+    assert top["cve_id"].tolist() == ranked.head(500)["cve_id"].tolist()
+    assert ranked.head(500)["risk_score"].is_monotonic_decreasing
 
 
 def test_train_predict_feature_parity():

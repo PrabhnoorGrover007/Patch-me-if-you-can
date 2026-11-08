@@ -1,19 +1,21 @@
 {
   "pool": "Jan-Sep 2025 (held-out)",
-  "candidates": 35289,
+  "candidates": 35280,
   "positives": 52,
-  "model_top500_hits": 20,
+  "model_top500_hits": 22,
   "baseline_union_hits": 19,
   "missed_by_all_baselines": 33,
-  "missed_but_recovered_by_model": 5,
+  "missed_but_recovered_by_model": 7,
   "recovered_ids": [
     "CVE-2024-53704",
-    "CVE-2025-6554",
+    "CVE-2024-54085",
+    "CVE-2025-2746",
+    "CVE-2025-2747",
     "CVE-2025-9242",
     "CVE-2025-24472",
     "CVE-2025-41244"
   ],
-  "overlap_with_baseline_union": 176,
+  "overlap_with_baseline_union": 215,
   "recovered_examples": [
     {
       "cve_id": "CVE-2024-53704",
@@ -24,12 +26,28 @@
       "cwe_ids": "CWE-287"
     },
     {
-      "cve_id": "CVE-2025-6554",
-      "snapshot_month": "2025-06",
-      "cvss3": 8.1,
-      "epss": NaN,
-      "vendor_key": "google",
-      "cwe_ids": "CWE-843"
+      "cve_id": "CVE-2024-54085",
+      "snapshot_month": "2025-03",
+      "cvss3": 9.8,
+      "epss": 0.0010000000474974513,
+      "vendor_key": "ami",
+      "cwe_ids": "CWE-290"
+    },
+    {
+      "cve_id": "CVE-2025-2746",
+      "snapshot_month": "2025-03",
+      "cvss3": 9.8,
+      "epss": 0.001180000021122396,
+      "vendor_key": "vulncheck",
+      "cwe_ids": "CWE-288"
+    },
+    {
+      "cve_id": "CVE-2025-2747",
+      "snapshot_month": "2025-03",
+      "cvss3": 9.8,
+      "epss": 0.001180000021122396,
+      "vendor_key": "vulncheck",
+      "cwe_ids": "CWE-288"
     },
     {
       "cve_id": "CVE-2025-9242",

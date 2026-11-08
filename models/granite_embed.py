@@ -101,7 +101,7 @@ def main() -> None:
         "predict_max_sim_mean": float(pr_feat["granite_knn_max"].mean()),
         "seconds": round(time.time() - t0, 1),
     }
-    (ART / "granite_meta.json").write_text(json.dumps(meta, indent=2))
+    (ART / "granite_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
     log(f"done: {meta}")
 
 

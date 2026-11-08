@@ -54,6 +54,7 @@ export default function CveDetail() {
           <div className="stat-label">Risk score</div>
           <div className="stat-value accent">{row.risk_score.toFixed(3)}</div>
           <div className="stat-foot">top {(100 - row.risk_percentile * 100).toFixed(2)}% of 72,670</div>
+          <Link className="button ghost" to="/granite" style={{ marginTop: 10 }}>Granite intelligence</Link>
         </div>
       </div>
 
@@ -92,8 +93,6 @@ export default function CveDetail() {
             <dl className="kv" style={{ marginTop: 12 }}>
               <dt>Vendor KEV history</dt>
               <dd>{tech.vendor_kev_prior == null ? "no prior KEV entries" : `${tech.vendor_kev_prior} prior KEV entries`}</dd>
-              <dt>Weakness class KEV rate</dt>
-              <dd>{tech.cwe_kev_rate == null ? "—" : fmt.pct(tech.cwe_kev_rate)}</dd>
               <dt>Public exploit sources</dt>
               <dd>{tech.n_exploit_sources == null ? "—" : tech.n_exploit_sources}</dd>
               <dt>Granite similarity</dt>
@@ -103,7 +102,11 @@ export default function CveDetail() {
                   : `${tech.granite_similarity.toFixed(3)} cosine to prior KEV descriptions`}
               </dd>
               <dt>CVSS attack vector</dt>
-              <dd>{["physical", "local", "adjacent", "network"][tech.attack_vector ?? 0] ?? "—"}</dd>
+              <dd>{tech.attack_vector == null ? "—" : ["physical", "local", "adjacent", "network"][tech.attack_vector] ?? "—"}</dd>
+              <dt>Privileges required</dt>
+              <dd>{tech.privileges_required == null ? "—" : ["none", "low", "high"][tech.privileges_required] ?? "—"}</dd>
+              <dt>User interaction</dt>
+              <dd>{tech.user_interaction == null ? "—" : tech.user_interaction ? "required" : "none"}</dd>
             </dl>
           </Card>
         </div>

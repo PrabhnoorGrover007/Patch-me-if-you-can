@@ -5,7 +5,7 @@
 - **We cannot report the official 2026 result.** The answer key (KEV additions to 4 November 2026) is
   not in the supplied data — the KEV file ends 2025-12-29. Every performance number in this project is
   a *historical* validation number on reconstructed cohorts, and is labelled as such.
-- **The historical pools are easier than the 2026 pool.** The Jan–Sep 2025 pool has 35,289 candidates
+- **The historical pools are easier than the 2026 pool.** The Jan–Sep 2025 pool has 35,280 candidates
   and 52 positives (0.147%); the 2026 pool has 72,670 candidates. A top-500 slice is therefore a
   larger fraction of the historical pool, which flatters every method, baselines included. Our
   baselines score differently from the official 7/6/8 for exactly this reason (5/8/18 on our pool).
@@ -44,20 +44,20 @@
 
 - **Blend weights were selected on 2024 out-of-fold scores** with 67 positives. That is a thin basis
   for a weight; the selected 0.2 vs 0.8 is not meaningfully better than nearby values, and we say so.
-- **The Granite preference is a judgement call.** The shipped blend scores 27 hits@500 on the
-  selection metric against 28 for the best non-Granite blend, and we preferred it because IBM
-  technology use is a competition requirement. It then scored 20 vs 18 on held-out, but that held-out
-  result was observable to us before the final choice, so treat the preference as a documented
-  decision rather than a clean pre-registered one. Both configurations are reported in
-  MODEL_EVALUATION.md.
+- **The Granite preference is a judgement call.** The selected pair's best 2024 OOF score is 29
+  hits@500 against 30 for the outright best pair, and we preferred it because IBM technology use is a
+  competition requirement; the selected weight itself scores 26, so the preference is not a clean
+  win. It then scored 22 vs 18 on held-out, but that held-out result was observable to us before the
+  final choice, so treat the preference as a documented decision rather than a clean pre-registered
+  one. Both configurations are reported in MODEL_EVALUATION.md.
 - **The permutation importances** are computed on a subsample of the held-out pool and are unstable
   under resampling; treat the ordering as indicative.
 - **Calibration is approximate.** The blend is a rank average, so its output is a percentile, not a
   probability. The UI therefore calls it a risk score with a percentile, not a probability of
   exploitation.
-- **Granite embeddings run in bfloat16 on CPU**, which is slower than fp32 on some CPUs and introduces
-  small numerical differences across machines; the features are recomputed from scratch by the
-  pipeline, so this affects reproducibility at the fourth decimal, not the ranking.
+- **Granite embeddings are float32 on CPU**; last-bit differences across BLAS implementations can
+  move a cosine similarity by a few thousandths, but the features are recomputed from scratch and the
+  ranking is stable at that scale.
 
 ## On the product
 

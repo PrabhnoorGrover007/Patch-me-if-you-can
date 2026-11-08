@@ -104,7 +104,7 @@ def main() -> None:
         "principle": "a feature is admissible only if its value could have been known at the end of the "
                      "vulnerability's snapshot month",
     }
-    (ART / "feature_audit.json").write_text(json.dumps(payload, indent=2))
+    (ART / "feature_audit.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
     lines = [
         "# Feature availability audit", "",
@@ -131,7 +131,7 @@ def main() -> None:
               "2026 pool lacks them for reasons that correlate with NVD attention.",
               "- Exploit-signal files cover 2024-01 to 2025-12 only; 2023 cohorts are therefore excluded from "
               "training rather than imputed, because a fully-missing EPSS column is not a neutral imputation."]
-    (DOCS / "FEATURE_AUDIT.md").write_text("\n".join(lines) + "\n")
+    (DOCS / "FEATURE_AUDIT.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"[audit] {len(rows)} features, {len(EXCLUDED)} excluded columns -> docs/FEATURE_AUDIT.md")
 
 

@@ -99,7 +99,7 @@ export default function Performance() {
       </div>
 
       <div className="section grid c2">
-        <Card title="Out-of-fold comparison" sub="All 24 monthly cohorts; 2024 was the selection signal, with 2025 held-out confirmation shown above">
+        <Card title="Out-of-fold comparison" sub="2024 selection cohorts only; 2025 is the held-out confirmation shown above">
           <div className="table-wrap" style={{ border: "none" }}>
             <table>
               <thead>
