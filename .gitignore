@@ -27,3 +27,12 @@ out/*.parquet
 
 # Local assistant notes (not part of the project)
 CLAUDE.md
+
+# Node build artefacts and local state
+app/node_modules/
+app/.next/
+app/.data/
+*.tsbuildinfo
+
+# macOS
+.DS_Store
