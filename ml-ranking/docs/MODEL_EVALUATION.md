@@ -113,6 +113,25 @@ Interactions dominate: neither weakness class nor exploit availability is worth 
 "this class, with public exploit code" is the single strongest thing the model knows. Granite's
 similarity feature ranks seventh, which is why we keep it and also why we do not call it the engine.
 
+## What we tested and rejected
+
+Every candidate feature has to pass a gate fixed before it is evaluated: it must hold or improve
+hits@500 both on the 2024 out-of-fold pool and on the held-out 2025 pool, with any blend weight
+chosen on 2024 only. Four features adapted from a second, independently written implementation of
+this task — vendor-name KEV history matched from the description text, an edge-device keyword flag,
+and a v4 EPSS level — were put through that gate (`artifacts/add_feature_ablation.json`).
+
+| Variant | Booster features | Booster 2024 OOF / 2025 held-out @500 | Blend w_b | Blend held-out @500 |
+| :-- | --: | :-- | --: | :-- |
+| Shipped model | 78 | 28 / 19 | 0.20 | **24** (bootstrap 14–33) |
+| + candidate features | 82 | 29 / 20 | 0.35 | 22 (bootstrap 12–31) |
+
+The booster improved on both pools, which is what made the ablation tempting. The shipped blend did
+not: the extra features moved the 2024-optimal weight from 0.20 to 0.35, and at that weight held-out
+fell by 2 hits (P@50 0.20 → 0.18, AP 0.118 → 0.119, both inside noise on 52 positives). The gate said
+revert, so the submitted model does not contain them and `pipeline/features.py` is byte-identical to
+the code that produced `top500.csv`.
+
 ## What we did not do
 
 - **No random split, no stratified shuffle, no cross-month leakage.** Grouping is by `snapshot_month`.

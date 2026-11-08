@@ -1,0 +1,63 @@
+{
+  "window": "2025-01..2025-09",
+  "rows": 32668,
+  "positives": 45,
+  "train_rows": 38428,
+  "train_positives": 63,
+  "results": {
+    "logistic_regression": {
+      "hits@50": 7,
+      "hits@100": 11,
+      "hits@274": 15,
+      "hits@500": 15,
+      "p@50": 0.14,
+      "ap": 0.0708,
+      "auc": 0.8739
+    },
+    "hist_gradient_boosting": {
+      "hits@50": 5,
+      "hits@100": 7,
+      "hits@274": 11,
+      "hits@500": 16,
+      "p@50": 0.1,
+      "ap": 0.0337,
+      "auc": 0.7912
+    },
+    "cvss_first": {
+      "hits@50": 3,
+      "hits@100": 4,
+      "hits@274": 8,
+      "hits@500": 9,
+      "p@50": 0.06,
+      "ap": 0.0164,
+      "auc": 0.7316
+    },
+    "epss_first": {
+      "hits@50": 5,
+      "hits@100": 5,
+      "hits@274": 10,
+      "hits@500": 11,
+      "p@50": 0.1,
+      "ap": 0.0328,
+      "auc": 0.7518
+    },
+    "exploit_flags_then_epss": {
+      "hits@50": 6,
+      "hits@100": 8,
+      "hits@274": 16,
+      "hits@500": 19,
+      "p@50": 0.12,
+      "ap": 0.0537,
+      "auc": 0.8202
+    },
+    "heuristic_baseline": {
+      "hits@50": 6,
+      "hits@100": 8,
+      "hits@274": 12,
+      "hits@500": 15,
+      "p@50": 0.12,
+      "ap": 0.0464,
+      "auc": 0.8758
+    }
+  }
+}

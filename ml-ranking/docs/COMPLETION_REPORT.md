@@ -23,7 +23,7 @@ of the build, not reconstructed from memory: every command below was executed in
 | Criterion | Where it is addressed |
 | :-- | :-- |
 | Discovery (35%) | `DISCOVERIES.md` — nine findings, each with n, rate and Wilson 95% interval; the blind-spot result (33 of 52 exploited CVEs missed by every baseline) is the headline |
-| Data use (25%) | `DATA_AUDIT.md` and `FEATURE_AUDIT.md` — 401,082 records, 6.46 M signals, every one of the 114 features with source, fill rate and leak assessment; excluded columns justified |
+| Data use (25%) | `DATA_AUDIT.md` and `FEATURE_AUDIT.md` — 401,082 records, 6.46 M signals, every one of the 112 features with source, fill rate and leak assessment; excluded columns justified |
 | Communication (25%) | README, dashboard, `DEMO_SCRIPT.md`, `DEVPOST.md`; every performance claim carries an interval and a plain statement of what it does not prove |
 | Impact (15%) | The product answers "what do we fix first, and why", with per-CVE evidence a patch decision can cite |
 | IBM technology (mandatory) | IBM Granite embeddings, run locally; measured ablation 19 → 24 hits@500; `IBM_INTEGRATION.md` |

@@ -32,7 +32,7 @@ Nine-month pools (Jan–Sep) mirror the 2026 shape exactly. Jan–Sep 2025 is th
 2024 slots are excluded from training (no signal file) rather than imputed with all-missing EPSS,
 which would teach the model a spurious "missing EPSS" prior that does not hold in 2026 (2% missing).
 
-## 3. Features (114)
+## 3. Features (112)
 
 Built by `pipeline/features.py`; every group and its availability argument is in
 [FEATURE_AUDIT.md](FEATURE_AUDIT.md).

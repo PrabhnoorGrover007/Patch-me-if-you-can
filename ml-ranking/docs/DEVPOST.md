@@ -8,7 +8,8 @@ Before the Breach — exploit-aware vulnerability prioritisation
 
 Rank 72,670 CVEs by what attackers will actually exploit, not by how scary the score looks.
 
-**Code repository:** _paste the GitHub URL here before submitting._
+**Code repository:** https://github.com/PrabhnoorGrover007/Patch-me-if-you-can — the IBM-track solution
+lives in `ml-ranking/` on branch `feature/ml-ranking-solution`; `main` holds the team's other track.
 **Submission file:** `top500.csv` — 500 unique `cve_id` values, one column, attached to this submission.
 
 ## Inspiration
@@ -102,6 +103,9 @@ No other outside data was used.
 - A measured Granite ablation: the embedding features take the blend from 19 to 24 hits@500.
 - A dashboard where every ranking is explainable from recorded evidence, with the explanation source
   labelled rather than implied.
+- A feature gate fixed before evaluation: four candidate features raised the single model but cost the
+  shipped blend 2 held-out hits, so they were reverted and the negative result is published in
+  `docs/MODEL_EVALUATION.md` instead of being quietly dropped.
 - 18 executable tests covering label construction, feature as-of integrity, submission format and the
   API contract.
 

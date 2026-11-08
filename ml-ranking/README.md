@@ -35,18 +35,21 @@ Manual equivalent:
 
 ```bash
 python -m venv .venv && .venv/Scripts/pip install -r requirements.txt   # or .venv/bin/pip on unix
-python pipeline/prepare_data.py     # raw CSVs  -> parquet artefacts
-python pipeline/features.py         # cohorts   -> 114 features, as-of monthly priors
-python models/train.py              # selection -> artifacts/model.joblib
-python models/predict.py            # score 2026 -> top500.csv
+python -m pipeline.prepare_data     # raw CSVs  -> parquet artefacts
+python -m pipeline.features         # cohorts   -> 112 features, as-of monthly priors
+python -m models.train              # selection -> artifacts/model.joblib
+python -m models.predict            # score 2026 -> top500.csv
 python -m uvicorn api.main:app --port 8000
 ```
+
+Stages run as modules (`-m`) because they import one another: the script form fails with
+`ModuleNotFoundError: No module named 'eval'`, the `-m` form works.
 
 The Granite embedding stage is optional for the API but required to reproduce the shipped model:
 
 ```bash
 pip install -r requirements-granite.txt
-python models/granite_embed.py      # ~23 min on CPU, no account or API key needed
+python -m models.granite_embed      # ~23 min on CPU, no account or API key needed
 ```
 
 ## What you get
@@ -75,6 +78,12 @@ Bootstrap 95% interval on our hits@500 is 14–33, so the lead over the baseline
 guaranteed margin. What is solid: precision at 50 is 2.5× the baseline and the full ordering (AP) is
 2.5× better, which means the top of the list is genuinely better, not just longer.
 
+We also tested four extra features adapted from a second, independently written implementation, and
+rejected them. They lifted the single booster on both pools (2024 OOF 28 → 29, held-out 19 → 20) but
+shifted the 2024-optimal blend weight from 0.20 to 0.35, where the shipped blend lost 2 held-out hits
+(24 → 22). The gate was fixed before the test, so the rejected variant is published instead of being
+quietly folded in — full table in [`docs/MODEL_EVALUATION.md`](docs/MODEL_EVALUATION.md).
+
 Profile of the shipped top 500 versus the whole pool: mean EPSS 0.0212 vs 0.0027 (7.9×), public
 exploit code in 56.8% of rows, mean CVSS 9.27 vs 7.05.
 
@@ -84,7 +93,7 @@ exploit code in 56.8% of rows, mean CVSS 9.27 vs 7.05.
    1,484 KEV entries, 72,670 benchmark rows across eight snapshot months.
 2. **Label** — a CVE is positive if KEV added it *strictly after* its snapshot month ended. Nobody
    can see the future in this label, by construction.
-3. **Features (114)** — severity and vector components, EPSS level and rank, exploit-code availability
+3. **Features (112)** — severity and vector components, EPSS level and rank, exploit-code availability
    (PoC, Nuclei, Metasploit), CWE class and CWE×exploit interactions, description keyword families,
    age, reference signals, vendor KEV history as-of the snapshot month, and IBM Granite embedding
    similarity to previously exploited CVEs.
@@ -132,6 +141,18 @@ reference set, submission format (500 unique ids, all in the scoreboard, one col
 integrity, model determinism, discovery confidence intervals, and the API contract.
 See [`docs/TEST_REPORT.md`](docs/TEST_REPORT.md).
 
+## Verify it yourself
+
+```bash
+.venv/Scripts/python.exe -m pytest -q        # 18 passed: label, as-of integrity, submission format, API
+bash start.sh                                # API + dashboard on http://127.0.0.1:8000
+curl -s http://127.0.0.1:8000/api/health     # {"status":"ok","rows":72670,"granite":true}
+```
+
+`top500.csv` is the file that gets scored. Its invariants are executable: 500 unique ids, one column,
+every id present in `scoreboard_2026.csv`. The submitted file's md5 is
+`c842423e00d3c1fba5469065f03a1cbe`, reproducible with `python -m models.predict`.
+
 ## Honest limitations
 
 - The 2026 answer key does not exist in the release — KEV entries end 2025-12-29 — so **our 2026
@@ -150,7 +171,7 @@ Full list in [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md).
 | :-- | :-- |
 | [`docs/METHODOLOGY.md`](docs/METHODOLOGY.md) | data, label, features, model, validation protocol |
 | [`docs/DATA_AUDIT.md`](docs/DATA_AUDIT.md) | corpus shape, coverage, anomalies, leakage exclusions |
-| [`docs/FEATURE_AUDIT.md`](docs/FEATURE_AUDIT.md) | all 114 features, source, fill rate, leak status |
+| [`docs/FEATURE_AUDIT.md`](docs/FEATURE_AUDIT.md) | all 112 features, source, fill rate, leak status |
 | [`docs/DISCOVERIES.md`](docs/DISCOVERIES.md) | nine findings with confidence intervals |
 | [`docs/MODEL_EVALUATION.md`](docs/MODEL_EVALUATION.md) | selection table, held-out results, blind spot |
 | [`docs/IBM_INTEGRATION.md`](docs/IBM_INTEGRATION.md) | Granite usage and measured contribution |
