@@ -31,7 +31,7 @@ label = 0  otherwise
   varying window (through 2026-11-04), so we keep the variable window instead of throwing away data.
 - `label = 0` means "not confirmed on KEV by 2025-12-31". It does **not** mean the CVE was never attacked.
 - Late-2025 cohorts have short windows, so they carry fewer positives. The current build has
-  **78,287 rows and 111 positives** (63 from 2024 cohorts, 48 from 2025 cohorts).
+  **82,427 rows and 119 positives** (67 from 2024 cohorts, 52 from 2025 cohorts).
 
 ## 4. Columns
 
