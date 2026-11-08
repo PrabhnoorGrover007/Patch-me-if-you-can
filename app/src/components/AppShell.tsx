@@ -7,6 +7,9 @@ import { useChat } from "./ChatProvider";
 
 const TABS = [
   { href: "/", label: "Dashboard" },
+  { href: "/time-machine", label: "Time Machine" },
+  { href: "/patch-budget", label: "Patch Budget" },
+  { href: "/beat-the-model", label: "Beat the Model" },
   { href: "/explorer", label: "Explorer" },
   { href: "/patch", label: "20-Patch challenge" },
   { href: "/discoveries", label: "Discoveries" },

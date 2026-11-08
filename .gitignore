@@ -2,6 +2,10 @@
 data/
 data.zip
 
+# Time Machine replay payload is committed so the page needs no raw CSVs
+!app/src/data/
+!app/src/data/**
+
 # python
 .venv/
 __pycache__/
