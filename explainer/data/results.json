@@ -1,0 +1,24 @@
+{
+  "cvss_hits": 7,
+  "epss_hits": 6,
+  "code_then_epss_hits": 8,
+  "model_hits": null,
+  "finding": "",
+  "chart_title": "",
+  "chart": [],
+  "leaked_columns": [
+    { "column": "nvd_status", "reason": "NIST reviewed 100% of attacked 2025 bugs vs 49% of the rest" },
+    { "column": "n_affected_cpes / product list", "reason": "Filled in during NIST review: 100% of attacked bugs had one vs 63% of the rest" },
+    { "column": "reference tags", "reason": "Added by NIST later: 'Mitigation' on 13.9% of attacked bugs vs 0.9%" },
+    { "column": "news & research links", "reason": "Written because of the attack" },
+    { "column": "blank CVSS score", "reason": "0% blank on attacked bugs vs 5.8% on the rest" }
+  ],
+  "team": [],
+  "_sources": {
+    "cvss_hits, epss_hits, code_then_epss_hits": "IBM track README: standard rankings, confirmed attacks found in the 2026 top 500",
+    "leaked_columns": "Our leakage audit (src/audit.py) on vulnerabilities published in 2025, CISA KEV to 2025-12-31",
+    "model_hits": "Unknown until judging (2026 answers are checked by the judges). Fill with the team's number and label it.",
+    "finding, chart": "Waiting for the team's analysis",
+    "team": "Waiting for team names"
+  }
+}

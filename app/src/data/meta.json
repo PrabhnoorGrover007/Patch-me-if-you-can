@@ -1,0 +1,112 @@
+{
+  "generatedAt": "2026-11-08T15:04:50.420Z",
+  "universe": 72670,
+  "cohort": 500,
+  "medians": {
+    "risk": 49,
+    "effort": 6
+  },
+  "severityCounts": {
+    "CRITICAL": 339,
+    "HIGH": 137,
+    "MEDIUM": 23,
+    "LOW": 1
+  },
+  "effortCounts": {
+    "Medium": 380,
+    "Low": 96,
+    "High": 24
+  },
+  "quadrantCounts": {
+    "Quick win": 171,
+    "Plan it": 92,
+    "Defer": 75,
+    "Fill-in": 162
+  },
+  "exposureByMonth": [
+    {
+      "month": "2026-01",
+      "published": 35,
+      "openRisk": 1503,
+      "criticalOpen": 26
+    },
+    {
+      "month": "2026-02",
+      "published": 30,
+      "openRisk": 2703,
+      "criticalOpen": 48
+    },
+    {
+      "month": "2026-03",
+      "published": 37,
+      "openRisk": 4412,
+      "criticalOpen": 71
+    },
+    {
+      "month": "2026-04",
+      "published": 46,
+      "openRisk": 6589,
+      "criticalOpen": 101
+    },
+    {
+      "month": "2026-05",
+      "published": 43,
+      "openRisk": 8630,
+      "criticalOpen": 126
+    },
+    {
+      "month": "2026-06",
+      "published": 67,
+      "openRisk": 12016,
+      "criticalOpen": 169
+    },
+    {
+      "month": "2026-07",
+      "published": 78,
+      "openRisk": 15823,
+      "criticalOpen": 222
+    },
+    {
+      "month": "2026-08",
+      "published": 85,
+      "openRisk": 19926,
+      "criticalOpen": 279
+    },
+    {
+      "month": "2026-09",
+      "published": 79,
+      "openRisk": 23638,
+      "criticalOpen": 339
+    }
+  ],
+  "exploitCoverage": {
+    "withAnyExploit": 398,
+    "withNuclei": 69,
+    "epssAbove10pct": 25
+  },
+  "validation": {
+    "model": "logistic_regression",
+    "hitsAt274": 17,
+    "hitsAt500": 18,
+    "baselineName": "exploit_flags_then_epss",
+    "baselineHits": 15,
+    "precisionAt274": 0.062,
+    "liftPct": 13.3,
+    "rocAuc": 0.8801,
+    "averagePrecision": 0.0535,
+    "validationRows": 39859,
+    "positives": 48,
+    "trainRows": 38428,
+    "trainPositives": 63,
+    "kScaled": 274,
+    "generatedAt": "2026-11-07 20:23:19"
+  },
+  "sources": [
+    "outputs/top500.csv (submission: rank order)",
+    "IBM_dataset/data/scoreboard_2026.csv (EPSS + exploit flags at each cutoff)",
+    "IBM_dataset/data/vulnerabilities.csv (description, CVSS, CWE)",
+    "IBM_dataset/data/weakness_types.csv (CWE names)",
+    "IBM_dataset/data/affected_products.csv (product context)",
+    "outputs/validation_results.json (model metrics)"
+  ]
+}
