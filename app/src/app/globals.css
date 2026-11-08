@@ -173,3 +173,9 @@
     border-top: 1px solid #ece3d2;
   }
 }
+
+@keyframes tm-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(155, 17, 30, 0.55); }
+  50% { box-shadow: 0 0 0 4px rgba(155, 17, 30, 0); }
+}
+.tm-pulse { animation: tm-pulse 0.9s ease-in-out infinite; }
